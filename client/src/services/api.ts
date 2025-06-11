@@ -1,0 +1,268 @@
+import axios from 'axios';
+
+const API_BASE_URL = 'http://localhost:5000';
+
+export const fetchMarketData = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/market-data`);
+        return response.data;
+    } catch (error) {
+        throw new Error('Error fetching market data');
+    }
+};
+
+export const fetchUserPortfolio = async (userId: string) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/users/${userId}/portfolio`);
+        return response.data;
+    } catch (error) {
+        throw new Error('Error fetching user portfolio');
+    }
+};
+
+export const executeTrade = async (tradeDetails: any) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/trades`, tradeDetails);
+        return response.data;
+    } catch (error) {
+        throw new Error('Error executing trade');
+    }
+};
+
+export const loginUser = async (email: string, password: string, twoFAToken?: string) => {
+    try {
+        const payload: any = { email, password };
+        if (twoFAToken) payload.twoFAToken = twoFAToken;
+        const response = await axios.post(`${API_BASE_URL}/auth/login`, payload);
+        return response.data;
+    } catch (error: any) {
+        if (error.response && error.response.data && error.response.data.error) {
+            throw new Error(error.response.data.error);
+        }
+        throw new Error('Login failed');
+    }
+};
+
+// Update registerUser to throw backend error message if available
+export const registerUser = async (fullName: string, email: string, password: string, wallet: string, referredBy?: string) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/auth/register`, { fullName, email, password, wallet, referredBy });
+        return response.data;
+    } catch (error: any) {
+        if (error.response && error.response.data && error.response.data.error) {
+            throw new Error(error.response.data.error);
+        }
+        throw new Error('Registration failed');
+    }
+};
+
+// Remove old getPortfolio export
+// export const getPortfolio = (userId: string) => fetchUserPortfolio(userId);
+
+// Add new getPortfolio and convertBalance
+export const getPortfolio = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.get('http://localhost:5000/api/portfolio', {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+export const convertBalance = async (direction: 'USDT_TO_SPOT' | 'SPOT_TO_USDT', amount: number) => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.post('http://localhost:5000/api/convert', { direction, amount }, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+// Add getTeamInfo API call to fetch referral link and team members for the Team page.
+export const getTeamInfo = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.get(`${API_BASE_URL}/api/team`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+// Add a function to the API service to validate if a referral code exists in the backend.
+export const validateReferralCode = async (code: string) => {
+    const res = await axios.get(`${API_BASE_URL}/api/validate-referral/${code}`);
+    return res.data.valid;
+};
+
+// Fetch all available stocks
+export const getStocks = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.get(`${API_BASE_URL}/api/stock`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+// Purchase a stock
+export const purchaseStock = async (stockId: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.post(`${API_BASE_URL}/api/stock/purchase`, { stockId }, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+// Transfer SPOT to another user by email
+export const transferSpot = async (recipientEmail: string, amount: number, twoFAToken: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.post(`${API_BASE_URL}/api/transfer`, { recipientEmail, amount, twoFAToken }, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+// Add API functions to send the name change verification code and to change the user's name after code verification.
+export const sendNameVerificationCode = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.post('http://localhost:5000/api/send-name-verification', {}, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+export const changeName = async (newName: string, code: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    try {
+        const res = await axios.post('http://localhost:5000/api/change-name', { newName, code }, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.data;
+    } catch (error: any) {
+        if (error.response && error.response.data && error.response.data.error) {
+            // Return the backend error message as the error message
+            throw new Error(error.response.data.error);
+        }
+        // If no backend error, show the default axios error message
+        throw new Error(error.message || 'Failed to update name.');
+    }
+};
+
+// Add API functions to send verification code and change for email and wallet, similar to name change functions.
+export const sendEmailVerificationCode = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.post('http://localhost:5000/api/send-email-verification', {}, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+export const changeEmail = async (newEmail: string, spotid: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.post('http://localhost:5000/api/change-email', { newEmail, spotid }, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+export const sendWalletVerificationCode = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.post('http://localhost:5000/api/send-wallet-verification', {}, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+export const changeWallet = async (newWallet: string, code: string, spotid: string, twoFAToken: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.post('http://localhost:5000/api/change-wallet', { newWallet, code, spotid, twoFAToken }, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+// Add this function to actually call the backend for password verification code (placeholder for now)
+export const sendPasswordVerificationCode = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.post('http://localhost:5000/api/send-password-verification', {}, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+// Send funds privacy verification code to email
+export const sendFundsPrivacyVerificationCode = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.post(`${API_BASE_URL}/api/send-funds-privacy-code`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+// Verify funds privacy (lock funds actions)
+export const verifyFundsPrivacy = async (spotid: string, emailCode: string, password: string, twoFAToken: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.post(`${API_BASE_URL}/api/verify-funds-privacy`, {
+        spotid, emailCode, password, twoFAToken
+    }, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+// Change password
+export const changePassword = async (newPassword: string, code: string, spotid: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const payload = { newPassword, code, spotid }; // REMOVE twoFAToken from payload
+    const res = await axios.post('http://localhost:5000/api/change-password', payload, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+// Admin login
+export const adminLogin = async (email: string, password: string) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/auth/admin/login`, { email, password });
+        return response.data;
+    } catch (error: any) {
+        if (error.response && error.response.data && error.response.data.error) {
+            throw new Error(error.response.data.error);
+        }
+        throw new Error('Admin login failed');
+    }
+};
+
+// Add an API function to fetch all users (for admin).
+export const getAllUsers = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.get('http://localhost:5000/api/admin/users', {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+// Send chat message
+export const sendChatMessage = async (text: string, image?: string) => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.post('http://localhost:5000/api/chat/send', { text, image }, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};
+
+// All conversion logic uses backend rate. No hardcoded rate here. If you reference the rate in comments, update to 500 USDT per SPOT.
