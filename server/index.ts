@@ -879,14 +879,15 @@ app.post('/api/send-email-verification', authenticateToken, async (req: Request,
 
 app.post('/api/change-email', authenticateToken, async (req: Request, res: Response) => {
     const userId = (req as any).user.userId;
-    const { newEmail, code } = req.body;
+    const { newEmail, spotid } = req.body;
     const user = await User.findById(userId);
     if (!user || typeof user.email !== 'string') {
         res.status(404).json({ error: 'User not found' });
         return;
     }
-    if (!verifyCode('emailChangeCodes', user.email, code)) {
-        res.status(400).json({ error: 'Invalid or expired verification code' });
+    // Check spotid matches
+    if (user.spotid !== spotid) {
+        res.status(400).json({ error: 'Invalid spotid' });
         return;
     }
     // Check if new email already exists
@@ -897,7 +898,6 @@ app.post('/api/change-email', authenticateToken, async (req: Request, res: Respo
     }
     user.email = newEmail;
     await user.save();
-    deleteCode('emailChangeCodes', user.email);
     // Log activity
     await logActivity('USER_UPDATE', user, { changedFields: ['email'] });
     res.json({ message: 'Email updated successfully' });
