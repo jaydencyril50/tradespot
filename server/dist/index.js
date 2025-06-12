@@ -49,6 +49,7 @@ const http_1 = __importDefault(require("http"));
 const socket_io_1 = require("socket.io");
 const Announcement_1 = __importDefault(require("./models/Announcement"));
 const Activity_1 = __importDefault(require("./models/Activity"));
+const DepositSession_1 = __importDefault(require("./models/DepositSession"));
 dotenv.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
@@ -1110,9 +1111,9 @@ app.post('/api/withdraw', authenticateToken, (req, res) => __awaiter(void 0, voi
     res.json({ message: 'Withdrawal request submitted successfully.' });
 }));
 // --- Deposit endpoints ---
-// Store pending deposits in memory (for demo; use DB in production)
-const pendingDeposits = {};
-// Start a deposit session
+// Remove demo in-memory pendingDeposits
+// (import removed to avoid duplicate identifier error)
+// Start a deposit session (real, DB-backed)
 app.post('/api/deposit/start', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
     const { amount } = req.body;
@@ -1120,182 +1121,63 @@ app.post('/api/deposit/start', authenticateToken, (req, res) => __awaiter(void 0
         res.status(400).json({ error: 'Minimum deposit is 10 USDT' });
         return;
     }
-    // Only one pending deposit per user at a time
-    pendingDeposits[userId] = {
+    // Only one pending deposit per user at a time (not expired, not credited)
+    const now = new Date();
+    const existingSession = yield DepositSession_1.default.findOne({
+        userId,
+        credited: { $in: [false, null] },
+        expiresAt: { $gt: now },
+    });
+    if (existingSession) {
+        return res.json({
+            address: existingSession.address,
+            expiresAt: existingSession.expiresAt.getTime(),
+            sessionId: existingSession._id,
+        });
+    }
+    // Create new session
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+    const address = 'TSNHcwrdH83nh16RGdFQizYKQaDUyTnd7W';
+    const session = yield DepositSession_1.default.create({
+        userId,
         amount: Number(amount),
-        address: 'TSNHcwrdH83nh16RGdFQizYKQaDUyTnd7W',
-        createdAt: Date.now(),
+        address,
+        createdAt: now,
         credited: false,
-    };
-    res.json({ address: 'TSNHcwrdH83nh16RGdFQizYKQaDUyTnd7W', expiresAt: Date.now() + 15 * 60 * 1000 });
+        expiresAt,
+    });
+    res.json({ address, expiresAt: expiresAt.getTime(), sessionId: session._id });
 }));
-// Poll for deposit status (simulate detection for demo)
+// Poll for deposit status (real detection only)
 app.get('/api/deposit/status', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.user.userId;
-    const pending = pendingDeposits[userId];
-    if (!pending) {
-        res.json({ status: 'none' });
-        return;
-    }
-    // Simulate detection: after 20 seconds, mark as credited
-    if (!pending.credited && Date.now() - pending.createdAt > 20000) {
-        pending.credited = true;
-        // Credit user
-        const user = yield User.findById(userId);
-        if (user) {
-            user.usdtBalance += pending.amount;
-            user.recentTransactions = user.recentTransactions || [];
-            user.recentTransactions.push({
-                type: 'Deposit',
-                amount: pending.amount,
-                currency: 'USDT',
-                date: new Date(),
-            });
-            yield user.save();
-            // Notify user of deposit
-            yield Notification.create({
-                userId: user._id,
-                message: `Deposit of ${pending.amount} USDT credited to your account.`,
-                read: false
-            });
-        }
-    }
-    if (pending.credited) {
-        delete pendingDeposits[userId];
-        res.json({ status: 'success', amount: pending.amount });
-        return;
-    }
-    // Timeout after 15 minutes
-    if (Date.now() - pending.createdAt > 15 * 60 * 1000) {
-        delete pendingDeposits[userId];
-        res.json({ status: 'failed' });
-        return;
-    }
-    res.json({ status: 'pending' });
-}));
-// --- FUNDS PRIVACY ENDPOINTS ---
-app.post('/api/send-funds-privacy-code', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.user.userId;
-    const user = yield User.findById(userId);
-    if (!user || typeof user.email !== 'string') {
-        res.status(404).json({ error: 'User not found' });
-        return;
-    }
-    // Generate a 6-digit code
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    // Store code in memory (for demo; use DB or cache in production)
-    global.fundsPrivacyCodes = global.fundsPrivacyCodes || {};
-    global.fundsPrivacyCodes[user.email] = code;
-    // Send email (using nodemailer)
     try {
-        const transporter = nodemailer_1.default.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
-        yield transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: user.email,
-            subject: 'Your Funds Privacy Verification Code',
-            text: `Your funds privacy verification code is: ${code}`,
-        });
-        res.json({ message: 'Funds privacy verification code sent.' });
+        // Find the most recent pending deposit session for this user
+        const session = yield DepositSession_1.default.findOne({
+            userId: req.user._id,
+            credited: { $in: [false, null] },
+            expiresAt: { $gt: new Date() },
+        }).sort({ createdAt: -1 });
+        if (!session) {
+            // No pending session found, check if any session expired recently
+            const expired = yield DepositSession_1.default.findOne({
+                userId: req.user._id,
+                credited: false,
+                expiresAt: { $lte: new Date() },
+            }).sort({ createdAt: -1 });
+            if (expired) {
+                return res.json({ status: 'failed' });
+            }
+            return res.json({ status: 'failed' });
+        }
+        if (session.credited) {
+            return res.json({ status: 'success' });
+        }
+        // Still pending
+        return res.json({ status: 'pending' });
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to send email.' });
+        return res.status(500).json({ status: 'failed', error: 'Server error' });
     }
-}));
-// --- FUNDS PRIVACY VERIFICATION CHECK ENDPOINT ---
-app.post('/api/verify-funds-privacy', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.user.userId;
-    const { spotid, emailCode, password, twoFAToken } = req.body;
-    if (!spotid || !emailCode || !password || !twoFAToken) {
-        res.status(400).json({ error: 'All fields are required.' });
-        return;
-    }
-    const user = yield User.findById(userId);
-    if (!user) {
-        res.status(404).json({ error: 'User not found.' });
-        return;
-    }
-    // Check spotid
-    if (user.spotid !== spotid) {
-        res.status(400).json({ error: 'Invalid Spot ID.' });
-        return;
-    }
-    // Check email code
-    const codes = global.fundsPrivacyCodes || {};
-    if (!codes[user.email] || codes[user.email] !== emailCode) {
-        res.status(400).json({ error: 'Invalid or expired email verification code.' });
-        return;
-    }
-    // Check password
-    const validPassword = yield bcryptjs_1.default.compare(password, user.password);
-    if (!validPassword) {
-        res.status(400).json({ error: 'Incorrect password.' });
-        return;
-    }
-    // Check 2FA
-    if (!user.twoFA || !user.twoFA.enabled || !user.twoFA.secret) {
-        res.status(400).json({ error: '2FA is not enabled for this account.' });
-        return;
-    }
-    const verified2FA = speakeasy_1.default.totp.verify({
-        secret: user.twoFA.secret,
-        encoding: 'base32',
-        token: twoFAToken,
-        window: 1
-    });
-    if (!verified2FA) {
-        res.status(400).json({ error: 'Invalid 2FA code' });
-        return;
-    }
-    // Optionally: Invalidate the code after use
-    delete codes[user.email];
-    global.fundsPrivacyCodes = codes;
-    // Toggle fundsLocked in DB
-    user.fundsLocked = !user.fundsLocked;
-    yield user.save();
-    res.json({
-        message: user.fundsLocked
-            ? 'Funds privacy verified and funds are now locked.'
-            : 'Funds privacy verified and funds are now unlocked.',
-        fundsLocked: user.fundsLocked
-    });
-}));
-// Add this endpoint to return all transactions for the user
-app.get('/api/transactions', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.user.userId;
-    const user = yield User.findById(userId);
-    if (!user) {
-        res.status(404).json({ error: 'User not found' });
-        return;
-    }
-    res.json({ transactions: (user.recentTransactions || []).slice().reverse() });
-}));
-// Endpoint: Get user notifications
-app.get('/api/notifications', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.user.userId;
-    const notifications = yield Notification.find({ userId }).sort({ createdAt: -1 });
-    res.json({ notifications });
-}));
-// Endpoint: Mark all notifications as read
-app.patch('/api/notifications/mark-read', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.user.userId;
-    yield Notification.updateMany({ userId, read: false }, { $set: { read: true } });
-    res.json({ success: true });
-}));
-// --- 2FA STATUS ENDPOINT ---
-app.get('/api/2fa/status', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.user.userId;
-    const user = yield User.findById(userId);
-    if (!user) {
-        res.status(404).json({ error: 'User not found' });
-        return;
-    }
-    res.json({ enabled: !!(user.twoFA && user.twoFA.enabled) });
 }));
 // Admin: Get all users
 app.get('/api/admin/users', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -1749,7 +1631,7 @@ function getStyledEmailHtml(subject, body) {
 // Start deposit monitor polling service
 require("./services/depositMonitor");
 // --- DEPOSIT STATUS ENDPOINT ---
-const DepositSession_1 = __importDefault(require("./models/DepositSession"));
+// (import removed to avoid duplicate identifier error)
 app.get('/api/deposit/status', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Find the most recent pending deposit session for this user
@@ -1778,5 +1660,20 @@ app.get('/api/deposit/status', authenticateToken, (req, res) => __awaiter(void 0
     }
     catch (err) {
         return res.status(500).json({ status: 'failed', error: 'Server error' });
+    }
+}));
+// Get user's recent transactions
+app.get('/api/transactions', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = req.user.userId || req.user._id;
+        const user = yield User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        // Return all recent transactions, or limit if needed
+        res.json({ transactions: user.recentTransactions || [] });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to fetch transactions' });
     }
 }));
