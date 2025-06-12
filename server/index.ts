@@ -793,18 +793,10 @@ app.post('/api/send-name-verification', authenticateToken, async (req: Request, 
             from: process.env.EMAIL_USER,
             to: user.email,
             subject: 'Your Name Change Verification Code',
-            html: `
-                <div style="font-family: Arial, sans-serif; background: #f6f8fa; padding: 32px;">
-                  <div style="max-width: 420px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 16px rgba(30,60,114,0.10); padding: 32px;">
-                    <h2 style="color: #1e3c72; margin-bottom: 18px;">Name Change Verification</h2>
-                    <p style="font-size: 16px; color: #333; margin-bottom: 18px;">To confirm your name change, please use the verification code below:</p>
-                    <div style="font-size: 28px; font-weight: bold; letter-spacing: 6px; color: #1e3c72; background: #f0f4fa; padding: 18px 0; border-radius: 6px; text-align: center; margin-bottom: 24px; border: 1px dashed #1e3c72;">
-                      ${code}
-                    </div>
-                    <p style="font-size: 14px; color: #888;">If you did not request this, you can safely ignore this email.</p>
-                  </div>
-                </div>
-            `
+            html: getStyledEmailHtml(
+              'Name Change Verification',
+              `Your verification code is: <b style="font-size:20px;color:#1e3c72;">${code}</b>`
+            )
         });
         res.json({ message: 'Verification code sent' });
     } catch (err) {
@@ -855,21 +847,10 @@ app.post('/api/send-email-verification', authenticateToken, async (req: Request,
             from: process.env.EMAIL_USER,
             to: user.email,
             subject: 'Your Email Change Verification Code',
-            html: `
-                <div style="font-family: Arial, sans-serif; background: #f6f8fa; padding: 32px;">
-                  <div style="max-width: 420px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 16px rgba(30,60,114,0.10); padding: 32px;">
-                    <div style="text-align:center; margin-bottom: 18px;">
-                      <span style="font-size: 22px; font-weight: bold; color: #1e3c72; letter-spacing: 2px;">TradeSpot</span>
-                    </div>
-                    <h2 style="color: #1e3c72; margin-bottom: 18px;">Email Change Verification</h2>
-                    <p style="font-size: 16px; color: #333; margin-bottom: 18px;">To confirm your email change, please use the verification code below:</p>
-                    <div style="font-size: 28px; font-weight: bold; letter-spacing: 6px; color: #1e3c72; background: #f0f4fa; padding: 18px 0; border-radius: 6px; text-align: center; margin-bottom: 24px; border: 1px dashed #1e3c72;">
-                      ${code}
-                    </div>
-                    <p style="font-size: 14px; color: #888;">If you did not request this, you can safely ignore this email.</p>
-                  </div>
-                </div>
-            `
+            html: getStyledEmailHtml(
+              'Email Change Verification',
+              `Your email change verification code is: <b style="font-size:20px;color:#1e3c72;">${code}</b>`
+            )
         });
         res.json({ message: 'Verification code sent' });
     } catch (err) {
@@ -923,32 +904,14 @@ app.post('/api/send-wallet-verification', authenticateToken, async (req: Request
             }
         });
         await transporter.sendMail({
-    from: `"TradeSpot Global🌍" <${process.env.EMAIL_USER}>`,
-    to: user.email,
-    replyTo: 'support@tradespot.online',
-    subject: 'Your Wallet Change Verification Code',
-    html: `
-        <div style="font-family: Arial, sans-serif; background: #f4f6f8; padding: 40px;">
-          <div style="max-width: 480px; margin: 0 auto; background: #ffffff; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 32px;">
-            <div style="text-align:center; margin-bottom: 20px;">
-              <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #1e3c72; letter-spacing: 1px;">TRADESPOT</h1>
-            </div>
-            <h2 style="color: #1e3c72; margin-bottom: 16px;">Wallet Change Verification</h2>
-            <p style="font-size: 16px; color: #444; margin-bottom: 20px;">
-              To confirm your wallet change, please use the verification code below:
-            </p>
-            <div style="font-size: 30px; font-weight: bold; letter-spacing: 6px; color: #1e3c72; background: #f0f4fa; padding: 20px 0; border-radius: 6px; text-align: center; margin-bottom: 24px; border: 2px dashed #1e3c72;">
-              ${code}
-            </div>
-            <p style="font-size: 14px; color: #888;">If you did not request this, you can safely ignore this email.</p>
-            <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
-            <div style="text-align:center;">
-              <a href="https://t.me/tradespotglobal" style="font-size: 14px; color: #1e3c72; text-decoration: none;">Need Help?</a>
-            </div>
-          </div>
-        </div>
-    `
-});
+            from: process.env.EMAIL_USER,
+            to: user.email,
+            subject: 'Wallet Change Verification Code',
+            html: getStyledEmailHtml(
+              'Wallet Change Verification',
+              `Your wallet change verification code is: <b style="font-size:20px;color:#1e3c72;">${code}</b>`
+            )
+        });
         res.json({ message: 'Verification code sent' });
     } catch (err) {
         res.status(500).json({ error: 'Failed to send email' });
@@ -1032,22 +995,11 @@ app.post('/api/send-password-verification', authenticateToken, async (req: Reque
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: user.email,
-            subject: 'Your Password Change Verification Code',
-            html: `
-                <div style="font-family: Arial, sans-serif; background: #f6f8fa; padding: 32px;">
-                  <div style="max-width: 420px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 16px rgba(30,60,114,0.10); padding: 32px;">
-                    <div style="text-align:center; margin-bottom: 18px;">
-                      <span style="font-size: 22px; font-weight: bold; color: #1e3c72; letter-spacing: 2px;">TradeSpot</span>
-                    </div>
-                    <h2 style="color: #1e3c72; margin-bottom: 18px;">Password Change Verification</h2>
-                    <p style="font-size: 16px; color: #333; margin-bottom: 18px;">To confirm your password change, please use the verification code below:</p>
-                    <div style="font-size: 28px; font-weight: bold; letter-spacing: 6px; color: #1e3c72; background: #f0f4fa; padding: 18px 0; border-radius: 6px; text-align: center; margin-bottom: 24px; border: 1px dashed #1e3c72;">
-                      ${code}
-                    </div>
-                    <p style="font-size: 14px; color: #888;">If you did not request this, you can safely ignore this email.</p>
-                  </div>
-                </div>
-            `
+            subject: 'Password Change Verification Code',
+            html: getStyledEmailHtml(
+              'Password Change Verification',
+              `Your password change verification code is: <b style="font-size:20px;color:#1e3c72;">${code}</b>`
+            )
         });
         res.json({ message: 'Verification code sent' });
     } catch (err) {
@@ -1105,22 +1057,11 @@ app.post('/api/send-withdrawal-verification', authenticateToken, async (req: Req
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: user.email,
-            subject: 'Your Withdrawal Verification Code',
-            html: `
-                <div style="font-family: Arial, sans-serif; background: #f6f8fa; padding: 32px;">
-                  <div style="max-width: 420px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 16px rgba(30,60,114,0.10); padding: 32px;">
-                    <div style="text-align:center; margin-bottom: 18px;">
-                      <span style="font-size: 22px; font-weight: bold; color: #1e3c72; letter-spacing: 2px;">TradeSpot</span>
-                    </div>
-                    <h2 style="color: #1e3c72; margin-bottom: 18px;">Withdrawal Verification</h2>
-                    <p style="font-size: 16px; color: #333; margin-bottom: 18px;">To confirm your withdrawal, please use the verification code below:</p>
-                    <div style="font-size: 28px; font-weight: bold; letter-spacing: 6px; color: #1e3c72; background: #f0f4fa; padding: 18px 0; border-radius: 6px; text-align: center; margin-bottom: 24px; border: 1px dashed #1e3c72;">
-                      ${code}
-                    </div>
-                    <p style="font-size: 14px; color: #888;">If you did not request this, you can safely ignore this email.</p>
-                  </div>
-                </div>
-            `
+            subject: 'Withdrawal Verification Code',
+            html: getStyledEmailHtml(
+              'Withdrawal Verification',
+              `Your withdrawal verification code is: <b style="font-size:20px;color:#1e3c72;">${code}</b>`
+            )
         });
         res.json({ message: 'Verification code sent' });
     } catch (err) {
@@ -1827,3 +1768,22 @@ cron.schedule('0 * * * *', async () => {
 });
 
 server.listen(5000, () => console.log('Server running on port 5000'));
+
+// --- EMAIL STYLING UTILITY ---
+// Returns a styled HTML email body for all user emails
+function getStyledEmailHtml(subject: string, body: string) {
+  return `
+    <div style="background:#f7faff;padding:32px 0;font-family:Arial,sans-serif;">
+      <div style="max-width:420px;margin:0 auto;background:#fff;border-radius:8px;box-shadow:0 2px 16px rgba(30,60,114,0.10);padding:32px 24px;">
+        <h2 style="color:#1e3c72;font-size:22px;font-weight:700;margin-bottom:18px;letter-spacing:1px;">${subject}</h2>
+        <div style="font-size:17px;color:#25324B;margin-bottom:18px;line-height:1.6;">
+          ${body}
+        </div>
+        <div style="margin-top:32px;font-size:14px;color:#888;text-align:center;">
+          If you did not request this, please ignore this email.<br>
+          <span style="color:#1e3c72;font-weight:600;">Tradespot Security Team</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
