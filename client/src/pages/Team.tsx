@@ -46,19 +46,6 @@ const Team: React.FC = () => {
               }
             }}
           />
-          <button
-            onClick={async () => {
-              if (referralLink) {
-                await navigator.clipboard.writeText(referralLink);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 1500);
-              }
-            }}
-            style={{ padding: '7px 14px', background: '#1e3c72', color: '#fff', border: 'none', borderRadius: 3, cursor: 'pointer', fontSize: 14 }}
-            type="button"
-          >
-            {copied ? 'Copied!' : 'Copy'}
-          </button>
         </div>
       </div>
       <div style={{ fontWeight: 600, color: '#25324B', marginBottom: 8 }}>

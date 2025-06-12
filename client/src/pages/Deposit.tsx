@@ -28,9 +28,8 @@ const Deposit: React.FC = () => {
                     if (res.data.status === 'success') {
                         setModalStatus('success');
                         setTimeout(() => setModalOpen(false), 1800);
-                    } else if (res.data.status === 'failed') {
-                        setModalStatus('failed');
                     }
+                    // Do not set 'failed' here
                 } catch {}
             }, 10000);
         }
@@ -42,7 +41,9 @@ const Deposit: React.FC = () => {
         if (expiresAt) {
             const left = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
             setTimer(left);
-            if (left <= 0) setModalStatus('failed');
+            if (left <= 0) {
+                setModalStatus('failed');
+            }
             const t = setTimeout(() => setTimer(left - 1), 1000);
             return () => clearTimeout(t);
         }
