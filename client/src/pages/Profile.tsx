@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const API = process.env.REACT_APP_API_BASE_URL;
+
 interface UserProfile {
   id: string;
   fullName: string;
@@ -29,7 +31,7 @@ const Profile: React.FC = () => {
           navigate('/login');
           return;
         }
-        const res = await axios.get('http://localhost:5000/api/portfolio', {
+        const res = await axios.get(`${API}/api/portfolio`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser({

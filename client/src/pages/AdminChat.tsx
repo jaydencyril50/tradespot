@@ -9,7 +9,8 @@ interface Message {
   createdAt?: string;
 }
 
-const SOCKET_URL = 'http://localhost:5000'; // Adjust if needed
+const API = process.env.REACT_APP_API_BASE_URL;
+const SOCKET_URL = API;
 
 const AdminChat: React.FC = () => {
   const { spotid } = useParams<{ spotid: string }>();

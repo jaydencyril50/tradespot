@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const API = process.env.REACT_APP_API_BASE_URL;
+
 const Withdraw: React.FC = () => {
     const [usdtBalance, setUsdtBalance] = useState<number>(0);
     const [wallet, setWallet] = useState<string>('');
@@ -22,7 +24,7 @@ const Withdraw: React.FC = () => {
             try {
                 const token = localStorage.getItem('token');
                 if (!token) throw new Error('Not authenticated');
-                const res = await axios.get('http://localhost:5000/api/portfolio', {
+                const res = await axios.get(`${API}/api/portfolio`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUsdtBalance(res.data.usdtBalance || 0);
@@ -44,7 +46,7 @@ const Withdraw: React.FC = () => {
         try {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('Not authenticated');
-            await axios.post('http://localhost:5000/api/send-withdrawal-verification', {}, {
+            await axios.post(`${API}/api/send-withdrawal-verification`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setCodeSent(true);
@@ -80,7 +82,7 @@ const Withdraw: React.FC = () => {
         try {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('Not authenticated');
-            await axios.post('http://localhost:5000/api/withdraw', {
+            await axios.post(`${API}/api/withdraw`, {
                 amount: Number(amount),
                 verificationCode,
                 twoFACode,

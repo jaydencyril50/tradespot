@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const API = process.env.REACT_APP_API_BASE_URL;
+
 interface Transaction {
   type: string;
   amount: number;
@@ -19,7 +21,7 @@ const TransactionHistory: React.FC = () => {
       setError('');
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:5000/api/transactions', {
+        const res = await axios.get(`${API}/api/transactions`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTransactions(res.data.transactions || []);

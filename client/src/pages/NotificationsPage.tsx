@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
+const API = process.env.REACT_APP_API_BASE_URL;
+
 const NotificationsPage: React.FC = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -9,13 +11,13 @@ const NotificationsPage: React.FC = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('http://localhost:5000/api/notifications', {
+        const res = await fetch(`${API}/api/notifications`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
         setNotifications(data.notifications || []);
         // Mark all as read
-        await fetch('http://localhost:5000/api/notifications/mark-read', {
+        await fetch(`${API}/api/notifications/mark-read`, {
           method: 'PATCH',
           headers: { Authorization: `Bearer ${token}` },
         });

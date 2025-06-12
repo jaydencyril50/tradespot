@@ -9,6 +9,8 @@ interface Activity {
   details?: any;
 }
 
+const API = process.env.REACT_APP_API_BASE_URL;
+
 const AdminRecent: React.FC = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +23,7 @@ const AdminRecent: React.FC = () => {
       try {
         const token = localStorage.getItem('adminToken');
         if (!token) throw new Error('Not authenticated');
-        const res = await axios.get('http://localhost:5000/api/admin/recent-activities', {
+        const res = await axios.get(`${API}/api/admin/recent-activities`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setActivities(res.data.activities || []);

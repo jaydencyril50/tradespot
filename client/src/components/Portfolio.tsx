@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const API = process.env.REACT_APP_API_BASE_URL;
+
 interface PortfolioItem {
     id: string;
     name: string;
@@ -17,7 +19,7 @@ const Portfolio: React.FC = () => {
         const fetchPortfolio = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get('http://localhost:5000/api/portfolio', {
+                const res = await axios.get(`${API}/api/portfolio`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setPortfolio(res.data.portfolio || []);

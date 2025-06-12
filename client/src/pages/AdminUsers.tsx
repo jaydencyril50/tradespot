@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const API = process.env.REACT_APP_API_BASE_URL;
+
 interface User {
   _id: string;
   fullName: string;
@@ -27,7 +29,7 @@ const AdminUsers: React.FC = () => {
       try {
         const token = localStorage.getItem('adminToken'); // Use adminToken
         if (!token) throw new Error('Not authenticated');
-        const res = await axios.get('http://localhost:5000/api/admin/users', {
+        const res = await axios.get(`${API}/api/admin/users`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(res.data.users || []);
@@ -50,7 +52,7 @@ const AdminUsers: React.FC = () => {
       if (!token) throw new Error('Not authenticated');
       // Call backend API to update user details
       await axios.put(
-        `http://localhost:5000/api/admin/users/${selectedUser._id}`,
+        `${API}/api/admin/users/${selectedUser._id}`,
         {
           fullName: selectedUser.fullName,
           email: selectedUser.email,

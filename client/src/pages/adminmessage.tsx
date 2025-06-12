@@ -11,6 +11,8 @@ interface ChatMessage {
   createdAt?: string;
 }
 
+const API = process.env.REACT_APP_API_BASE_URL;
+
 const AdminMessage: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +26,7 @@ const AdminMessage: React.FC = () => {
       try {
         const token = localStorage.getItem('adminToken');
         if (!token) throw new Error('Not authenticated');
-        const res = await axios.get('http://localhost:5000/api/admin/chat-messages', {
+        const res = await axios.get(`${API}/api/admin/chat-messages`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         // Group messages by spotid, keep only the latest message per user

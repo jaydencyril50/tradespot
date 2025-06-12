@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API = process.env.REACT_APP_API_BASE_URL;
 const DEPOSIT_ADDRESS = 'TSNHcwrdH83nh16RGdFQizYKQaDUyTnd7W';
 
 const Deposit: React.FC = () => {
@@ -18,7 +19,7 @@ const Deposit: React.FC = () => {
             interval = setInterval(async () => {
                 try {
                     const token = localStorage.getItem('token');
-                    const res = await axios.get('http://localhost:5000/api/deposit/status', {
+                    const res = await axios.get(`${API}/api/deposit/status`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
                     if (res.data.status === 'success') {
@@ -49,7 +50,7 @@ const Deposit: React.FC = () => {
         setChecking(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:5000/api/deposit/start', { amount: Number(amount) }, {
+            await axios.post(`${API}/api/deposit/start`, { amount: Number(amount) }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setModalOpen(true);

@@ -3,6 +3,8 @@ import './Market.css';
 import { getStocks, purchaseStock } from '../services/api';
 import { FaHistory } from 'react-icons/fa';
 
+const API = process.env.REACT_APP_API_BASE_URL;
+
 interface Product {
   id: string;
   name: string;
@@ -71,7 +73,7 @@ const Market: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('Not authenticated');
-      const res = await fetch('http://localhost:5000/api/stock/history', {
+      const res = await fetch(`${API}/api/stock/history`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();

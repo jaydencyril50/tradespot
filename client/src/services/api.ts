@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API = process.env.REACT_APP_API_BASE_URL;
 
 export const fetchMarketData = async () => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/market-data`);
+        const response = await axios.get(`${API}/market-data`);
         return response.data;
     } catch (error) {
         throw new Error('Error fetching market data');
@@ -13,7 +13,7 @@ export const fetchMarketData = async () => {
 
 export const fetchUserPortfolio = async (userId: string) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/users/${userId}/portfolio`);
+        const response = await axios.get(`${API}/users/${userId}/portfolio`);
         return response.data;
     } catch (error) {
         throw new Error('Error fetching user portfolio');
@@ -22,7 +22,7 @@ export const fetchUserPortfolio = async (userId: string) => {
 
 export const executeTrade = async (tradeDetails: any) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/trades`, tradeDetails);
+        const response = await axios.post(`${API}/trades`, tradeDetails);
         return response.data;
     } catch (error) {
         throw new Error('Error executing trade');
@@ -33,7 +33,7 @@ export const loginUser = async (email: string, password: string, twoFAToken?: st
     try {
         const payload: any = { email, password };
         if (twoFAToken) payload.twoFAToken = twoFAToken;
-        const response = await axios.post(`${API_BASE_URL}/auth/login`, payload);
+        const response = await axios.post(`${API}/auth/login`, payload);
         return response.data;
     } catch (error: any) {
         if (error.response && error.response.data && error.response.data.error) {
@@ -46,7 +46,7 @@ export const loginUser = async (email: string, password: string, twoFAToken?: st
 // Update registerUser to throw backend error message if available
 export const registerUser = async (fullName: string, email: string, password: string, wallet: string, referredBy?: string) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/auth/register`, { fullName, email, password, wallet, referredBy });
+        const response = await axios.post(`${API}/auth/register`, { fullName, email, password, wallet, referredBy });
         return response.data;
     } catch (error: any) {
         if (error.response && error.response.data && error.response.data.error) {
@@ -82,7 +82,7 @@ export const convertBalance = async (direction: 'USDT_TO_SPOT' | 'SPOT_TO_USDT',
 export const getTeamInfo = async () => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.get(`${API_BASE_URL}/api/team`, {
+    const res = await axios.get(`${API}/api/team`, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
@@ -90,7 +90,7 @@ export const getTeamInfo = async () => {
 
 // Add a function to the API service to validate if a referral code exists in the backend.
 export const validateReferralCode = async (code: string) => {
-    const res = await axios.get(`${API_BASE_URL}/api/validate-referral/${code}`);
+    const res = await axios.get(`${API}/api/validate-referral/${code}`);
     return res.data.valid;
 };
 
@@ -98,7 +98,7 @@ export const validateReferralCode = async (code: string) => {
 export const getStocks = async () => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.get(`${API_BASE_URL}/api/stock`, {
+    const res = await axios.get(`${API}/api/stock`, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
@@ -108,7 +108,7 @@ export const getStocks = async () => {
 export const purchaseStock = async (stockId: string) => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.post(`${API_BASE_URL}/api/stock/purchase`, { stockId }, {
+    const res = await axios.post(`${API}/api/stock/purchase`, { stockId }, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
@@ -118,7 +118,7 @@ export const purchaseStock = async (stockId: string) => {
 export const transferSpot = async (recipientEmail: string, amount: number, twoFAToken: string) => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.post(`${API_BASE_URL}/api/transfer`, { recipientEmail, amount, twoFAToken }, {
+    const res = await axios.post(`${API}/api/transfer`, { recipientEmail, amount, twoFAToken }, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
@@ -203,7 +203,7 @@ export const sendPasswordVerificationCode = async () => {
 export const sendFundsPrivacyVerificationCode = async () => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.post(`${API_BASE_URL}/api/send-funds-privacy-code`, {}, {
+    const res = await axios.post(`${API}/api/send-funds-privacy-code`, {}, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
@@ -213,7 +213,7 @@ export const sendFundsPrivacyVerificationCode = async () => {
 export const verifyFundsPrivacy = async (spotid: string, emailCode: string, password: string, twoFAToken: string) => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.post(`${API_BASE_URL}/api/verify-funds-privacy`, {
+    const res = await axios.post(`${API}/api/verify-funds-privacy`, {
         spotid, emailCode, password, twoFAToken
     }, {
         headers: { Authorization: `Bearer ${token}` },
@@ -235,7 +235,7 @@ export const changePassword = async (newPassword: string, code: string, spotid: 
 // Admin login
 export const adminLogin = async (email: string, password: string) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/auth/admin/login`, { email, password });
+        const response = await axios.post(`${API}/auth/admin/login`, { email, password });
         return response.data;
     } catch (error: any) {
         if (error.response && error.response.data && error.response.data.error) {

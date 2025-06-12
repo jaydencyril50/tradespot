@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const API = process.env.REACT_APP_API_BASE_URL;
+
 interface InboxItem {
   spotid: string;
   latest?: {
@@ -26,7 +28,7 @@ const ChatInbox: React.FC = () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('Not authenticated');
-        const res = await axios.get('http://localhost:5000/api/chat/inbox', {
+        const res = await axios.get(`${API}/api/chat/inbox`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setInbox(res.data.inbox || []);

@@ -4,7 +4,8 @@ import { sendChatMessage, getPortfolio } from '../services/api';
 import io from 'socket.io-client';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const SOCKET_URL = 'http://localhost:5000'; // Adjust if needed
+const API = process.env.REACT_APP_API_BASE_URL;
+const SOCKET_URL = API;
 
 const ChatPage: React.FC = () => {
   const { spotid } = useParams<{ spotid: string }>();
@@ -41,7 +42,7 @@ const ChatPage: React.FC = () => {
       })));
       // Mark all admin messages as read
       if (history.some(msg => msg.from === 'admin' && msg.unread)) {
-        fetch('http://localhost:5000/api/chat/mark-read', {
+        fetch(`${API}/api/chat/mark-read`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -58,7 +59,7 @@ const ChatPage: React.FC = () => {
       ]);
       // Mark as read if from admin
       if (msg.from === 'admin') {
-        fetch('http://localhost:5000/api/chat/mark-read', {
+        fetch(`${API}/api/chat/mark-read`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

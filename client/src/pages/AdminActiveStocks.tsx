@@ -18,6 +18,8 @@ interface EditModalState {
   completed: boolean;
 }
 
+const API = process.env.REACT_APP_API_BASE_URL;
+
 const AdminActiveStocks: React.FC = () => {
   const [activeStocks, setActiveStocks] = useState<ActiveStockPlan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,7 +40,7 @@ const AdminActiveStocks: React.FC = () => {
       try {
         const token = localStorage.getItem('adminToken');
         if (!token) throw new Error('Not authenticated');
-        const res = await axios.get('http://localhost:5000/api/admin/all-stock-plans', {
+        const res = await axios.get(`${API}/api/admin/all-stock-plans`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setActiveStocks(res.data.stockPlans || []);
@@ -74,7 +76,7 @@ const AdminActiveStocks: React.FC = () => {
     try {
       const token = localStorage.getItem('adminToken');
       if (!token) throw new Error('Not authenticated');
-      await axios.put(`http://localhost:5000/api/admin/stock-plan/${editModal.stock._id}`,
+      await axios.put(`${API}/api/admin/stock-plan/${editModal.stock._id}`,
         {
           purchaseAmount: editModal.purchaseAmount,
           dailyProfits: editModal.dailyProfits,
@@ -104,7 +106,7 @@ const AdminActiveStocks: React.FC = () => {
     try {
       const token = localStorage.getItem('adminToken');
       if (!token) throw new Error('Not authenticated');
-      await axios.delete(`http://localhost:5000/api/admin/stock-plan/${editModal.stock._id}`,
+      await axios.delete(`${API}/api/admin/stock-plan/${editModal.stock._id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setActiveStocks((prev) => prev.filter((s) => s._id !== editModal.stock!._id));

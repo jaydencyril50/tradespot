@@ -200,6 +200,8 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
   );
 };
 
+const API = process.env.REACT_APP_API_BASE_URL;
+
 const Dashboard: React.FC = () => {
 	const navigate = useNavigate();
 	const chartRef = useRef<HTMLDivElement>(null);
@@ -459,7 +461,7 @@ const Dashboard: React.FC = () => {
 			try {
 				const token = localStorage.getItem('token');
 				if (!token) return;
-				const res = await fetch('http://localhost:5000/api/notifications', {
+				const res = await fetch(`${API}/api/notifications`, {
 					headers: { Authorization: `Bearer ${token}` },
 				});
 				const data = await res.json();
