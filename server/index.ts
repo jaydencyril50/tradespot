@@ -1453,6 +1453,16 @@ app.post('/api/announcement', async (req: Request, res: Response) => {
       announcement.updatedAt = new Date();
       await announcement.save();
     }
+    // Notify all users of the new announcement
+    const users = await User.find({}, '_id');
+    const notifications = users.map((u: any) => ({
+      userId: u._id,
+      message: `Announcement: ${notice}`,
+      read: false
+    }));
+    if (notifications.length > 0) {
+      await Notification.insertMany(notifications);
+    }
     res.json({ message: 'Announcement updated', notice: announcement.notice });
   } catch (err) {
     res.status(500).json({ error: 'Failed to update announcement' });
