@@ -13,6 +13,9 @@ const Deposit: React.FC = () => {
     const [checking, setChecking] = useState(false);
     const [copied, setCopied] = useState(false);
 
+    // Store session expiry for timer
+    const [expiresAt, setExpiresAt] = useState<number | null>(null);
+
     useEffect(() => {
         let interval: NodeJS.Timeout;
         if (modalOpen && modalStatus === 'pending') {
@@ -36,10 +39,14 @@ const Deposit: React.FC = () => {
 
     useEffect(() => {
         if (!modalOpen || modalStatus !== 'pending') return;
-        if (timer <= 0) return setModalStatus('failed');
-        const t = setTimeout(() => setTimer(timer - 1), 1000);
-        return () => clearTimeout(t);
-    }, [modalOpen, modalStatus, timer]);
+        if (expiresAt) {
+            const left = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+            setTimer(left);
+            if (left <= 0) setModalStatus('failed');
+            const t = setTimeout(() => setTimer(left - 1), 1000);
+            return () => clearTimeout(t);
+        }
+    }, [modalOpen, modalStatus, expiresAt, timer]);
 
     const handleDeposit = async () => {
         setError('');
@@ -50,12 +57,13 @@ const Deposit: React.FC = () => {
         setChecking(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.post(`${API}/api/deposit/start`, { amount: Number(amount) }, {
+            const res = await axios.post(`${API}/api/deposit/start`, { amount: Number(amount) }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setModalOpen(true);
             setModalStatus('pending');
-            setTimer(15 * 60);
+            setExpiresAt(res.data.expiresAt || (Date.now() + 15 * 60 * 1000));
+            setTimer(Math.max(0, Math.floor(((res.data.expiresAt || (Date.now() + 15 * 60 * 1000)) - Date.now()) / 1000)));
         } catch (e: any) {
             setError(e?.response?.data?.error || e.message || 'Failed to start deposit');
         } finally {
