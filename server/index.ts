@@ -1718,3 +1718,26 @@ app.get('/api/transactions', authenticateToken, async (req: Request, res: Respon
     res.status(500).json({ error: 'Failed to fetch transactions' });
   }
 });
+
+// --- NOTIFICATIONS API ---
+// Get all notifications for the logged-in user
+app.get('/api/notifications', authenticateToken, async (req: Request, res: Response) => {
+    try {
+        const userId = (req as any).user.userId;
+        const notifications = await Notification.find({ userId }).sort({ createdAt: -1 });
+        res.json({ notifications });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch notifications' });
+    }
+});
+
+// Mark all notifications as read for the logged-in user
+app.patch('/api/notifications/mark-read', authenticateToken, async (req: Request, res: Response) => {
+    try {
+        const userId = (req as any).user.userId;
+        await Notification.updateMany({ userId, read: false }, { $set: { read: true } });
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to mark notifications as read' });
+    }
+});
