@@ -1653,17 +1653,36 @@ server.listen(5000, () => console.log('Server running on port 5000'));
 // --- EMAIL STYLING UTILITY ---
 function getStyledEmailHtml(subject: string, body: string) {
   return `
-    <div style="background:#f7faff;padding:32px 0;font-family:Arial,sans-serif;">
-      <div style="max-width:420px;margin:0 auto;background:#fff;border-radius:8px;box-shadow:0 2px 16px rgba(30,60,114,0.10);padding:32px 24px;">
-        <h2 style="color:#1e3c72;font-size:22px;font-weight:700;margin-bottom:18px;letter-spacing:1px;">${subject}</h2>
-        <div style="font-size:17px;color:#25324B;margin-bottom:18px;line-height:1.6;">
-          ${body}
-        </div>
-        <div style="margin-top:32px;font-size:14px;color:#888;text-align:center;">
-          If you did not request this, please ignore this email.<br>
-          <span style="color:#1e3c72;font-weight:600;">Tradespot Security Team</span>
-        </div>
-      </div>
+    <div style="background:#f4f6fb;padding:0;margin:0;font-family:'Segoe UI',Arial,sans-serif;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6fb;padding:0;margin:0;">
+        <tr>
+          <td align="center" style="padding:48px 0 32px 0;">
+            <table width="480" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;box-shadow:0 4px 32px rgba(30,60,114,0.10);padding:0;overflow:hidden;">
+              <tr>
+                <td align="center" style="background:#1e3c72;padding:40px 0 24px 0;">
+                  <span style="display:block;font-size:40px;font-weight:900;letter-spacing:2px;color:#fff;line-height:1.1;">TRADESPOT</span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:32px 36px 0 36px;">
+                  <h2 style="color:#1e3c72;font-size:24px;font-weight:700;margin:0 0 18px 0;letter-spacing:1px;">${subject}</h2>
+                  <div style="font-size:17px;color:#25324B;margin-bottom:18px;line-height:1.7;">
+                    ${body}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 36px 32px 36px;">
+                  <div style="margin-top:32px;font-size:14px;color:#888;text-align:center;">
+                    If you did not request this, please ignore this email.<br>
+                    <span style="color:#1e3c72;font-weight:700;">Tradespot Security Team</span>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
     </div>
   `;
 }

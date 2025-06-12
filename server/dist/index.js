@@ -1687,3 +1687,26 @@ app.get('/api/transactions', authenticateToken, (req, res) => __awaiter(void 0, 
         res.status(500).json({ error: 'Failed to fetch transactions' });
     }
 }));
+// --- NOTIFICATIONS API ---
+// Get all notifications for the logged-in user
+app.get('/api/notifications', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = req.user.userId;
+        const notifications = yield Notification.find({ userId }).sort({ createdAt: -1 });
+        res.json({ notifications });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to fetch notifications' });
+    }
+}));
+// Mark all notifications as read for the logged-in user
+app.patch('/api/notifications/mark-read', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = req.user.userId;
+        yield Notification.updateMany({ userId, read: false }, { $set: { read: true } });
+        res.json({ success: true });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to mark notifications as read' });
+    }
+}));
