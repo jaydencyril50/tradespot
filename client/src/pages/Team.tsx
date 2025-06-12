@@ -6,6 +6,7 @@ const Team: React.FC = () => {
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const fetchTeam = async () => {
@@ -30,13 +31,35 @@ const Team: React.FC = () => {
       {error && <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>}
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontWeight: 600, color: '#25324B', marginBottom: 8 }}>Your Referral Link:</div>
-        <input
-          type="text"
-          value={referralLink}
-          readOnly
-          style={{ width: '97%', padding: 8, border: '1px solid #ccc', fontSize: 15, background: '#f7faff', borderRadius: 0 }}
-          onFocus={e => e.target.select()}
-        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <input
+            type="text"
+            value={copied ? 'Copied!' : referralLink}
+            readOnly
+            style={{ width: '97%', padding: 8, border: '1px solid #ccc', fontSize: 15, background: '#f7faff', borderRadius: 0, cursor: 'pointer', color: copied ? '#1e3c72' : undefined, fontWeight: copied ? 600 : undefined }}
+            onFocus={e => e.target.select()}
+            onClick={async () => {
+              if (referralLink) {
+                await navigator.clipboard.writeText(referralLink);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1500);
+              }
+            }}
+          />
+          <button
+            onClick={async () => {
+              if (referralLink) {
+                await navigator.clipboard.writeText(referralLink);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1500);
+              }
+            }}
+            style={{ padding: '7px 14px', background: '#1e3c72', color: '#fff', border: 'none', borderRadius: 3, cursor: 'pointer', fontSize: 14 }}
+            type="button"
+          >
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
+        </div>
       </div>
       <div style={{ fontWeight: 600, color: '#25324B', marginBottom: 8 }}>
         Total Members: {members.length}
