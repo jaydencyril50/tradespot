@@ -1601,6 +1601,17 @@ app.post('/api/2fa/verify', authenticateToken, async (req: Request, res: Respons
   res.json({ message: '2FA enabled successfully' });
 });
 
+// --- 2FA STATUS ENDPOINT ---
+app.get('/api/2fa/status', authenticateToken, async (req: Request, res: Response) => {
+  const userId = (req as any).user.userId;
+  const user = await User.findById(userId);
+  if (!user) {
+    res.status(404).json({ error: 'User not found' });
+    return;
+  }
+  res.json({ enabled: !!(user.twoFA && user.twoFA.enabled) });
+});
+
 // --- API: Mark messages as read (user or admin marks all as read) ---
 app.post('/api/chat/mark-read', async (req: Request, res: Response) => {
    try {
