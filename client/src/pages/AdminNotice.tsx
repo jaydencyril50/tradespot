@@ -5,13 +5,14 @@ const AdminNotice: React.FC = () => {
   const [input, setInput] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(true);
+  const API = process.env.REACT_APP_API_BASE_URL || '';
 
   // Fetch announcement from backend on mount
   useEffect(() => {
     const fetchNotice = async () => {
       setLoading(true);
       try {
-        const res = await fetch('/api/announcement');
+        const res = await fetch(`${API}/api/announcement`);
         const data = await res.json();
         setNotice(data.notice || '');
         setInput(data.notice || '');
@@ -23,11 +24,11 @@ const AdminNotice: React.FC = () => {
       }
     };
     fetchNotice();
-  }, []);
+  }, [API]);
 
   const handleSave = async () => {
     try {
-      const res = await fetch('/api/announcement', {
+      const res = await fetch(`${API}/api/announcement`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ notice: input }),
@@ -45,7 +46,7 @@ const AdminNotice: React.FC = () => {
   const handleClear = async () => {
     setInput('');
     try {
-      const res = await fetch('/api/announcement', {
+      const res = await fetch(`${API}/api/announcement`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ notice: '' }),
