@@ -36,7 +36,7 @@
   ],
   "author": "Your Name",
   "license": "MIT",
-  "proxy": "http://localhost:5000",
+  "proxy": "https://tradespot-server.onrender.com",
   "browserslist": {
     "production": [
       ">0.2%",

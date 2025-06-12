@@ -95,7 +95,7 @@ const Profile: React.FC = () => {
                   // Save to backend
                   const token = localStorage.getItem('token');
                   if (token) {
-                    await axios.put('http://localhost:5000/api/portfolio', { profilePicture: data.secure_url }, {
+                    await axios.put('https://tradespot-server.onrender.com/api/portfolio', { profilePicture: data.secure_url }, {
                       headers: { Authorization: `Bearer ${token}` },
                     });
                   }
