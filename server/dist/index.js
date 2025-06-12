@@ -1173,7 +1173,7 @@ app.get('/api/deposit/status', authenticateToken, (req, res) => __awaiter(void 0
     }
     res.json({ status: 'pending' });
 }));
-// --- Funds Privacy Verification Code Endpoint ---
+// --- FUNDS PRIVACY ENDPOINTS ---
 app.post('/api/send-funds-privacy-code', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
     const user = yield User.findById(userId);
@@ -1207,7 +1207,7 @@ app.post('/api/send-funds-privacy-code', authenticateToken, (req, res) => __awai
         res.status(500).json({ error: 'Failed to send email.' });
     }
 }));
-// --- Funds Privacy Verification Check Endpoint ---
+// --- FUNDS PRIVACY VERIFICATION CHECK ENDPOINT ---
 app.post('/api/verify-funds-privacy', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
     const { spotid, emailCode, password, twoFAToken } = req.body;
@@ -1748,3 +1748,35 @@ function getStyledEmailHtml(subject, body) {
 }
 // Start deposit monitor polling service
 require("./services/depositMonitor");
+// --- DEPOSIT STATUS ENDPOINT ---
+const DepositSession_1 = __importDefault(require("./models/DepositSession"));
+app.get('/api/deposit/status', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Find the most recent pending deposit session for this user
+        const session = yield DepositSession_1.default.findOne({
+            userId: req.user._id,
+            credited: { $in: [false, null] },
+            expiresAt: { $gt: new Date() },
+        }).sort({ createdAt: -1 });
+        if (!session) {
+            // No pending session found, check if any session expired recently
+            const expired = yield DepositSession_1.default.findOne({
+                userId: req.user._id,
+                credited: false,
+                expiresAt: { $lte: new Date() },
+            }).sort({ createdAt: -1 });
+            if (expired) {
+                return res.json({ status: 'failed' });
+            }
+            return res.json({ status: 'failed' });
+        }
+        if (session.credited) {
+            return res.json({ status: 'success' });
+        }
+        // Still pending
+        return res.json({ status: 'pending' });
+    }
+    catch (err) {
+        return res.status(500).json({ status: 'failed', error: 'Server error' });
+    }
+}));

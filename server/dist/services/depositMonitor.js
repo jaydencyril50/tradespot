@@ -35,9 +35,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const bybit_1 = require("./bybit");
 const mongoose_1 = __importDefault(require("mongoose"));
-const User = mongoose_1.default.model("User");
+const dotenv_1 = __importDefault(require("dotenv"));
+const bybit_1 = require("./bybit");
+const User_1 = __importDefault(require("../models/User"));
+dotenv_1.default.config();
+mongoose_1.default
+    .connect(process.env.MONGO_URI, {})
+    .then(() => console.log("MongoDB connected"))
+    .catch((err) => console.error("MongoDB connection error:", err));
 // Polling interval in ms (e.g., 1 minute)
 const POLL_INTERVAL = 60 * 1000;
 function pollDeposits() {
@@ -63,18 +69,20 @@ function pollDeposits() {
                     new Date(d.updatedTime) >= session.createdAt);
                 if (match) {
                     // 4. Credit user balance
-                    yield User.findByIdAndUpdate(session.userId, {
+                    yield User_1.default.findByIdAndUpdate(session.userId, {
                         $inc: { usdtBalance: session.amount },
                     });
                     // 5. Mark session as credited
                     session.credited = true;
                     session.txid = match.txID || match.txid;
                     yield session.save();
+                    console.log(`Deposit credited: userId=${session.userId}, amount=${session.amount}, txid=${session.txid}`);
                     // Optionally: notify frontend via websocket/event
                 }
                 else if (now > session.expiresAt) {
                     session.credited = false;
                     yield session.save();
+                    console.log(`Deposit session expired: userId=${session.userId}, amount=${session.amount}, address=${session.address}`);
                     // Optionally: notify frontend of failure
                 }
             }
