@@ -474,7 +474,7 @@ app.get('/api/team', authenticateToken, async (req: Request, res: Response) => {
         return;
     }
     // Build referral link
-    const referralLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/register?ref=${user.referralCode}`;
+    const referralLink = `https://tradespot.online/register?ref=${user.referralCode}`;
     // Get team members' info
     const members = await Promise.all(
         (user.teamMembers || []).map(async (tm: any) => {
