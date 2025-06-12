@@ -63,7 +63,7 @@ export const registerUser = async (fullName: string, email: string, password: st
 export const getPortfolio = async () => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.get('https://tradespot-server.onrender.com/api/portfolio', {
+    const res = await axios.get(`${API}/api/portfolio`, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
@@ -72,7 +72,7 @@ export const getPortfolio = async () => {
 export const convertBalance = async (direction: 'USDT_TO_SPOT' | 'SPOT_TO_USDT', amount: number) => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.post('https://tradespot-server.onrender.com/api/convert', { direction, amount }, {
+    const res = await axios.post(`${API}/api/convert`, { direction, amount }, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
@@ -128,7 +128,7 @@ export const transferSpot = async (recipientEmail: string, amount: number, twoFA
 export const sendNameVerificationCode = async () => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.post('https://tradespot-server.onrender.com/api/send-name-verification', {}, {
+    const res = await axios.post(`${API}/api/send-name-verification`, {}, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
@@ -138,7 +138,7 @@ export const changeName = async (newName: string, code: string) => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
     try {
-        const res = await axios.post('https://tradespot-server.onrender.com/api/change-name', { newName, code }, {
+        const res = await axios.post(`${API}/api/change-name`, { newName, code }, {
             headers: { Authorization: `Bearer ${token}` },
         });
         return res.data;
@@ -156,7 +156,7 @@ export const changeName = async (newName: string, code: string) => {
 export const sendEmailVerificationCode = async () => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.post('https://tradespot-server.onrender.com/api/send-email-verification', {}, {
+    const res = await axios.post(`${API}/api/send-email-verification`, {}, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
@@ -165,7 +165,7 @@ export const sendEmailVerificationCode = async () => {
 export const changeEmail = async (newEmail: string, spotid: string) => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.post('https://tradespot-server.onrender.com/api/change-email', { newEmail, spotid }, {
+    const res = await axios.post(`${API}/api/change-email`, { newEmail, spotid }, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
@@ -174,7 +174,7 @@ export const changeEmail = async (newEmail: string, spotid: string) => {
 export const sendWalletVerificationCode = async () => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.post('https://tradespot-server.onrender.com/api/send-wallet-verification', {}, {
+    const res = await axios.post(`${API}/api/send-wallet-verification`, {}, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
@@ -183,7 +183,7 @@ export const sendWalletVerificationCode = async () => {
 export const changeWallet = async (newWallet: string, code: string, spotid: string, twoFAToken: string) => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.post('https://tradespot-server.onrender.com/api/change-wallet', { newWallet, code, spotid, twoFAToken }, {
+    const res = await axios.post(`${API}/api/change-wallet`, { newWallet, code, spotid, twoFAToken }, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
@@ -193,7 +193,7 @@ export const changeWallet = async (newWallet: string, code: string, spotid: stri
 export const sendPasswordVerificationCode = async () => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.post('https://tradespot-server.onrender.com/api/send-password-verification', {}, {
+    const res = await axios.post(`${API}/api/send-password-verification`, {}, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
@@ -226,7 +226,7 @@ export const changePassword = async (newPassword: string, code: string, spotid: 
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
     const payload = { newPassword, code, spotid }; // REMOVE twoFAToken from payload
-    const res = await axios.post('https://tradespot-server.onrender.com/api/change-password', payload, {
+    const res = await axios.post(`${API}/api/change-password`, payload, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
@@ -249,7 +249,7 @@ export const adminLogin = async (email: string, password: string) => {
 export const getAllUsers = async () => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.get('https://tradespot-server.onrender.com/api/admin/users', {
+    const res = await axios.get(`${API}/api/admin/users`, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
@@ -259,7 +259,7 @@ export const getAllUsers = async () => {
 export const sendChatMessage = async (text: string, image?: string) => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.post('https://tradespot-server.onrender.com/api/chat/send', { text, image }, {
+    const res = await axios.post(`${API}/api/chat/send`, { text, image }, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
