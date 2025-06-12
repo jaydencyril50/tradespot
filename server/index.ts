@@ -1217,7 +1217,7 @@ app.get('/api/deposit/status', authenticateToken, async (req: Request, res: Resp
   res.json({ status: 'pending' });
 });
 
-// --- Funds Privacy Verification Code Endpoint ---
+// --- FUNDS PRIVACY ENDPOINTS ---
 app.post('/api/send-funds-privacy-code', authenticateToken, async (req: Request, res: Response) => {
   const userId = (req as any).user.userId;
   const user = await User.findById(userId);
@@ -1252,7 +1252,7 @@ app.post('/api/send-funds-privacy-code', authenticateToken, async (req: Request,
   }
 });
 
-// --- Funds Privacy Verification Check Endpoint ---
+// --- FUNDS PRIVACY VERIFICATION CHECK ENDPOINT ---
 app.post('/api/verify-funds-privacy', authenticateToken, async (req: Request, res: Response) => {
   const userId = (req as any).user.userId;
   const { spotid, emailCode, password, twoFAToken } = req.body;
@@ -1770,7 +1770,6 @@ cron.schedule('0 * * * *', async () => {
 server.listen(5000, () => console.log('Server running on port 5000'));
 
 // --- EMAIL STYLING UTILITY ---
-// Returns a styled HTML email body for all user emails
 function getStyledEmailHtml(subject: string, body: string) {
   return `
     <div style="background:#f7faff;padding:32px 0;font-family:Arial,sans-serif;">
@@ -1787,3 +1786,39 @@ function getStyledEmailHtml(subject: string, body: string) {
     </div>
   `;
 }
+
+// Start deposit monitor polling service
+import "./services/depositMonitor";
+// --- DEPOSIT STATUS ENDPOINT ---
+import DepositSession from './models/DepositSession';
+
+app.get('/api/deposit/status', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    // Find the most recent pending deposit session for this user
+    const session = await DepositSession.findOne({
+      userId: (req as any).user._id,
+      credited: { $in: [false, null] },
+      expiresAt: { $gt: new Date() },
+    }).sort({ createdAt: -1 });
+
+    if (!session) {
+      // No pending session found, check if any session expired recently
+      const expired = await DepositSession.findOne({
+        userId: (req as any).user._id,
+        credited: false,
+        expiresAt: { $lte: new Date() },
+      }).sort({ createdAt: -1 });
+      if (expired) {
+        return res.json({ status: 'failed' });
+      }
+      return res.json({ status: 'failed' });
+    }
+    if (session.credited) {
+      return res.json({ status: 'success' });
+    }
+    // Still pending
+    return res.json({ status: 'pending' });
+  } catch (err) {
+    return res.status(500).json({ status: 'failed', error: 'Server error' });
+  }
+});
