@@ -1760,3 +1760,37 @@ app.patch('/api/notifications/mark-read', authenticateToken, async (req: Request
         res.status(500).json({ error: 'Failed to mark notifications as read' });
     }
 });
+
+// --- FUNDS PRIVACY VERIFICATION CODE ---
+app.post('/api/send-funds-privacy-code', authenticateToken, async (req: Request, res: Response) => {
+    const userId = (req as any).user.userId;
+    const user = await User.findById(userId);
+    if (!user || typeof user.email !== 'string') {
+        res.status(404).json({ error: 'User not found' });
+        return;
+    }
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    setCode('fundsPrivacyCodes', user.email, code);
+    // Send email
+    try {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: user.email,
+            subject: 'Funds Privacy Verification Code',
+            html: getStyledEmailHtml(
+              'Funds Privacy Verification',
+              `Your funds privacy verification code is: <b style="font-size:20px;color:#1e3c72;">${code}</b>`
+            )
+        });
+        res.json({ message: 'Verification code sent' });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to send email' });
+    }
+});
