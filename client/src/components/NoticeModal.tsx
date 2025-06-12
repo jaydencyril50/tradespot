@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 
+const API = process.env.REACT_APP_API_BASE_URL || '';
+
 const NoticeModal: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [notice, setNotice] = useState('');
@@ -10,7 +12,7 @@ const NoticeModal: React.FC = () => {
     const fetchNotice = async () => {
       setLoading(true);
       try {
-        const res = await fetch('/api/announcement');
+        const res = await fetch(`${API}/api/announcement`);
         const data = await res.json();
         setNotice(data.notice || '');
         setOpen(!!data.notice);
@@ -23,7 +25,7 @@ const NoticeModal: React.FC = () => {
     };
     fetchNotice();
     // Optionally, poll or use websockets for real-time updates
-  }, []);
+  }, [API]);
 
   if (!open || !notice) return null;
 
