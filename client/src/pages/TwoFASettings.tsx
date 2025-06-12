@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API = process.env.REACT_APP_API_BASE_URL;
+
 const TwoFASettings: React.FC = () => {
   const [qr, setQr] = useState<string | null>(null);
   const [otpauth, setOtpauth] = useState<string | null>(null);
@@ -17,7 +19,7 @@ const TwoFASettings: React.FC = () => {
       setLoading(true);
       setError('');
       try {
-        const res = await axios.get('/api/2fa/status', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+        const res = await axios.get(`${API}/api/2fa/status`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
         setEnabled(res.data.enabled);
         if (res.data.enabled) {
           setQr(null);
@@ -37,7 +39,7 @@ const TwoFASettings: React.FC = () => {
     setError('');
     setMessage('');
     try {
-      const res = await axios.post('/api/2fa/setup', {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      const res = await axios.post(`${API}/api/2fa/setup`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
       setQr(res.data.qr);
       setOtpauth(res.data.otpauth);
     } catch (e: any) {
@@ -52,7 +54,7 @@ const TwoFASettings: React.FC = () => {
     setError('');
     setMessage('');
     try {
-      await axios.post('/api/2fa/verify', { token }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      await axios.post(`${API}/api/2fa/verify`, { token }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
       setEnabled(true);
       setMessage('2FA enabled successfully!');
     } catch (e: any) {

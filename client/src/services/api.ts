@@ -265,4 +265,4 @@ export const sendChatMessage = async (text: string, image?: string) => {
     return res.data;
 };
 
-// All conversion logic uses backend rate. No hardcoded rate here. If you reference the rate in comments, update to 500 USDT per SPOT.
+// All axios requests use `${API}/...` for endpoint URLs
