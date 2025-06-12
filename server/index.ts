@@ -923,25 +923,36 @@ app.post('/api/send-wallet-verification', authenticateToken, async (req: Request
             }
         });
         await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: user.email,
-            subject: 'Your Wallet Change Verification Code',
-            html: `
-                <div style="font-family: Arial, sans-serif; background: #f6f8fa; padding: 32px;">
-                  <div style="max-width: 420px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 16px rgba(30,60,114,0.10); padding: 32px;">
-                    <div style="text-align:center; margin-bottom: 18px;">
-                      <span style="font-size: 22px; font-weight: bold; color: #1e3c72; letter-spacing: 2px;">TradeSpot</span>
-                    </div>
-                    <h2 style="color: #1e3c72; margin-bottom: 18px;">Wallet Change Verification</h2>
-                    <p style="font-size: 16px; color: #333; margin-bottom: 18px;">To confirm your wallet change, please use the verification code below:</p>
-                    <div style="font-size: 28px; font-weight: bold; letter-spacing: 6px; color: #1e3c72; background: #f0f4fa; padding: 18px 0; border-radius: 6px; text-align: center; margin-bottom: 24px; border: 1px dashed #1e3c72;">
-                      ${code}
-                    </div>
-                    <p style="font-size: 14px; color: #888;">If you did not request this, you can safely ignore this email.</p>
-                  </div>
-                </div>
-            `
-        });
+  from: `"TradeSpot Security" <${process.env.EMAIL_USER}>`,
+  to: user.email,
+  subject: '🔐 Your TradeSpot Wallet Change Verification Code',
+  html: `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f8; padding: 32px;">
+      <div style="max-width: 480px; margin: 0 auto; background: #ffffff; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); padding: 32px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h1 style="margin: 0; color: #1e3c72; font-size: 24px; font-weight: 700;">TradeSpot</h1>
+          <p style="color: #666; font-size: 14px;">Secure Verification</p>
+        </div>
+        <h2 style="color: #1e3c72; font-size: 20px; margin-bottom: 16px;">Confirm Wallet Change</h2>
+        <p style="font-size: 16px; color: #333; line-height: 1.5;">
+          Use the verification code below to confirm your request to change your wallet address:
+        </p>
+        <div style="margin: 24px 0; text-align: center;">
+          <span style="display: inline-block; font-size: 30px; font-weight: bold; color: #1e3c72; background: #f1f5ff; padding: 14px 24px; border-radius: 8px; border: 2px dashed #1e3c72; letter-spacing: 6px;">
+            ${code}
+          </span>
+        </div>
+        <p style="font-size: 14px; color: #888; line-height: 1.4;">
+          If you did not request this change, please ignore this email. No action is needed.
+        </p>
+        <hr style="margin: 32px 0; border: none; border-top: 1px solid #eee;">
+        <p style="font-size: 12px; color: #aaa; text-align: center;">
+          © ${new Date().getFullYear()} TradeSpot Inc. All rights reserved.
+        </p>
+      </div>
+    </div>
+  `
+});
         res.json({ message: 'Verification code sent' });
     } catch (err) {
         res.status(500).json({ error: 'Failed to send email' });
