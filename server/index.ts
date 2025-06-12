@@ -1147,7 +1147,7 @@ app.post('/api/withdraw', authenticateToken, async (req: Request, res: Response)
 // --- Deposit endpoints ---
 // Remove demo in-memory pendingDeposits
 
-import DepositSession from './models/DepositSession';
+// (import removed to avoid duplicate identifier error)
 
 // Start a deposit session (real, DB-backed)
 app.post('/api/deposit/start', authenticateToken, async (req: Request, res: Response) => {
@@ -1660,7 +1660,7 @@ function getStyledEmailHtml(subject: string, body: string) {
 // Start deposit monitor polling service
 import "./services/depositMonitor";
 // --- DEPOSIT STATUS ENDPOINT ---
-import DepositSession from './models/DepositSession';
+// (import removed to avoid duplicate identifier error)
 
 app.get('/api/deposit/status', authenticateToken, async (req: Request, res: Response) => {
   try {
