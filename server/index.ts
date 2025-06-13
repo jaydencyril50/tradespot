@@ -77,14 +77,15 @@ io.on('connection', (socket) => {
       email = user.email;
       userId = user._id;
     }
-    // Save message to DB (set userId for user messages)
     const chatMsg = new ChatMessageModel({
-      userId: data.from === 'admin' ? null : userId,
-      spotid: data.spotid,
-      email,
-      text: data.text,
-      image: data.image
-    });
+  userId: data.from === 'admin' ? null : userId,
+  spotid: data.spotid,
+  email,
+  text: data.text,
+  image: data.image,
+  status: 'sent',
+  unread: true
+});
     await chatMsg.save();
     // Broadcast to all sockets in this chat
     io.sockets.sockets.forEach(s => {
