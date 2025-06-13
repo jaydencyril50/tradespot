@@ -1,29 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getTrashItems, addTrashItem, searchTrashItems, TrashItem } from '../services/trashService';
 import './AdminDashboard.css';
 
 const AdminTrash: React.FC = () => {
-  const [items, setItems] = useState<TrashItem[]>(getTrashItems());
+  const [items, setItems] = useState<TrashItem[]>([]);
   const [input, setInput] = useState('');
   const [search, setSearch] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  // Fetch all items on mount
+  useEffect(() => {
+    setLoading(true);
+    getTrashItems()
+      .then(setItems)
+      .catch(() => setError('Failed to load trash items'))
+      .finally(() => setLoading(false));
+  }, []);
 
   // Live search
-  React.useEffect(() => {
-    setItems(searchTrashItems(search));
+  useEffect(() => {
+    setLoading(true);
+    searchTrashItems(search)
+      .then(setItems)
+      .catch(() => setError('Failed to search trash items'))
+      .finally(() => setLoading(false));
   }, [search]);
 
-  const handleAdd = (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
-    const result = addTrashItem(input);
+    setLoading(true);
+    const result = await addTrashItem(input);
     if (!result.success) {
       setError(result.error || 'Error');
+      setLoading(false);
       return;
     }
     setError('');
     setInput('');
-    setItems(getTrashItems());
+    // Refresh list
+    const updated = await getTrashItems();
+    setItems(updated);
+    setLoading(false);
   };
 
   return (
@@ -40,6 +59,7 @@ const AdminTrash: React.FC = () => {
         <button
           type="submit"
           style={{ padding: '8px 16px', background: '#1e3c72', color: '#fff', border: 'none', borderRadius: 4 }}
+          disabled={loading}
         >
           Save
         </button>
@@ -53,12 +73,14 @@ const AdminTrash: React.FC = () => {
         style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #ccc', marginBottom: 16 }}
       />
       <div style={{ minHeight: 120 }}>
-        {items.length === 0 ? (
+        {loading ? (
+          <div style={{ color: '#888', textAlign: 'center', marginTop: 32 }}>Loading...</div>
+        ) : items.length === 0 ? (
           <div style={{ color: '#888', textAlign: 'center', marginTop: 32 }}>No items found.</div>
         ) : (
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {items.map(item => (
-              <li key={item.id} style={{
+              <li key={item._id} style={{
                 background: '#f7f7f7',
                 marginBottom: 10,
                 padding: 12,

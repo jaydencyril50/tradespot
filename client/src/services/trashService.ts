@@ -1,33 +1,32 @@
-// Service for managing trash items in localStorage
+// Service for managing trash items via API
 export type TrashItem = {
-  id: string;
+  _id: string;
   content: string;
-  createdAt: number;
+  createdAt: string;
 };
 
-const STORAGE_KEY = 'admin_trash_items';
+const API_URL = '/api/trash';
 
-export function getTrashItems(): TrashItem[] {
-  const data = localStorage.getItem(STORAGE_KEY);
-  return data ? JSON.parse(data) : [];
+export async function getTrashItems(): Promise<TrashItem[]> {
+  const res = await fetch(API_URL);
+  if (!res.ok) throw new Error('Failed to fetch trash items');
+  return res.json();
 }
 
-export function addTrashItem(content: string): { success: boolean; error?: string } {
-  const items = getTrashItems();
-  if (items.some(item => item.content.trim().toLowerCase() === content.trim().toLowerCase())) {
-    return { success: false, error: 'Duplicate content not allowed.' };
-  }
-  const newItem: TrashItem = {
-    id: Date.now().toString(),
-    content: content.trim(),
-    createdAt: Date.now(),
-  };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([newItem, ...items]));
-  return { success: true };
+export async function addTrashItem(content: string): Promise<{ success: boolean; error?: string }> {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content })
+  });
+  if (res.status === 201) return { success: true };
+  const data = await res.json();
+  return { success: false, error: data.error || 'Error' };
 }
 
-export function searchTrashItems(query: string): TrashItem[] {
-  const items = getTrashItems();
-  if (!query.trim()) return items;
-  return items.filter(item => item.content.toLowerCase().includes(query.trim().toLowerCase()));
+export async function searchTrashItems(query: string): Promise<TrashItem[]> {
+  const url = query.trim() ? `${API_URL}/search?q=${encodeURIComponent(query)}` : API_URL;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to search trash items');
+  return res.json();
 }
