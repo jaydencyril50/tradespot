@@ -30,6 +30,7 @@ import AdminMessage from './pages/adminmessage';
 import AdminChat from './pages/AdminChat';
 import ChatInbox from './pages/ChatInbox';
 import AdminRecent from './pages/AdminRecent';
+import AdminTrash from './pages/AdminTrash';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Root container missing in index.html');
@@ -119,6 +120,7 @@ root.render(
           <Route path="/admin/messages" element={<AdminMessage />} />
           <Route path="/admin/chat/:spotid" element={<AdminChat />} />
           <Route path="/admin/recents" element={<AdminRecent />} />
+          <Route path="/admin/trash" element={<AdminTrash />} />
           <Route path="/chat/:spotid" element={
             <ProtectedRoute>
               <ChatPage />

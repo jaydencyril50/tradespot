@@ -72,6 +72,8 @@ const AdminDashboard: React.FC = () => {
                 navigate('/admin/messages');
               } else if (btn.label === 'RECENTS') {
                 navigate('/admin/recents');
+              } else if (btn.label === 'TRASH') {
+                navigate('/admin/trash');
               } else {
                
               }
