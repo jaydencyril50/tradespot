@@ -20,7 +20,13 @@ export async function addTrashItem(content: string): Promise<{ success: boolean;
     body: JSON.stringify({ content })
   });
   if (res.status === 201) return { success: true };
-  const data = await res.json();
+  let data: any = {};
+  try {
+    data = await res.json();
+  } catch (e) {
+    // If response is empty or not JSON, fallback to generic error
+    return { success: false, error: 'Error' };
+  }
   return { success: false, error: data.error || 'Error' };
 }
 
