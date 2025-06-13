@@ -9,22 +9,26 @@ const AdminTrash: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Fetch all items on mount
   useEffect(() => {
-    setLoading(true);
-    getTrashItems()
-      .then(setItems)
-      .catch(() => setError('Failed to load trash items'))
-      .finally(() => setLoading(false));
-  }, []);
+    const runSearch = async () => {
+      setLoading(true);
+      try {
+        let results = [];
+        if (search.trim()) {
+          results = await searchTrashItems(search);
+        } else {
+          results = await getTrashItems(); // avoid duplicate logic
+        }
+        setItems(results);
+        setError('');
+      } catch (err) {
+        setError('Failed to search trash items');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Live search
-  useEffect(() => {
-    setLoading(true);
-    searchTrashItems(search)
-      .then(setItems)
-      .catch(() => setError('Failed to search trash items'))
-      .finally(() => setLoading(false));
+    runSearch();
   }, [search]);
 
   const handleAdd = async (e: React.FormEvent) => {
