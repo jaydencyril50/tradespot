@@ -69,10 +69,13 @@ io.on('connection', (socket) => {
     if (data.from === 'admin') {
       email = 'admin@tradespot.com';
     } else {
-      // For user, try to get email and userId from DB
       const user = await User.findOne({ spotid: data.spotid });
-      email = user?.email || '';
-      userId = user?._id || null;
+      if (!user) {
+        socket.emit('chat_error', { error: 'User not found' });
+        return;
+      }
+      email = user.email;
+      userId = user._id;
     }
     // Save message to DB (set userId for user messages)
     const chatMsg = new ChatMessageModel({
