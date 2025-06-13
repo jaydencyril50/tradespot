@@ -80,12 +80,18 @@ const ChatPage: React.FC = () => {
 
   const handleSend = () => {
     if (!input && !image) return;
-    const msg = { from: 'user', text: input, image, createdAt: new Date().toISOString() };
-    setMessages(prev => [...prev, { ...msg, from: 'user' }]);
     socketRef.current?.emit('chat_message', { spotid: user?.spotid, text: input, image, from: 'user' });
     setInput('');
     setImage(undefined);
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  // Send on Enter key
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,6 +155,7 @@ const ChatPage: React.FC = () => {
           className="chat-textarea"
           value={input}
           onChange={e => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Type your message..."
           rows={2}
         />
@@ -163,9 +170,7 @@ const ChatPage: React.FC = () => {
           className="chat-upload-btn"
           onClick={() => fileInputRef.current?.click()}
           title="Upload Image"
-        >
-          📷
-        </button>
+        >📷</button>
         <button className="chat-send-btn" onClick={handleSend}>
           Send
         </button>

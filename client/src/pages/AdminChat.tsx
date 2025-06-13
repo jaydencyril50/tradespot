@@ -54,12 +54,18 @@ const AdminChat: React.FC = () => {
 
   const handleSend = () => {
     if (!input && !image) return;
-    const msg: Message = { from: 'admin', text: input, image, createdAt: new Date().toISOString() };
-    setMessages(prev => [...prev, msg]);
     socketRef.current?.emit('chat_message', { spotid, text: input, image, from: 'admin' });
     setInput('');
     setImage(undefined);
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  // Send on Enter key
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,6 +112,7 @@ const AdminChat: React.FC = () => {
         <textarea
           value={input}
           onChange={e => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Type your message..."
           rows={2}
           style={{ flex: 1, borderRadius: 4, border: '1px solid #e3e6ef', padding: 8, fontSize: 15, resize: 'none', minHeight: 38, maxHeight: 90 }}
@@ -119,17 +126,13 @@ const AdminChat: React.FC = () => {
         />
         <button
           onClick={() => fileInputRef.current?.click()}
-          title="Upload Image"
           style={{ background: '#f2f6fd', border: '1px solid #e3eafc', borderRadius: 4, fontSize: 18, padding: '6px 10px', cursor: 'pointer', color: '#25324B' }}
-        >
-          📷
-        </button>
+          title="Upload Image"
+        >📷</button>
         <button
           onClick={handleSend}
-          style={{ background: '#1e3c72', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 600, padding: '8px 18px', cursor: 'pointer' }}
-        >
-          Send
-        </button>
+          style={{ background: '#10c98f', color: '#fff', border: 'none', borderRadius: 4, fontSize: 16, fontWeight: 600, padding: '8px 18px', cursor: 'pointer' }}
+        >Send</button>
       </div>
     </div>
   );
