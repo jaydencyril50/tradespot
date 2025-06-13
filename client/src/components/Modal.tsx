@@ -27,6 +27,8 @@ const Modal: React.FC<ModalProps> = ({ onClose, children }) => {
         minWidth: 320,
         maxWidth: '90vw',
         position: 'relative',
+        maxHeight: '80vh', // Limit modal height
+        overflowY: 'auto', // Make content scrollable if too tall
       }}>
         <button
           onClick={onClose}
