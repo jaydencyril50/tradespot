@@ -25,7 +25,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const TrashItemSchema = new mongoose_1.Schema({
-    content: { type: String, required: true, unique: true },
+    content: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
 });
 const TrashItem = mongoose_1.default.model('TrashItem', TrashItemSchema);

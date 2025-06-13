@@ -42,6 +42,9 @@ router.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(201).json(newItem);
     }
     catch (err) {
+        if (err.code === 11000) {
+            return res.status(400).json({ error: 'Duplicate content not allowed.' });
+        }
         res.status(500).json({ error: 'Failed to add trash item.' });
     }
 }));

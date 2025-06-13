@@ -37,10 +37,10 @@ const AdminTrash: React.FC = () => {
       setLoading(false);
       return;
     }
-    setError('');
+     setError('');
     setInput('');
-    // Refresh list
-    const updated = await getTrashItems();
+    // Refresh list using current search
+    const updated = await searchTrashItems(search);
     setItems(updated);
     setLoading(false);
   };

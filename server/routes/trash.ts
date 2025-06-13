@@ -28,7 +28,10 @@ router.post('/', async (req, res) => {
     const newItem = new TrashItem({ content: content.trim() });
     await newItem.save();
     res.status(201).json(newItem);
-  } catch (err) {
+ } catch (err: any) {
+    if (err.code === 11000) {
+      return res.status(400).json({ error: 'Duplicate content not allowed.' });
+    }
     res.status(500).json({ error: 'Failed to add trash item.' });
   }
 });
