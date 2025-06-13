@@ -50,6 +50,8 @@ const socket_io_1 = require("socket.io");
 const Announcement_1 = __importDefault(require("./models/Announcement"));
 const Activity_1 = __importDefault(require("./models/Activity"));
 const DepositSession_1 = __importDefault(require("./models/DepositSession"));
+const ChatMessage_1 = __importDefault(require("./models/ChatMessage"));
+const trash_1 = __importDefault(require("./routes/trash"));
 dotenv.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
@@ -69,7 +71,6 @@ function getChatHistory(spotid) {
     });
 }
 io.on('connection', (socket) => {
-    // Identify user by spotid and role
     const { spotid, role } = socket.handshake.query;
     if (!spotid) {
         socket.disconnect();
@@ -81,45 +82,59 @@ io.on('connection', (socket) => {
             from: msg.email === 'admin@tradespot.com' ? 'admin' : 'user',
             text: msg.text,
             image: msg.image,
-            createdAt: msg.createdAt
+            createdAt: msg.createdAt,
+            status: msg.status,
+            unread: msg.unread,
+            _id: msg._id,
         })));
     });
     // Listen for chat messages
     socket.on('chat_message', (data) => __awaiter(void 0, void 0, void 0, function* () {
-        // data: { spotid, text, image, from }
-        if (!data || !data.spotid)
-            return;
-        let email = '';
-        let userId = null;
-        if (data.from === 'admin') {
-            email = 'admin@tradespot.com';
-        }
-        else {
-            // For user, try to get email and userId from DB
-            const user = yield User.findOne({ spotid: data.spotid });
-            email = (user === null || user === void 0 ? void 0 : user.email) || '';
-            userId = (user === null || user === void 0 ? void 0 : user._id) || null;
-        }
-        // Save message to DB (set userId for user messages)
-        const chatMsg = new ChatMessageModel({
-            userId: data.from === 'admin' ? null : userId,
-            spotid: data.spotid,
-            email,
-            text: data.text,
-            image: data.image
-        });
-        yield chatMsg.save();
-        // Broadcast to all sockets in this chat
-        io.sockets.sockets.forEach(s => {
-            if (s.handshake.query.spotid === data.spotid) {
-                s.emit('chat_message', {
-                    from: data.from,
-                    text: data.text,
-                    image: data.image,
-                    createdAt: chatMsg.createdAt
-                });
+        try {
+            if (!data || !data.spotid || (!data.text && !data.image) || !data.from)
+                return;
+            let email = '';
+            let userId = null;
+            if (data.from === 'admin') {
+                email = 'admin@tradespot.com';
             }
-        });
+            else {
+                const user = yield User.findOne({ spotid: data.spotid });
+                if (!user) {
+                    socket.emit('chat_error', { error: 'User not found' });
+                    return;
+                }
+                email = user.email;
+                userId = user._id;
+            }
+            const chatMsg = new ChatMessage_1.default({
+                userId: data.from === 'admin' ? null : userId,
+                spotid: data.spotid,
+                email,
+                text: data.text,
+                image: data.image,
+                status: 'sent',
+                unread: true,
+            });
+            yield chatMsg.save();
+            // Broadcast to all sockets in this chat
+            io.sockets.sockets.forEach(s => {
+                if (s.handshake.query.spotid === data.spotid) {
+                    s.emit('chat_message', {
+                        from: data.from,
+                        text: data.text,
+                        image: data.image,
+                        createdAt: chatMsg.createdAt,
+                        status: chatMsg.status,
+                        unread: chatMsg.unread,
+                        _id: chatMsg._id,
+                    });
+                }
+            });
+        }
+        catch (err) {
+            socket.emit('chat_error', { error: 'Failed to send message' });
+        }
     }));
 });
 const MONGO_URI = process.env.MONGO_URI;
@@ -1423,6 +1438,16 @@ app.post('/api/announcement', (req, res) => __awaiter(void 0, void 0, void 0, fu
             announcement.updatedAt = new Date();
             yield announcement.save();
         }
+        // Notify all users of the new announcement
+        const users = yield User.find({}, '_id');
+        const notifications = users.map((u) => ({
+            userId: u._id,
+            message: `Announcement: ${notice}`,
+            read: false
+        }));
+        if (notifications.length > 0) {
+            yield Notification.insertMany(notifications);
+        }
         res.json({ message: 'Announcement updated', notice: announcement.notice });
     }
     catch (err) {
@@ -1585,12 +1610,11 @@ app.get('/api/2fa/status', authenticateToken, (req, res) => __awaiter(void 0, vo
     }
     res.json({ enabled: !!(user.twoFA && user.twoFA.enabled) });
 }));
-// --- API: Mark messages as read (user or admin marks all as read) ---
 app.post('/api/chat/mark-read', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const spotid = req.body.spotid;
         const fromVal = req.body.from; // 'admin' or 'user'
-        yield ChatMessageModel.updateMany({ spotid, from: fromVal, unread: true }, { $set: { unread: false, status: 'read' } });
+        yield ChatMessage_1.default.updateMany({ spotid, from: fromVal, unread: true }, { $set: { unread: false, status: 'read' } });
         res.json({ success: true });
     }
     catch (e) {
@@ -1620,21 +1644,41 @@ node_cron_1.default.schedule('0 * * * *', () => __awaiter(void 0, void 0, void 0
         console.error('[Activity Cleanup] Error:', err);
     }
 }));
+app.use('/api/trash', trash_1.default);
 server.listen(5000, () => console.log('Server running on port 5000'));
 // --- EMAIL STYLING UTILITY ---
 function getStyledEmailHtml(subject, body) {
     return `
-    <div style="background:#f7faff;padding:32px 0;font-family:Arial,sans-serif;">
-      <div style="max-width:420px;margin:0 auto;background:#fff;border-radius:8px;box-shadow:0 2px 16px rgba(30,60,114,0.10);padding:32px 24px;">
-        <h2 style="color:#1e3c72;font-size:22px;font-weight:700;margin-bottom:18px;letter-spacing:1px;">${subject}</h2>
-        <div style="font-size:17px;color:#25324B;margin-bottom:18px;line-height:1.6;">
-          ${body}
-        </div>
-        <div style="margin-top:32px;font-size:14px;color:#888;text-align:center;">
-          If you did not request this, please ignore this email.<br>
-          <span style="color:#1e3c72;font-weight:600;">Tradespot Security Team</span>
-        </div>
-      </div>
+    <div style="background:#f4f6fb;padding:0;margin:0;font-family:'Segoe UI',Arial,sans-serif;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6fb;padding:0;margin:0;">
+        <tr>
+          <td align="center" style="padding:48px 0 32px 0;">
+            <table width="480" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;box-shadow:0 4px 32px rgba(30,60,114,0.10);padding:0;overflow:hidden;">
+              <tr>
+                <td align="center" style="background:#1e3c72;padding:40px 0 24px 0;">
+                  <span style="display:block;font-size:40px;font-weight:900;letter-spacing:2px;color:#fff;line-height:1.1;">TRADESPOT</span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:32px 36px 0 36px;">
+                  <h2 style="color:#1e3c72;font-size:24px;font-weight:700;margin:0 0 18px 0;letter-spacing:1px;">${subject}</h2>
+                  <div style="font-size:17px;color:#25324B;margin-bottom:18px;line-height:1.7;">
+                    ${body}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 36px 32px 36px;">
+                  <div style="margin-top:32px;font-size:14px;color:#888;text-align:center;">
+                    If you did not request this, please ignore this email.<br>
+                    <span style="color:#1e3c72;font-weight:700;">Tradespot Security Team</span>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
     </div>
   `;
 }
@@ -1708,5 +1752,36 @@ app.patch('/api/notifications/mark-read', authenticateToken, (req, res) => __awa
     }
     catch (err) {
         res.status(500).json({ error: 'Failed to mark notifications as read' });
+    }
+}));
+// --- FUNDS PRIVACY VERIFICATION CODE ---
+app.post('/api/send-funds-privacy-code', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user.userId;
+    const user = yield User.findById(userId);
+    if (!user || typeof user.email !== 'string') {
+        res.status(404).json({ error: 'User not found' });
+        return;
+    }
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    setCode('fundsPrivacyCodes', user.email, code);
+    // Send email
+    try {
+        const transporter = nodemailer_1.default.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+        yield transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: user.email,
+            subject: 'Funds Privacy Verification Code',
+            html: getStyledEmailHtml('Funds Privacy Verification', `Your funds privacy verification code is: <b style="font-size:20px;color:#1e3c72;">${code}</b>`)
+        });
+        res.json({ message: 'Verification code sent' });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to send email' });
     }
 }));
