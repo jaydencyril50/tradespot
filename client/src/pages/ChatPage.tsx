@@ -10,7 +10,15 @@ const SOCKET_URL = API;
 const ChatPage: React.FC = () => {
   const { spotid } = useParams<{ spotid: string }>();
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Array<{ text: string; image?: string; from?: 'admin' | 'user'; createdAt?: string; status?: string }>>([]);
+  const [messages, setMessages] = useState<Array<{
+    _id?: string;
+    text?: string;
+    image?: string;
+    from?: 'admin' | 'user';
+    createdAt?: string;
+    status?: string;
+    unread?: boolean;
+  }>>([]);
   const [input, setInput] = useState('');
   const [image, setImage] = useState<string | undefined>(undefined);
   const [user, setUser] = useState<{ email: string; spotid: string } | null>(null);
@@ -79,12 +87,12 @@ const ChatPage: React.FC = () => {
   }, [messages]);
 
   const handleSend = () => {
-    if (!input && !image) return;
-    socketRef.current?.emit('chat_message', { spotid: user?.spotid, text: input, image, from: 'user' });
-    setInput('');
-    setImage(undefined);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
+  if (!input && !image) return;
+  socketRef.current?.emit('chat_message', { spotid: user?.spotid, text: input, image, from: 'user' });
+  setInput('');
+  setImage(undefined);
+  if (fileInputRef.current) fileInputRef.current.value = '';
+};
 
   // Send on Enter key
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -126,7 +134,7 @@ const ChatPage: React.FC = () => {
         {messages.map((msg, idx) => (
           <div
             className="chat-message"
-            key={idx}
+            key={msg._id || idx}
             style={{
               alignSelf: msg.from === 'admin' ? 'flex-start' : 'flex-end',
               background: msg.from === 'admin' ? '#eaf1fb' : '#fff',
@@ -135,16 +143,20 @@ const ChatPage: React.FC = () => {
               marginRight: msg.from === 'admin' ? 'auto' : 0
             }}
           >
-            {msg.text && <div className="chat-text">{msg.text}</div>}
-            {msg.image && <img src={msg.image} alt="uploaded" className="chat-image" />}
+            <div style={{ fontSize: 11, color: '#aaa', marginBottom: 2 }}>
+              <strong>ID:</strong> {msg._id || 'N/A'}
+            </div>
+            {msg.text && <div className="chat-text"><strong>Text:</strong> {msg.text}</div>}
+            {msg.image && <div><strong>Image:</strong><br /><img src={msg.image} alt="uploaded" className="chat-image" /></div>}
             <div style={{ fontSize: 11, color: '#888', marginTop: 4, textAlign: 'right' }}>
-              {msg.createdAt ? new Date(msg.createdAt).toLocaleString() : ''}
-              {/* Message status (sent/delivered/read) placeholder */}
-              {msg.status && (
+              <div><strong>From:</strong> {msg.from}</div>
+              <div><strong>Created:</strong> {msg.createdAt ? new Date(msg.createdAt).toLocaleString() : 'N/A'}</div>
+              <div><strong>Status:</strong> {msg.status ? (
                 <span style={{ marginLeft: 8, color: msg.status === 'read' ? '#10c98f' : msg.status === 'delivered' ? '#1e3c72' : '#aaa' }}>
                   {msg.status.charAt(0).toUpperCase() + msg.status.slice(1)}
                 </span>
-              )}
+              ) : 'N/A'}</div>
+              <div><strong>Unread:</strong> {msg.unread !== undefined ? (msg.unread ? 'Yes' : 'No') : 'N/A'}</div>
             </div>
           </div>
         ))}

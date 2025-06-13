@@ -13,6 +13,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import Announcement from './models/Announcement';
 import Activity from './models/Activity';
 import DepositSession from './models/DepositSession';
+import ChatMessage from './models/ChatMessage';
 
 dotenv.config();
 
@@ -43,61 +44,71 @@ async function getChatHistory(spotid: string): Promise<any[]> {
 }
 
 io.on('connection', (socket) => {
-  // Identify user by spotid and role
   const { spotid, role } = socket.handshake.query;
   if (!spotid) {
     socket.disconnect();
     return;
   }
 
-  // Send chat history on connect
-  getChatHistory(spotid as string).then((history: ChatMessage[]) => {
+   // Send chat history on connect
+  getChatHistory(spotid as string).then((history: any[]) => {
     socket.emit('chat_history', history.map((msg) => ({
       from: msg.email === 'admin@tradespot.com' ? 'admin' : 'user',
       text: msg.text,
       image: msg.image,
-      createdAt: msg.createdAt
+      createdAt: msg.createdAt,
+      status: msg.status,
+      unread: msg.unread,
+      _id: msg._id,
     })));
   });
 
-  // Listen for chat messages
+   // Listen for chat messages
   socket.on('chat_message', async (data) => {
-    // data: { spotid, text, image, from }
-    if (!data || !data.spotid) return;
-    let email = '';
-    let userId = null;
-    if (data.from === 'admin') {
-      email = 'admin@tradespot.com';
-    } else {
-      const user = await User.findOne({ spotid: data.spotid });
-      if (!user) {
-        socket.emit('chat_error', { error: 'User not found' });
-        return;
+    try {
+      if (!data || !data.spotid || (!data.text && !data.image) || !data.from) return;
+      let email = '';
+      let userId = null;
+
+      if (data.from === 'admin') {
+        email = 'admin@tradespot.com';
+      } else {
+        const user = await User.findOne({ spotid: data.spotid });
+        if (!user) {
+          socket.emit('chat_error', { error: 'User not found' });
+          return;
+        }
+        email = user.email;
+        userId = user._id;
       }
-      email = user.email;
-      userId = user._id;
+        const chatMsg = new ChatMessage({
+        userId: data.from === 'admin' ? null : userId,
+        spotid: data.spotid,
+        email,
+        text: data.text,
+        image: data.image,
+        status: 'sent',
+        unread: true,
+      });
+      await chatMsg.save();
+
+     // Broadcast to all sockets in this chat
+      io.sockets.sockets.forEach(s => {
+        if (s.handshake.query.spotid === data.spotid) {
+          s.emit('chat_message', {
+            from: data.from,
+            text: data.text,
+            image: data.image,
+            createdAt: chatMsg.createdAt,
+            status: chatMsg.status,
+            unread: chatMsg.unread,
+            _id: chatMsg._id,
+          });
+        }
+      });
+    } catch (err) {
+      socket.emit('chat_error', { error: 'Failed to send message' });
     }
-    const chatMsg = new ChatMessageModel({
-  userId: data.from === 'admin' ? null : userId,
-  spotid: data.spotid,
-  email,
-  text: data.text,
-  image: data.image,
-  status: 'sent',
-  unread: true
-});
-    await chatMsg.save();
-    // Broadcast to all sockets in this chat
-    io.sockets.sockets.forEach(s => {
-      if (s.handshake.query.spotid === data.spotid) {
-        s.emit('chat_message', {
-          from: data.from,
-          text: data.text,
-          image: data.image,
-          createdAt: chatMsg.createdAt
-        });
-      }
-    });
   });
 });
 
@@ -1626,13 +1637,11 @@ app.get('/api/2fa/status', authenticateToken, async (req: Request, res: Response
   res.json({ enabled: !!(user.twoFA && user.twoFA.enabled) });
 });
 
-// --- API: Mark messages as read (user or admin marks all as read) ---
 app.post('/api/chat/mark-read', async (req: Request, res: Response) => {
-   try {
+  try {
     const spotid = req.body.spotid;
     const fromVal = req.body.from; // 'admin' or 'user'
-   
-    await ChatMessageModel.updateMany({ spotid, from: fromVal, unread: true }, { $set: { unread: false, status: 'read' } });
+    await ChatMessage.updateMany({ spotid, from: fromVal, unread: true }, { $set: { unread: false, status: 'read' } });
     res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: 'Failed to mark as read' });
