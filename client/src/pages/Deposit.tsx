@@ -48,12 +48,13 @@ const Deposit: React.FC = () => {
         } catch (err) {}
     };
 
-    const handleCopyTxid = async () => {
+    const handlePasteTxid = async () => {
         try {
-            await navigator.clipboard.writeText(txid);
-            setCopiedTxid(true);
-            setTimeout(() => setCopiedTxid(false), 1200);
-        } catch (err) {}
+            const text = await navigator.clipboard.readText();
+            setTxid(text);
+        } catch (err) {
+            setError('Failed to read from clipboard');
+        }
     };
 
     return (
@@ -107,12 +108,12 @@ const Deposit: React.FC = () => {
                                 style={{ width: '80%', padding: '8px', border: '1px solid #ccc', fontSize: 16 }}
                             />
                             <button
-                                onClick={handleCopyTxid}
+                                onClick={handlePasteTxid}
                                 style={{ padding: '6px 10px', border: 'none', borderRadius: 4, background: '#eaf1fb', color: '#25324B', cursor: 'pointer', fontWeight: 600 }}
-                                title={copiedTxid ? 'Copied!' : 'Copy txid'}
+                                title="Paste txid from clipboard"
                                 type="button"
                             >
-                                {copiedTxid ? 'Copied!' : 'Copy'}
+                                Paste
                             </button>
                         </div>
                     </div>
