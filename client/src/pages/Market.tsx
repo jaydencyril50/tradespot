@@ -152,8 +152,19 @@ const Market: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          overflow: 'auto', // Ensure modal is scrollable
         }}>
-          <div style={{ background: '#fff', border: '1px solid #e3e6ef', borderRadius: 8, padding: 20, maxWidth: 600, width: '95vw', maxHeight: '90vh', overflow: 'auto', boxShadow: '0 8px 32px 0 rgba(30,60,114,0.18)' }}>
+          <div style={{
+            background: '#fff',
+            border: '1px solid #e3e6ef',
+            borderRadius: 8,
+            padding: 20,
+            maxWidth: 600,
+            width: '95vw',
+            maxHeight: '90vh',
+            overflow: 'auto', // Make modal content scrollable
+            boxShadow: '0 8px 32px 0 rgba(30,60,114,0.18)'
+          }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <span style={{ fontWeight: 700, fontSize: 18 }}>Purchase History</span>
               <button onClick={() => setShowHistory(false)} style={{ background: 'none', border: 'none', fontSize: 18, cursor: 'pointer' }}>✕</button>
@@ -176,7 +187,7 @@ const Market: React.FC = () => {
                       <tr key={i}>
                         <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{h.stockName || h.planName || ''}</td>
                         <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{h.purchaseAmount}</td>
-                        <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{(h.purchaseAmount && h.profit ? (h.purchaseAmount * h.profit).toFixed(4) : '-')}</td>
+                        <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{(typeof h.purchaseAmount === 'number' && typeof h.profit === 'number') ? (h.purchaseAmount * h.profit).toFixed(4) : '-'}</td>
                         <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{h.startDate ? new Date(h.startDate).toLocaleString() : '-'}</td>
                         <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{h.expiresAt ? new Date(h.expiresAt).toLocaleString() : '-'}</td>
                       </tr>
