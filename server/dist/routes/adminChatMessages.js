@@ -14,11 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const ChatMessage_1 = __importDefault(require("../models/ChatMessage"));
-// Use authenticateAdmin from main index.ts
-const { authenticateAdmin } = require('../index');
+const authenticateAdmin_1 = __importDefault(require("../middleware/authenticateAdmin"));
 const router = express_1.default.Router();
 // --- ADMIN: GET ALL CHAT MESSAGES ---
-router.get('/api/admin/chat-messages', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/api/admin/chat-messages', authenticateAdmin_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const messages = yield ChatMessage_1.default.find({}, 'email spotid text image createdAt').sort({ createdAt: -1 }).lean();
         res.json({ messages });

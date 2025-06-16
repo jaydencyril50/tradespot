@@ -1788,6 +1788,8 @@ app.post('/api/send-funds-privacy-code', authenticateToken, async (req: Request,
     setCode('fundsPrivacyCodes', user.email, code);
     // Send email
 
+
+
     try {
         const transporter = nodemailer.createTransport({
             service: 'gmail',

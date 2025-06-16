@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express';
 import ChatMessage from '../models/ChatMessage';
-// Use authenticateAdmin from main index.ts
-const { authenticateAdmin } = require('../index');
+import authenticateAdmin from '../middleware/authenticateAdmin';
 
 const router = express.Router();
 
