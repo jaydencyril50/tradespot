@@ -1510,12 +1510,19 @@ app.post('/api/chat/send', authenticateToken, asyncHandler(async (req: Request, 
 
 // --- USER: SEND MESSAGE ---
 app.post('/api/chat-messages/:spotid', authenticateToken, async (req: Request, res: Response) => {
+  console.log('POST /api/chat-messages/:spotid called', req.body, req.params);
   const userId = (req as any).user.userId;
   const { spotid } = req.params;
   const { text, image } = req.body;
-  if (!text && !image) return res.status(400).json({ error: 'Message text or image required' });
+  if (!text && !image) {
+    console.log('No text or image provided');
+    return res.status(400).json({ error: 'Message text or image required' });
+  }
   const user = await User.findById(userId);
-  if (!user || user.spotid !== spotid) return res.status(404).json({ error: 'User not found' });
+  if (!user || user.spotid !== spotid) {
+    console.log('User not found or spotid mismatch', user, spotid);
+    return res.status(404).json({ error: 'User not found' });
+  }
   const chatMsg = new ChatMessage({
     userId: user._id,
     spotid: user.spotid,
@@ -1523,8 +1530,14 @@ app.post('/api/chat-messages/:spotid', authenticateToken, async (req: Request, r
     text,
     image
   });
-  await chatMsg.save();
-  res.json({ message: 'Message sent', chatMsg });
+  try {
+    await chatMsg.save();
+    console.log('Message saved:', chatMsg);
+    res.json({ message: 'Message sent', chatMsg });
+  } catch (err) {
+    console.error('Error saving message:', err);
+    res.status(500).json({ error: 'Failed to save message' });
+  }
 });
 
 // --- USER: FETCH MESSAGES ---
