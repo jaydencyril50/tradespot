@@ -13,9 +13,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import Announcement from './models/Announcement';
 import Activity from './models/Activity';
 import DepositSession from './models/DepositSession';
-import ChatMessage from './models/ChatMessage';
 import trashRoutes from './routes/trash';
-import adminChatMessagesRoutes from './routes/adminChatMessages';
 
 dotenv.config();
 
@@ -30,88 +28,6 @@ const io = new SocketIOServer(server, {
     origin: '*',
     methods: ['GET', 'POST']
   }
-});
-
-// Define ChatMessage interface for type safety
-interface ChatMessage {
-  email: string;
-  text: string;
-  image?: string;
-  createdAt: Date;
-}
-
-// Helper: get chat history for a spotid
-async function getChatHistory(spotid: string): Promise<any[]> {
-  return await ChatMessageModel.find({ spotid }).sort({ createdAt: 1 }).lean();
-}
-
-io.on('connection', (socket) => {
-  const { spotid, role } = socket.handshake.query;
-  if (!spotid) {
-    socket.disconnect();
-    return;
-  }
-
-   // Send chat history on connect
-  getChatHistory(spotid as string).then((history: any[]) => {
-    socket.emit('chat_history', history.map((msg) => ({
-      from: msg.email === 'admin@tradespot.com' ? 'admin' : 'user',
-      text: msg.text,
-      image: msg.image,
-      createdAt: msg.createdAt,
-      status: msg.status,
-      unread: msg.unread,
-      _id: msg._id,
-    })));
-  });
-
-   // Listen for chat messages
-  socket.on('chat_message', async (data) => {
-    try {
-      if (!data || !data.spotid || (!data.text && !data.image) || !data.from) return;
-      let email = '';
-      let userId = null;
-
-      if (data.from === 'admin') {
-        email = 'admin@tradespot.com';
-      } else {
-        const user = await User.findOne({ spotid: data.spotid });
-        if (!user) {
-          socket.emit('chat_error', { error: 'User not found' });
-          return;
-        }
-        email = user.email;
-        userId = user._id;
-      }
-        const chatMsg = new ChatMessage({
-        userId: data.from === 'admin' ? null : userId,
-        spotid: data.spotid,
-        email,
-        text: data.text,
-        image: data.image,
-        status: 'sent',
-        unread: true,
-      });
-      await chatMsg.save();
-
-     // Broadcast to all sockets in this chat
-      io.sockets.sockets.forEach(s => {
-        if (s.handshake.query.spotid === data.spotid) {
-          s.emit('chat_message', {
-            from: data.from,
-            text: data.text,
-            image: data.image,
-            createdAt: chatMsg.createdAt,
-            status: chatMsg.status,
-            unread: chatMsg.unread,
-            _id: chatMsg._id,
-          });
-        }
-      });
-    } catch (err) {
-      socket.emit('chat_error', { error: 'Failed to send message' });
-    }
-  });
 });
 
 const MONGO_URI = process.env.MONGO_URI!;
@@ -1486,96 +1402,6 @@ app.post('/api/announcement', async (req: Request, res: Response) => {
   }
 });
 
-// --- CHAT MESSAGE ENDPOINT ---
-app.post('/api/chat/send', authenticateToken, asyncHandler(async (req: Request, res: Response) => {
-  const userId = (req as any).user.userId;
-  const { text, image } = req.body;
-  if (!text && !image) {
-    return res.status(400).json({ error: 'Message text or image required' });
-  }
-  const user = await User.findById(userId);
-  if (!user) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-  const chatMsg = new ChatMessageModel({
-    userId: user._id,
-    spotid: user.spotid,
-    email: user.email,
-    text,
-    image
-  });
-  await chatMsg.save();
-  res.json({ message: 'Message sent', chatMsg });
-}));
-
-// --- USER: SEND MESSAGE ---
-app.post('/api/chat-messages/:spotid', authenticateToken, async (req: Request, res: Response) => {
-  console.log('POST /api/chat-messages/:spotid called', req.body, req.params);
-  const userId = (req as any).user.userId;
-  const { text, image } = req.body;
-  if (!text && !image) {
-    console.log('No text or image provided');
-    return res.status(400).json({ error: 'Message text or image required' });
-  }
-  const user = await User.findById(userId);
-  if (!user) {
-    console.log('User not found', userId);
-    return res.status(404).json({ error: 'User not found' });
-  }
-  // Save message regardless of spotid in URL
-  const chatMsg = new ChatMessage({
-    userId: user._id,
-    spotid: user.spotid,
-    email: user.email,
-    text,
-    image
-  });
-  try {
-    await chatMsg.save();
-    console.log('Message saved:', chatMsg);
-    res.json({ message: 'Message sent', chatMsg });
-  } catch (err) {
-    console.error('Error saving message:', err);
-    res.status(500).json({ error: 'Failed to save message' });
-  }
-});
-
-// --- USER: FETCH MESSAGES ---
-app.get('/api/chat-messages/:spotid', authenticateToken, async (req: Request, res: Response) => {
-  const userId = (req as any).user.userId;
-  const { spotid } = req.params;
-  const user = await User.findById(userId);
-  if (!user || user.spotid !== spotid) return res.status(404).json({ error: 'User not found' });
-  const messages = await ChatMessage.find({ spotid }).sort({ createdAt: 1 }).lean();
-  res.json({ messages });
-});
-
-// --- ADMIN: SEND MESSAGE ---
-app.post('/api/admin/chat-messages/:spotid', authenticateAdmin, async (req: Request, res: Response) => {
-  const { spotid } = req.params;
-  const { text, image } = req.body;
-  if (!text && !image) return res.status(400).json({ error: 'Message text or image required' });
-  const user = await User.findOne({ spotid });
-  if (!user) return res.status(404).json({ error: 'User not found' });
-  const chatMsg = new ChatMessage({
-    userId: null,
-    spotid,
-    email: 'admin@tradespot.com',
-    text,
-    image,
-    from: 'admin'
-  });
-  await chatMsg.save();
-  res.json({ message: 'Message sent', chatMsg });
-});
-
-// --- ADMIN: FETCH MESSAGES ---
-app.get('/api/admin/chat-messages/:spotid', authenticateAdmin, async (req: Request, res: Response) => {
-  const { spotid } = req.params;
-  const messages = await ChatMessage.find({ spotid }).sort({ createdAt: 1 }).lean();
-  res.json({ messages });
-});
-
 // --- 2FA SETUP ENDPOINT ---
 app.post('/api/2fa/setup', authenticateToken, async (req: Request, res: Response) => {
   const userId = (req as any).user.userId;
@@ -1639,17 +1465,6 @@ app.get('/api/2fa/status', authenticateToken, async (req: Request, res: Response
   res.json({ enabled: !!(user.twoFA && user.twoFA.enabled) });
 });
 
-app.post('/api/chat/mark-read', async (req: Request, res: Response) => {
-  try {
-    const spotid = req.body.spotid;
-    const fromVal = req.body.from; // 'admin' or 'user'
-    await ChatMessage.updateMany({ spotid, from: fromVal, unread: true }, { $set: { unread: false, status: 'read' } });
-    res.json({ success: true });
-  } catch (e) {
-    res.status(500).json({ error: 'Failed to mark as read' });
-  }
-});
-
 // --- ADMIN: GET RECENT ACTIVITIES ---
 app.get('/api/admin/recent-activities', authenticateAdmin, async (req, res) => {
   try {
@@ -1674,7 +1489,6 @@ cron.schedule('0 * * * *', async () => {
 });
 
 app.use('/api/trash', trashRoutes);
-app.use(adminChatMessagesRoutes);
 
 server.listen(5000, () => console.log('Server running on port 5000'));
 
