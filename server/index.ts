@@ -143,16 +143,7 @@ const withdrawalSchema = new mongoose.Schema({
 const Withdrawal = mongoose.model('Withdrawal', withdrawalSchema);
 
 // --- CHAT MESSAGE MODEL ---
-// Remove duplicate import and model definition
-const chatMessageSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
-  spotid: String,
-  email: String,
-  text: String,
-  image: String
-}, { timestamps: true });
-
-const ChatMessageModel = mongoose.models.ChatMessage || mongoose.model('ChatMessage', chatMessageSchema);
+// Removed ChatMessage and chatMessageSchema, ChatMessageModel, and all chat/message related code
 
 // Utility to wrap async route handlers
 function asyncHandler(fn: any) {
