@@ -1664,12 +1664,16 @@ app.post('/api/send-funds-privacy-code', authenticateToken, async (req: Request,
     }
 });
 
-// --- Admin: Get all manual deposit requests ---
 app.get('/api/admin/deposits', authenticateAdmin, async (req: Request, res: Response) => {
-  const deposits = await DepositSession.find({ txid: { $exists: true, $ne: null } })
-    .populate('userId', 'email spotid')
-    .sort({ createdAt: -1 });
-  res.json({ deposits });
+  try {
+    // Find all deposit sessions with status 'pending', populate user info
+    const deposits = await DepositSession.find({ status: 'pending' })
+      .populate('userId', 'email spotid')
+      .sort({ createdAt: -1 });
+    res.json({ deposits });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch deposit requests' });
+  }
 });
 
 // --- Admin: Approve manual deposit ---
