@@ -255,14 +255,4 @@ export const getAllUsers = async () => {
     return res.data;
 };
 
-// Send chat message
-export const sendChatMessage = async (text: string, image?: string) => {
-    const token = localStorage.getItem('token');
-    if (!token) throw new Error('Not authenticated');
-    const res = await axios.post(`${API}/api/chat/send`, { text, image }, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
-    return res.data;
-};
-
 // All axios requests use `${API}/...` for endpoint URLs

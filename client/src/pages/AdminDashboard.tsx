@@ -8,7 +8,6 @@ const adminButtons = [
   { label: 'CASHOUT', icon: '💸' },
   { label: 'DEPOSIT', icon: '💰' },
   { label: 'NOTICE', icon: '📢' },
-  { label: 'MESSAGES', icon: '✉️' },
   { label: 'RECENTS', icon: '🕒' },
   { label: 'SOCIALS', icon: '🌐' },
   { label: 'TRASH', icon: '🗑️' },
@@ -78,8 +77,6 @@ const AdminDashboard: React.FC = () => {
                 navigate('/admin/deposit');
               } else if (btn.label === 'NOTICE') {
                 navigate('/admin/notice');
-              } else if (btn.label === 'MESSAGES') {
-                navigate('/admin/messages');
               } else if (btn.label === 'RECENTS') {
                 navigate('/admin/recents');
               } else if (btn.label === 'TRASH') {

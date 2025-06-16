@@ -25,10 +25,8 @@ import AdminUsers from './pages/AdminUsers';
 import AdminActiveStocks from './pages/AdminActiveStocks';
 import AdminWithdrawals from './pages/AdminWithdrawals';
 import AdminNotice from './pages/AdminNotice';
-import ChatPage from './pages/ChatPage';
 import AdminMessage from './pages/adminmessage';
 import AdminChat from './pages/AdminChat';
-import ChatInbox from './pages/ChatInbox';
 import AdminRecent from './pages/AdminRecent';
 import AdminTrash from './pages/AdminTrash';
 
@@ -121,21 +119,6 @@ root.render(
           <Route path="/admin/chat/:spotid" element={<AdminChat />} />
           <Route path="/admin/recents" element={<AdminRecent />} />
           <Route path="/admin/trash" element={<AdminTrash />} />
-          <Route path="/chat/:spotid" element={
-            <ProtectedRoute>
-              <ChatPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/chat" element={
-            <ProtectedRoute>
-              <ChatPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/chat-inbox" element={
-            <ProtectedRoute>
-              <ChatInbox />
-            </ProtectedRoute>
-          } />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
