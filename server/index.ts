@@ -15,6 +15,7 @@ import Activity from './models/Activity';
 import DepositSession from './models/DepositSession';
 import ChatMessage from './models/ChatMessage';
 import trashRoutes from './routes/trash';
+import adminChatMessagesRoutes from './routes/adminChatMessages';
 
 dotenv.config();
 
@@ -1660,6 +1661,7 @@ cron.schedule('0 * * * *', async () => {
 });
 
 app.use('/api/trash', trashRoutes);
+app.use(adminChatMessagesRoutes);
 
 server.listen(5000, () => console.log('Server running on port 5000'));
 
@@ -1785,10 +1787,11 @@ app.post('/api/send-funds-privacy-code', authenticateToken, async (req: Request,
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setCode('fundsPrivacyCodes', user.email, code);
     // Send email
+
     try {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
-                       auth: {
+            auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
             }

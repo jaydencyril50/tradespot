@@ -52,6 +52,7 @@ const Activity_1 = __importDefault(require("./models/Activity"));
 const DepositSession_1 = __importDefault(require("./models/DepositSession"));
 const ChatMessage_1 = __importDefault(require("./models/ChatMessage"));
 const trash_1 = __importDefault(require("./routes/trash"));
+const adminChatMessages_1 = __importDefault(require("./routes/adminChatMessages"));
 dotenv.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
@@ -183,9 +184,9 @@ const User = mongoose_1.default.model('User', userSchema);
 const stockSchema = new mongoose_1.default.Schema({
     name: String,
     price: Number,
-    profit: Number,
+    profit: { type: Number, default: 0.02 },
     purchaseAmount: Number,
-    durationDays: Number,
+    durationDays: { type: Number, default: 365 },
     createdAt: { type: Date, default: Date.now }
 });
 const Stock = mongoose_1.default.model('Stock', stockSchema);
@@ -1475,79 +1476,61 @@ app.post('/api/chat/send', authenticateToken, asyncHandler((req, res) => __await
     yield chatMsg.save();
     res.json({ message: 'Message sent', chatMsg });
 })));
-// --- ADMIN: GET ALL CHAT MESSAGES ---
-app.get('/api/admin/chat-messages', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const messages = yield ChatMessageModel.find({}, 'email spotid text image createdAt').sort({ createdAt: -1 }).lean();
-        res.json({ messages });
-    }
-    catch (err) {
-        res.status(500).json({ error: 'Failed to fetch chat messages' });
-    }
+// --- USER: SEND MESSAGE ---
+app.post('/api/chat-messages/:spotid', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user.userId;
+    const { spotid } = req.params;
+    const { text, image } = req.body;
+    if (!text && !image)
+        return res.status(400).json({ error: 'Message text or image required' });
+    const user = yield User.findById(userId);
+    if (!user || user.spotid !== spotid)
+        return res.status(404).json({ error: 'User not found' });
+    const chatMsg = new ChatMessage_1.default({
+        userId: user._id,
+        spotid: user.spotid,
+        email: user.email,
+        text,
+        image
+    });
+    yield chatMsg.save();
+    res.json({ message: 'Message sent', chatMsg });
 }));
-// --- API: Get chat inbox for user (latest message per conversation, unread count) ---
-app.get('/api/chat/inbox', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    try {
-        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
-        if (!token)
-            return res.status(401).json({ error: 'Not authenticated' });
-        const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET);
-        const user = yield User.findById(decoded.userId);
-        if (!user)
-            return res.status(404).json({ error: 'User not found' });
-        // Find all conversations for this user (by spotid)
-        const messages = yield ChatMessageModel.find({ spotid: user.spotid }).sort({ createdAt: -1 }).lean();
-        // For user, only one conversation (with admin)
-        const unreadCount = messages.filter(m => m.from === 'admin' && m.unread).length;
-        const latest = messages[0] || {};
-        res.json({
-            inbox: [
-                {
-                    spotid: user.spotid,
-                    latest: {
-                        _id: latest._id,
-                        text: latest.text,
-                        image: latest.image,
-                        createdAt: latest.createdAt,
-                        from: latest.email === 'admin@tradespot.com' ? 'admin' : 'user',
-                        unread: unreadCount > 0
-                    },
-                    unreadCount
-                }
-            ]
-        });
-    }
-    catch (e) {
-        res.status(500).json({ error: 'Failed to fetch chat inbox' });
-    }
+// --- USER: FETCH MESSAGES ---
+app.get('/api/chat-messages/:spotid', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user.userId;
+    const { spotid } = req.params;
+    const user = yield User.findById(userId);
+    if (!user || user.spotid !== spotid)
+        return res.status(404).json({ error: 'User not found' });
+    const messages = yield ChatMessage_1.default.find({ spotid }).sort({ createdAt: 1 }).lean();
+    res.json({ messages });
 }));
-// --- API: Get chat inbox for admin (all users, latest message per conversation, unread count) ---
-app.get('/api/admin/chat-inbox', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
-    try {
-        const token = (_b = req.headers.authorization) === null || _b === void 0 ? void 0 : _b.split(' ')[1];
-        if (!token)
-            return res.status(401).json({ error: 'Not authenticated' });
-        // Optionally verify admin token here
-        // Get all spotids with messages
-        const allMessages = yield ChatMessageModel.find({}).sort({ createdAt: -1 }).lean();
-        const grouped = {};
-        allMessages.forEach(msg => {
-            if (!grouped[msg.spotid])
-                grouped[msg.spotid] = [];
-            grouped[msg.spotid].push(msg);
-        });
-        const inbox = Object.entries(grouped).map(([spotid, msgs]) => {
-            const latest = msgs[0];
-            const unreadCount = msgs.filter(m => m.from !== 'admin' && m.unread).length;
-            return { spotid, latest, unreadCount };
-        });
-        res.json({ inbox });
-    }
-    catch (e) {
-        res.status(500).json({ error: 'Failed to fetch admin inbox' });
-    }
+// --- ADMIN: SEND MESSAGE ---
+app.post('/api/admin/chat-messages/:spotid', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { spotid } = req.params;
+    const { text, image } = req.body;
+    if (!text && !image)
+        return res.status(400).json({ error: 'Message text or image required' });
+    const user = yield User.findOne({ spotid });
+    if (!user)
+        return res.status(404).json({ error: 'User not found' });
+    const chatMsg = new ChatMessage_1.default({
+        userId: null,
+        spotid,
+        email: 'admin@tradespot.com',
+        text,
+        image,
+        from: 'admin'
+    });
+    yield chatMsg.save();
+    res.json({ message: 'Message sent', chatMsg });
+}));
+// --- ADMIN: FETCH MESSAGES ---
+app.get('/api/admin/chat-messages/:spotid', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { spotid } = req.params;
+    const messages = yield ChatMessage_1.default.find({ spotid }).sort({ createdAt: 1 }).lean();
+    res.json({ messages });
 }));
 // --- 2FA SETUP ENDPOINT ---
 app.post('/api/2fa/setup', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -1645,6 +1628,7 @@ node_cron_1.default.schedule('0 * * * *', () => __awaiter(void 0, void 0, void 0
     }
 }));
 app.use('/api/trash', trash_1.default);
+app.use(adminChatMessages_1.default);
 server.listen(5000, () => console.log('Server running on port 5000'));
 // --- EMAIL STYLING UTILITY ---
 function getStyledEmailHtml(subject, body) {
