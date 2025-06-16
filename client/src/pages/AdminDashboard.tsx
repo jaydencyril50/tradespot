@@ -6,6 +6,7 @@ const adminButtons = [
   { label: 'USERS', icon: '👤' },
   { label: 'STOCKS', icon: '📈' },
   { label: 'CASHOUT', icon: '💸' },
+  { label: 'DEPOSIT', icon: '💰' }, // Added deposit button
   { label: 'NOTICE', icon: '📢' },
   { label: 'MESSAGES', icon: '✉️' },
   { label: 'RECENTS', icon: '🕒' },
@@ -51,8 +52,32 @@ const AdminDashboard: React.FC = () => {
     setShowDetailsList(false);
   };
 
+  const handleLogout = () => {
+    // Clear auth tokens or session here
+    localStorage.removeItem('adminToken'); // Use the correct admin token key
+    navigate('/admin/login'); // Redirect to admin login page
+  };
+
   return (
     <div className="admin-dashboard-page">
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+        <button
+          className="admin-logout-btn"
+          onClick={handleLogout}
+          style={{
+            background: '#fff',
+            color: '#1e3c72',
+            border: '1px solid #1e3c72',
+            borderRadius: 4,
+            padding: '6px 18px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            boxShadow: '0 2px 8px rgba(30,60,114,0.10)'
+          }}
+        >
+          LOGOUT
+        </button>
+      </div>
       <h1 className="admin-dashboard-title">Admin Dashboard</h1>
       <div className="admin-dashboard-cards">
         {adminButtons.map(btn => (
@@ -66,6 +91,8 @@ const AdminDashboard: React.FC = () => {
                 navigate('/admin/stocks');
               } else if (btn.label === 'CASHOUT') {
                 navigate('/admin/withdrawals');
+              } else if (btn.label === 'DEPOSIT') {
+                navigate('/admin/deposit'); // Add your deposit route here
               } else if (btn.label === 'NOTICE') {
                 navigate('/admin/notice');
               } else if (btn.label === 'MESSAGES') {
@@ -75,7 +102,7 @@ const AdminDashboard: React.FC = () => {
               } else if (btn.label === 'TRASH') {
                 navigate('/admin/trash');
               } else {
-               
+                // ...existing code...
               }
             }}
             style={{ userSelect: 'none', pointerEvents: 'auto' }}
