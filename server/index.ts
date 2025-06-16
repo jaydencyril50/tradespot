@@ -1359,6 +1359,17 @@ app.post('/admin/withdrawals/:id/approve', asyncHandler(async (req: Request, res
     res.json({ message: 'Withdrawal approved' });
 }));
 
+// --- ADMIN: GET ALL DEPOSIT REQUESTS ---
+app.get('/api/admin/deposits', authenticateAdmin, async (req: Request, res: Response) => {
+  try {
+    const DepositSession = (await import('./models/DepositSession')).default;
+    const sessions = await DepositSession.find({}).populate('userId', 'email spotid');
+    res.json({ deposits: sessions });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch deposits' });
+  }
+});
+
 // Admin: Reject withdrawal
 app.post('/admin/withdrawals/:id/reject', asyncHandler(async (req: Request, res: Response) => {
     // TODO: Add admin authentication
