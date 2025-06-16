@@ -127,11 +127,17 @@ const Market: React.FC = () => {
         {products.map((product) => {
           // Remove date/time from display name
           const displayName = product.name.replace(/\sPlan\s\d{4}-\d{1,2}-\d{1,2}(\s\d{1,2}:00)?/, '').trim();
+          // Format price and profit to 2 decimal places
+          const formattedPrice = product.purchaseAmount.toFixed(2);
+          // Calculate 2% daily profit for 365 days (not compounded)
+          const dailyProfit = product.purchaseAmount * 0.02;
+          const totalProfit = dailyProfit * 365;
+          const formattedProfit = totalProfit.toFixed(2);
           return (
             <div className={`market-card ${product.name.toLowerCase().includes('gold') ? 'gold-card' : 'silver-card'}`} key={product.id}>
               <h2>{displayName}</h2>
-              <div className="market-card-amount">Price: {product.purchaseAmount} SPOT</div>
-              <div className="market-card-earn">Profit: <span>{(product.purchaseAmount * product.profit * 60).toFixed(4)} SPOT</span></div>
+              <div className="market-card-amount">Price: {formattedPrice} SPOT</div>
+              <div className="market-card-earn">Profit (365 days @ 2%/day): <span>{formattedProfit} SPOT</span></div>
               <button className={`market-card-btn ${product.name.toLowerCase().includes('gold') ? 'gold' : 'silver'}`} onClick={() => handlePurchase(product.id)} disabled={loading}>
                 {loading ? 'Processing...' : 'Purchase'}
               </button>
