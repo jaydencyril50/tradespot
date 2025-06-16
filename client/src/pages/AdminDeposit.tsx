@@ -78,10 +78,12 @@ const AdminDeposit: React.FC = () => {
                     </span>
                     {copied && <span style={{ color: '#10c98f', marginLeft: 6, fontSize: 13 }}>Copied!</span>}
                   </td>
-                  <td>{d.credited ? 'approved' : d.status || 'pending'}</td>
+                  <td>{d.status ? d.status.charAt(0).toUpperCase() + d.status.slice(1) : (d.credited ? 'Approved' : 'Pending')}</td>
                   <td>
-                    {d.credited ? (
+                    {d.status === 'approved' ? (
                       <span style={{ color: '#10c98f', fontWeight: 600 }}>Approved</span>
+                    ) : d.status === 'rejected' ? (
+                      <span style={{ color: '#e74c3c', fontWeight: 600 }}>Rejected</span>
                     ) : (
                       <>
                         <button

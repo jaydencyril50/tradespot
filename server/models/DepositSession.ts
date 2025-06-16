@@ -8,6 +8,7 @@ const depositSessionSchema = new mongoose.Schema({
   credited: { type: Boolean, default: false },
   txid: { type: String },
   expiresAt: { type: Date, required: true },
+  status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
 });
 
 const DepositSession = mongoose.model('DepositSession', depositSessionSchema);

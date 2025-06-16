@@ -1151,15 +1151,15 @@ app.post('/api/deposit/manual', authenticateToken, async (req: Request, res: Res
   if (!txid || typeof txid !== 'string' || txid.length < 8) {
     return res.status(400).json({ error: 'Invalid txid' });
   }
-  // Save deposit request for admin review
   await DepositSession.create({
     userId,
     amount: Number(amount),
     address: 'TSNHcwrdH83nh16RGdFQizYKQaDUyTnd7W',
     txid,
     credited: false,
+    status: 'pending',
     createdAt: new Date(),
-    expiresAt: new Date(Date.now() + 24*60*60*1000), // 24h expiry for review
+    expiresAt: new Date(Date.now() + 24*60*60*1000),
   });
   res.json({ message: 'Deposit request submitted for admin review.' });
 });
@@ -1656,7 +1656,7 @@ app.post('/api/send-funds-privacy-code', authenticateToken, async (req: Request,
 
 // --- Admin: Get all manual deposit requests ---
 app.get('/api/admin/deposits', authenticateAdmin, async (req: Request, res: Response) => {
-  const deposits = await DepositSession.find({ txid: { $exists: true, $ne: null }, credited: false })
+  const deposits = await DepositSession.find({ txid: { $exists: true, $ne: null } })
     .populate('userId', 'email spotid')
     .sort({ createdAt: -1 });
   res.json({ deposits });
@@ -1665,10 +1665,10 @@ app.get('/api/admin/deposits', authenticateAdmin, async (req: Request, res: Resp
 // --- Admin: Approve manual deposit ---
 app.post('/api/admin/deposits/:id/approve', authenticateAdmin, async (req: Request, res: Response) => {
   const deposit = await DepositSession.findById(req.params.id).populate('userId');
-  if (!deposit || deposit.credited) return res.status(404).json({ error: 'Deposit not found or already approved' });
+  if (!deposit || deposit.status === 'approved') return res.status(404).json({ error: 'Deposit not found or already approved' });
   deposit.credited = true;
+  deposit.status = 'approved';
   await deposit.save();
-  // Credit user balance
   if (deposit.userId) {
     await (await import('./models/User')).default.findByIdAndUpdate(deposit.userId._id, { $inc: { usdtBalance: deposit.amount } });
   }
@@ -1678,7 +1678,8 @@ app.post('/api/admin/deposits/:id/approve', authenticateAdmin, async (req: Reque
 // --- Admin: Reject manual deposit ---
 app.post('/api/admin/deposits/:id/reject', authenticateAdmin, async (req: Request, res: Response) => {
   const deposit = await DepositSession.findById(req.params.id);
-  if (!deposit || deposit.credited) return res.status(404).json({ error: 'Deposit not found or already processed' });
-  await deposit.deleteOne();
+  if (!deposit || deposit.status === 'approved' || deposit.status === 'rejected') return res.status(404).json({ error: 'Deposit not found or already processed' });
+  deposit.status = 'rejected';
+  await deposit.save();
   res.json({ message: 'Deposit rejected' });
 });
