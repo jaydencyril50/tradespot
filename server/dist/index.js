@@ -1058,7 +1058,7 @@ app.post('/api/deposit/start', authenticateToken, (req, res) => __awaiter(void 0
     const now = new Date();
     const existingSession = yield DepositSession_1.default.findOne({
         userId,
-        credited: { $in: [false, null] },
+        status: { $in: ['pending', 'approved'] },
         expiresAt: { $gt: now },
     });
     if (existingSession) {
@@ -1076,7 +1076,7 @@ app.post('/api/deposit/start', authenticateToken, (req, res) => __awaiter(void 0
         amount: Number(amount),
         address,
         createdAt: now,
-        credited: false,
+        status: 'pending',
         expiresAt,
     });
     res.json({ address, expiresAt: expiresAt.getTime(), sessionId: session._id });
@@ -1087,14 +1087,14 @@ app.get('/api/deposit/status', authenticateToken, (req, res) => __awaiter(void 0
         // Find the most recent pending deposit session for this user
         const session = yield DepositSession_1.default.findOne({
             userId: req.user._id,
-            credited: { $in: [false, null] },
+            status: { $in: ['pending', 'approved'] },
             expiresAt: { $gt: new Date() },
         }).sort({ createdAt: -1 });
         if (!session) {
             // No pending session found, check if any session expired recently
             const expired = yield DepositSession_1.default.findOne({
                 userId: req.user._id,
-                credited: false,
+                status: 'pending',
                 expiresAt: { $lte: new Date() },
             }).sort({ createdAt: -1 });
             if (expired) {
@@ -1102,7 +1102,7 @@ app.get('/api/deposit/status', authenticateToken, (req, res) => __awaiter(void 0
             }
             return res.json({ status: 'failed' });
         }
-        if (session.credited) {
+        if (session.status === 'approved') {
             return res.json({ status: 'success' });
         }
         // Still pending
@@ -1111,6 +1111,45 @@ app.get('/api/deposit/status', authenticateToken, (req, res) => __awaiter(void 0
     catch (err) {
         return res.status(500).json({ status: 'failed', error: 'Server error' });
     }
+}));
+// Admin: Get all deposit sessions (optionally filter by status)
+app.get('/api/admin/deposits', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Optionally filter by status: ?status=pending
+        const status = req.query.status;
+        const filter = {};
+        if (status)
+            filter.status = status;
+        // Populate userId with email and spotid for display
+        const deposits = yield DepositSession_1.default.find(filter)
+            .sort({ createdAt: -1 })
+            .populate('userId', 'email spotid');
+        res.json({ deposits });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to fetch deposits' });
+    }
+}));
+// --- Manual Deposit Endpoint ---
+app.post('/api/deposit/manual', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user.userId;
+    const { amount, txid } = req.body;
+    if (!amount || isNaN(amount) || amount < 10) {
+        return res.status(400).json({ error: 'Minimum deposit is 10 USDT' });
+    }
+    if (!txid || typeof txid !== 'string' || txid.length < 8) {
+        return res.status(400).json({ error: 'Invalid txid' });
+    }
+    yield DepositSession_1.default.create({
+        userId,
+        amount: Number(amount),
+        address: 'TSNHcwrdH83nh16RGdFQizYKQaDUyTnd7W',
+        txid,
+        status: 'pending',
+        createdAt: new Date(),
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    });
+    res.json({ message: 'Deposit request submitted for admin review.' });
 }));
 // Admin: Get all users
 app.get('/api/admin/users', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -1314,6 +1353,24 @@ app.post('/admin/withdrawals/:id/approve', asyncHandler((req, res) => __awaiter(
     });
     res.json({ message: 'Withdrawal approved' });
 })));
+// --- ADMIN: GET ALL DEPOSIT REQUESTS ---
+app.get('/api/admin/deposits', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Optionally filter by status: ?status=pending
+        const status = req.query.status;
+        const filter = {};
+        if (status)
+            filter.status = status;
+        // Populate userId with email and spotid for display
+        const deposits = yield DepositSession_1.default.find(filter)
+            .sort({ createdAt: -1 })
+            .populate('userId', 'email spotid');
+        res.json({ deposits });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to fetch deposits' });
+    }
+}));
 // Admin: Reject withdrawal
 app.post('/admin/withdrawals/:id/reject', asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // TODO: Add admin authentication
@@ -1503,14 +1560,14 @@ app.get('/api/deposit/status', authenticateToken, (req, res) => __awaiter(void 0
         // Find the most recent pending deposit session for this user
         const session = yield DepositSession_1.default.findOne({
             userId: req.user._id,
-            credited: { $in: [false, null] },
+            status: { $in: ['pending', 'approved'] },
             expiresAt: { $gt: new Date() },
         }).sort({ createdAt: -1 });
         if (!session) {
             // No pending session found, check if any session expired recently
             const expired = yield DepositSession_1.default.findOne({
                 userId: req.user._id,
-                credited: false,
+                status: 'pending',
                 expiresAt: { $lte: new Date() },
             }).sort({ createdAt: -1 });
             if (expired) {
@@ -1518,7 +1575,7 @@ app.get('/api/deposit/status', authenticateToken, (req, res) => __awaiter(void 0
             }
             return res.json({ status: 'failed' });
         }
-        if (session.credited) {
+        if (session.status === 'approved') {
             return res.json({ status: 'success' });
         }
         // Still pending
@@ -1596,4 +1653,37 @@ app.post('/api/send-funds-privacy-code', authenticateToken, (req, res) => __awai
     catch (err) {
         res.status(500).json({ error: 'Failed to send email' });
     }
+}));
+app.get('/api/admin/deposits', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Find all deposit sessions with status 'pending', populate user info
+        const deposits = yield DepositSession_1.default.find({ status: 'pending' })
+            .populate('userId', 'email spotid')
+            .sort({ createdAt: -1 });
+        res.json({ deposits });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to fetch deposit requests' });
+    }
+}));
+// --- Admin: Approve manual deposit ---
+app.post('/api/admin/deposits/:id/approve', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const deposit = yield DepositSession_1.default.findById(req.params.id).populate('userId');
+    if (!deposit || deposit.status === 'approved')
+        return res.status(404).json({ error: 'Deposit not found or already approved' });
+    deposit.status = 'approved';
+    yield deposit.save();
+    if (deposit.userId) {
+        yield (yield Promise.resolve().then(() => __importStar(require('./models/User')))).default.findByIdAndUpdate(deposit.userId._id, { $inc: { usdtBalance: deposit.amount } });
+    }
+    res.json({ message: 'Deposit approved' });
+}));
+// --- Admin: Reject manual deposit ---
+app.post('/api/admin/deposits/:id/reject', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const deposit = yield DepositSession_1.default.findById(req.params.id);
+    if (!deposit || deposit.status === 'approved' || deposit.status === 'rejected')
+        return res.status(404).json({ error: 'Deposit not found or already processed' });
+    deposit.status = 'rejected';
+    yield deposit.save();
+    res.json({ message: 'Deposit rejected' });
 }));

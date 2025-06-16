@@ -12,7 +12,8 @@ const AdminDeposit: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.get('/api/admin/deposits');
+      // Only fetch pending deposits
+      const res = await axios.get('/api/admin/deposits?status=pending');
       setDeposits(res.data.deposits || []);
     } catch (e: any) {
       setError(e?.response?.data?.error || e.message || 'Failed to fetch deposits');
