@@ -1141,6 +1141,29 @@ app.get('/api/deposit/status', authenticateToken, async (req: Request, res: Resp
   }
 });
 
+// --- Manual Deposit Endpoint ---
+app.post('/api/deposit/manual', authenticateToken, async (req: Request, res: Response) => {
+  const userId = (req as any).user.userId;
+  const { amount, txid } = req.body;
+  if (!amount || isNaN(amount) || amount < 10) {
+    return res.status(400).json({ error: 'Minimum deposit is 10 USDT' });
+  }
+  if (!txid || typeof txid !== 'string' || txid.length < 8) {
+    return res.status(400).json({ error: 'Invalid txid' });
+  }
+  // Save deposit request for admin review
+  await DepositSession.create({
+    userId,
+    amount: Number(amount),
+    address: 'TSNHcwrdH83nh16RGdFQizYKQaDUyTnd7W',
+    txid,
+    credited: false,
+    createdAt: new Date(),
+    expiresAt: new Date(Date.now() + 24*60*60*1000), // 24h expiry for review
+  });
+  res.json({ message: 'Deposit request submitted for admin review.' });
+});
+
 // Admin: Get all users
 app.get('/api/admin/users', authenticateAdmin, async (req: Request, res: Response) => {
     try {
@@ -1629,4 +1652,33 @@ app.post('/api/send-funds-privacy-code', authenticateToken, async (req: Request,
     } catch (err) {
         res.status(500).json({ error: 'Failed to send email' });
     }
+});
+
+// --- Admin: Get all manual deposit requests ---
+app.get('/api/admin/deposits', authenticateAdmin, async (req: Request, res: Response) => {
+  const deposits = await DepositSession.find({ txid: { $exists: true, $ne: null }, credited: false })
+    .populate('userId', 'email spotid')
+    .sort({ createdAt: -1 });
+  res.json({ deposits });
+});
+
+// --- Admin: Approve manual deposit ---
+app.post('/api/admin/deposits/:id/approve', authenticateAdmin, async (req: Request, res: Response) => {
+  const deposit = await DepositSession.findById(req.params.id).populate('userId');
+  if (!deposit || deposit.credited) return res.status(404).json({ error: 'Deposit not found or already approved' });
+  deposit.credited = true;
+  await deposit.save();
+  // Credit user balance
+  if (deposit.userId) {
+    await (await import('./models/User')).default.findByIdAndUpdate(deposit.userId._id, { $inc: { usdtBalance: deposit.amount } });
+  }
+  res.json({ message: 'Deposit approved' });
+});
+
+// --- Admin: Reject manual deposit ---
+app.post('/api/admin/deposits/:id/reject', authenticateAdmin, async (req: Request, res: Response) => {
+  const deposit = await DepositSession.findById(req.params.id);
+  if (!deposit || deposit.credited) return res.status(404).json({ error: 'Deposit not found or already processed' });
+  await deposit.deleteOne();
+  res.json({ message: 'Deposit rejected' });
 });

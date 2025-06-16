@@ -50,9 +50,7 @@ const socket_io_1 = require("socket.io");
 const Announcement_1 = __importDefault(require("./models/Announcement"));
 const Activity_1 = __importDefault(require("./models/Activity"));
 const DepositSession_1 = __importDefault(require("./models/DepositSession"));
-const ChatMessage_1 = __importDefault(require("./models/ChatMessage"));
 const trash_1 = __importDefault(require("./routes/trash"));
-const adminChatMessages_1 = __importDefault(require("./routes/adminChatMessages"));
 dotenv.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
@@ -150,15 +148,7 @@ const withdrawalSchema = new mongoose_1.default.Schema({
 });
 const Withdrawal = mongoose_1.default.model('Withdrawal', withdrawalSchema);
 // --- CHAT MESSAGE MODEL ---
-// Remove duplicate import and model definition
-const chatMessageSchema = new mongoose_1.default.Schema({
-    userId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User', default: null },
-    spotid: String,
-    email: String,
-    text: String,
-    image: String
-}, { timestamps: true });
-const ChatMessageModel = mongoose_1.default.models.ChatMessage || mongoose_1.default.model('ChatMessage', chatMessageSchema);
+// Removed ChatMessage and chatMessageSchema, ChatMessageModel, and all chat/message related code
 // Utility to wrap async route handlers
 function asyncHandler(fn) {
     return function (req, res, next) {
@@ -1382,6 +1372,92 @@ app.post('/api/announcement', (req, res) => __awaiter(void 0, void 0, void 0, fu
         res.status(500).json({ error: 'Failed to update announcement' });
     }
 }));
+// --- 2FA SETUP ENDPOINT ---
+app.post('/api/2fa/setup', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user.userId;
+    const user = yield User.findById(userId);
+    if (!user) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+    }
+    // Generate a new TOTP secret
+    const secret = speakeasy_1.default.generateSecret({
+        name: `TradeSpot (${user.email})`,
+        length: 32
+    });
+    // Save the secret to the user (but do not enable 2FA yet)
+    user.twoFA = { enabled: false, secret: secret.base32 };
+    yield user.save();
+    // Generate QR code for Google Authenticator
+    const otpauth = secret.otpauth_url || '';
+    let qr = '';
+    try {
+        qr = yield qrcode_1.default.toDataURL(otpauth);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to generate QR code' });
+        return;
+    }
+    res.json({ qr, otpauth, secret: secret.base32 });
+}));
+// --- 2FA VERIFY ENDPOINT ---
+app.post('/api/2fa/verify', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user.userId;
+    const { token } = req.body;
+    const user = yield User.findById(userId);
+    if (!user || !user.twoFA || !user.twoFA.secret) {
+        res.status(400).json({ error: '2FA setup not started' });
+        return;
+    }
+    const verified = speakeasy_1.default.totp.verify({
+        secret: user.twoFA.secret,
+        encoding: 'base32',
+        token,
+        window: 1
+    });
+    if (!verified) {
+        res.status(400).json({ error: 'Invalid 2FA code' });
+        return;
+    }
+    user.twoFA.enabled = true;
+    yield user.save();
+    res.json({ message: '2FA enabled successfully' });
+}));
+// --- 2FA STATUS ENDPOINT ---
+app.get('/api/2fa/status', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user.userId;
+    const user = yield User.findById(userId);
+    if (!user) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+    }
+    res.json({ enabled: !!(user.twoFA && user.twoFA.enabled) });
+}));
+// --- ADMIN: GET RECENT ACTIVITIES ---
+app.get('/api/admin/recent-activities', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const activities = yield Activity_1.default.find({}).sort({ createdAt: -1 }).limit(50).lean();
+        res.json({ activities });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to fetch activities' });
+    }
+}));
+// Auto-delete activities older than 24 hours (run every hour)
+node_cron_1.default.schedule('0 * * * *', () => __awaiter(void 0, void 0, void 0, function* () {
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    try {
+        const result = yield Activity_1.default.deleteMany({ createdAt: { $lt: cutoff } });
+        if (result.deletedCount) {
+            console.log(`[Activity Cleanup] Deleted ${result.deletedCount} activities older than 24h`);
+        }
+    }
+    catch (err) {
+        console.error('[Activity Cleanup] Error:', err);
+    }
+}));
+app.use('/api/trash', trash_1.default);
+server.listen(5000, () => console.log('Server running on port 5000'));
 // --- EMAIL STYLING UTILITY ---
 function getStyledEmailHtml(subject, body) {
     return `

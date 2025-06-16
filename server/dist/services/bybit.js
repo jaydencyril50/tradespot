@@ -88,4 +88,3 @@ exports.getRecentDeposits = getRecentDeposits;
 // Only run the monitor if debugMode is true
 if (debugMode)
     getRecentDeposits();
-// All chat/message related code has been removed from this build file.

@@ -38,8 +38,8 @@ const dashboardItems = [
 ];
 
 const mainButtons = [
-	{ label: 'DEPOSIT', icon: '➕' },
-	{ label: 'WITHDRAW', icon: '💸' },
+	{ label: 'DEPOSIT', icon: '➕', route: '/deposit' },
+	{ label: 'WITHDRAW', icon: '💸', route: '/withdraw' },
 	{ label: 'TRANSFER', icon: '🔄' },
 	{ label: 'CONVERT', icon: '🔁' },
 ];
@@ -474,8 +474,17 @@ const Dashboard: React.FC = () => {
 		return () => clearInterval(interval);
 	}, []);
 
+	// In the main button click handler, navigate to the deposit page if DEPOSIT is clicked
+	const handleMainButtonClick = (label: string) => {
+		if (label === 'DEPOSIT') {
+			navigate('/deposit');
+			return;
+		}
+		// ...existing code...
+	};
+
 	return (
-		<div className='dashboard-gradient-bg dashboard-circles-container'>
+		<div className="dashboard-page">
 			<NoticeModal />
 			{/* Top bar */}
 			<div style={{
@@ -881,11 +890,18 @@ const Dashboard: React.FC = () => {
 				{/* End social/contact buttons row */}
 			</div>
 			<div className='dashboard-main-buttons'>
-				{mainButtons.slice(4).map((item) => (
+				{mainButtons.map((item) => (
 					<button
 						className='dashboard-circle'
 						key={item.label}
 						tabIndex={0}
+						onClick={
+							item.label === 'DEPOSIT' ? () => navigate('/deposit') :
+							item.label === 'WITHDRAW' ? () => !fundsLocked && navigate('/withdraw') :
+							item.label === 'CONVERT' ? openConvertModal :
+							item.label === 'TRANSFER' ? () => !fundsLocked && openTransferModal() :
+							undefined
+						}
 					>
 						<span className='dashboard-circle-icon'>{item.icon}</span>
 						<span className='dashboard-circle-label'>{item.label}</span>

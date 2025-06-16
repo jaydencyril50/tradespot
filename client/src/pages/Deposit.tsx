@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
 const API = process.env.REACT_APP_API_BASE_URL;
@@ -6,67 +6,35 @@ const DEPOSIT_ADDRESS = 'TSNHcwrdH83nh16RGdFQizYKQaDUyTnd7W';
 
 const Deposit: React.FC = () => {
     const [amount, setAmount] = useState('');
-    const [modalOpen, setModalOpen] = useState(false);
-    const [modalStatus, setModalStatus] = useState<'pending' | 'success' | 'failed' | null>(null);
-    const [timer, setTimer] = useState(15 * 60); // 15 minutes
+    const [txid, setTxid] = useState('');
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [checking, setChecking] = useState(false);
     const [copied, setCopied] = useState(false);
-
-    // Store session expiry for timer
-    const [expiresAt, setExpiresAt] = useState<number | null>(null);
-
-    useEffect(() => {
-        let interval: NodeJS.Timeout;
-        if (modalOpen && modalStatus === 'pending') {
-            interval = setInterval(async () => {
-                try {
-                    const token = localStorage.getItem('token');
-                    const res = await axios.get(`${API}/api/deposit/status`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
-                    if (res.data.status === 'success') {
-                        setModalStatus('success');
-                        setTimeout(() => setModalOpen(false), 1800);
-                    }
-                    // Do not set 'failed' here
-                } catch {}
-            }, 10000);
-        }
-        return () => clearInterval(interval);
-    }, [modalOpen, modalStatus]);
-
-    useEffect(() => {
-        if (!modalOpen || modalStatus !== 'pending') return;
-        if (expiresAt) {
-            const left = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
-            setTimer(left);
-            if (left <= 0) {
-                setModalStatus('failed');
-            }
-            const t = setTimeout(() => setTimer(left - 1), 1000);
-            return () => clearTimeout(t);
-        }
-    }, [modalOpen, modalStatus, expiresAt, timer]);
+    const [copiedTxid, setCopiedTxid] = useState(false);
 
     const handleDeposit = async () => {
         setError('');
+        setSuccess('');
         if (!amount || isNaN(Number(amount)) || Number(amount) < 10) {
             setError('Minimum deposit is 10 USDT');
+            return;
+        }
+        if (!txid || txid.length < 8) {
+            setError('Please enter a valid transaction ID (txid)');
             return;
         }
         setChecking(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post(`${API}/api/deposit/start`, { amount: Number(amount) }, {
+            await axios.post(`${API}/api/deposit/manual`, { amount: Number(amount), txid }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setModalOpen(true);
-            setModalStatus('pending');
-            setExpiresAt(res.data.expiresAt || (Date.now() + 15 * 60 * 1000));
-            setTimer(Math.max(0, Math.floor(((res.data.expiresAt || (Date.now() + 15 * 60 * 1000)) - Date.now()) / 1000)));
+            setSuccess('Deposit request submitted! Awaiting admin approval.');
+            setAmount('');
+            setTxid('');
         } catch (e: any) {
-            setError(e?.response?.data?.error || e.message || 'Failed to start deposit');
+            setError(e?.response?.data?.error || e.message || 'Failed to submit deposit request');
         } finally {
             setChecking(false);
         }
@@ -77,9 +45,15 @@ const Deposit: React.FC = () => {
             await navigator.clipboard.writeText(DEPOSIT_ADDRESS);
             setCopied(true);
             setTimeout(() => setCopied(false), 1200);
-        } catch (err) {
-            // fallback: do nothing
-        }
+        } catch (err) {}
+    };
+
+    const handleCopyTxid = async () => {
+        try {
+            await navigator.clipboard.writeText(txid);
+            setCopiedTxid(true);
+            setTimeout(() => setCopiedTxid(false), 1200);
+        } catch (err) {}
     };
 
     return (
@@ -123,13 +97,33 @@ const Deposit: React.FC = () => {
                             style={{ width: '95%', padding: '8px', border: '1px solid #ccc', fontSize: 16 }}
                         />
                     </div>
+                    <div style={{ marginBottom: 18 }}>
+                        <label style={{ fontWeight: 500, color: '#25324B', marginBottom: 4, display: 'block' }}>Transaction ID (txid):</label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <input
+                                type="text"
+                                value={txid}
+                                onChange={e => setTxid(e.target.value)}
+                                style={{ width: '80%', padding: '8px', border: '1px solid #ccc', fontSize: 16 }}
+                            />
+                            <button
+                                onClick={handleCopyTxid}
+                                style={{ padding: '6px 10px', border: 'none', borderRadius: 4, background: '#eaf1fb', color: '#25324B', cursor: 'pointer', fontWeight: 600 }}
+                                title={copiedTxid ? 'Copied!' : 'Copy txid'}
+                                type="button"
+                            >
+                                {copiedTxid ? 'Copied!' : 'Copy'}
+                            </button>
+                        </div>
+                    </div>
                     {error && <div style={{ color: '#e74c3c', marginBottom: 10 }}>{error}</div>}
+                    {success && <div style={{ color: '#10c98f', marginBottom: 10 }}>{success}</div>}
                     <button
                         onClick={handleDeposit}
                         disabled={checking}
                         style={{
                             width: '95%',
-                            background: '#888', // match Settings button color
+                            background: '#888',
                             color: '#fff',
                             padding: '12px 0',
                             border: 'none',
@@ -142,106 +136,10 @@ const Deposit: React.FC = () => {
                             transition: 'background 0.2s',
                         }}
                     >
-                        {checking ? 'Checking...' : 'Deposit Now'}
+                        {checking ? 'Submitting...' : 'Submit Deposit Request'}
                     </button>
                 </div>
             </div>
-
-            {modalOpen && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100vw',
-                    height: '100vh',
-                    background: 'rgba(30,40,60,0.55)',
-                    zIndex: 9999,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: '100vh',
-                }}>
-                    <div style={{
-                        background: '#000',
-                        borderRadius: 16,
-                        padding: 32,
-                        width: 300,
-                        height: 320,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 4px 30px rgba(0,255,100,0.2)',
-                        color: '#00ff88',
-                    }}>
-                        {modalStatus === 'pending' && (
-                            <>
-                                <svg
-                                    width="100"
-                                    height="100"
-                                    viewBox="0 0 100 100"
-                                    style={{ marginBottom: 24, animation: 'spin-animation 1.2s linear infinite' }}
-                                >
-                                    <circle
-                                        cx="50"
-                                        cy="50"
-                                        r="40"
-                                        fill="none"
-                                        stroke="#00ff88"
-                                        strokeWidth="8"
-                                        strokeLinecap="round"
-                                        strokeDasharray="40 20"
-                                        strokeDashoffset="0"
-                                    />
-                                </svg>
-                                <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 8 }}>Detecting...</div>
-                                <div style={{ fontSize: 14 }}>
-                                    Time left: {Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, '0')}
-                                </div>
-                            </>
-                        )}
-
-                        {modalStatus === 'success' && (
-                            <>
-                                <div style={{ fontSize: 22, fontWeight: 700, color: '#10c98f', marginBottom: 12 }}>Deposit Success!</div>
-                                <div style={{ fontSize: 15, color: '#eaf1fb', marginBottom: 8 }}>Your balance will update shortly.</div>
-                            </>
-                        )}
-
-                        {modalStatus === 'failed' && (
-                            <>
-                                <div style={{ fontSize: 22, fontWeight: 700, color: '#e74c3c', marginBottom: 12 }}>Deposit Failed</div>
-                                <div style={{ fontSize: 15, color: '#fff', marginBottom: 8 }}>No deposit detected for {amount} USDT.</div>
-                                <button
-                                    onClick={() => setModalOpen(false)}
-                                    style={{
-                                        marginTop: 18,
-                                        background: '#1e3c72',
-                                        color: '#fff',
-                                        border: 'none',
-                                        borderRadius: 0,
-                                        padding: '8px 18px',
-                                        fontWeight: 600,
-                                        fontSize: 16,
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    Close
-                                </button>
-                            </>
-                        )}
-                    </div>
-                </div>
-            )}
-            {/* Inline animation style */}
-            <style>
-                {`
-                    @keyframes spin-animation {
-                        0% { transform: rotate(0deg); }
-                        100% { transform: rotate(360deg); }
-                    }
-                `}
-            </style>
         </div>
     );
 };

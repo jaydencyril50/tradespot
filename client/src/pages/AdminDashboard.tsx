@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './AdminDashboard.css';
 import { useNavigate } from 'react-router-dom';
+import AdminDeposit from './AdminDeposit';
 
 const adminButtons = [
   { label: 'USERS', icon: '👤' },
