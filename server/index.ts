@@ -1142,17 +1142,13 @@ app.get('/api/deposit/status', authenticateToken, async (req: Request, res: Resp
 // Admin: Get all deposit sessions (optionally filter by status)
 app.get('/api/admin/deposits', authenticateAdmin, async (req: Request, res: Response) => {
   try {
-    // Optionally filter by status: ?status=pending
-    const status = req.query.status as string | undefined;
-    const filter: any = {};
-    if (status) filter.status = status;
-    // Populate userId with email and spotid for display
-    const deposits = await DepositSession.find(filter)
-      .sort({ createdAt: -1 })
-      .populate('userId', 'email spotid');
+    // Find all deposit sessions with status 'pending', populate user info
+    const deposits = await DepositSession.find({ status: 'pending' })
+      .populate('userId', 'email spotid')
+      .sort({ createdAt: -1 });
     res.json({ deposits });
-  } catch (err: any) {
-    res.status(500).json({ error: 'Failed to fetch deposits' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch deposit requests' });
   }
 });
 
@@ -1376,17 +1372,13 @@ app.post('/admin/withdrawals/:id/approve', asyncHandler(async (req: Request, res
 // --- ADMIN: GET ALL DEPOSIT REQUESTS ---
 app.get('/api/admin/deposits', authenticateAdmin, async (req: Request, res: Response) => {
   try {
-    // Optionally filter by status: ?status=pending
-    const status = req.query.status as string | undefined;
-    const filter: any = {};
-    if (status) filter.status = status;
-    // Populate userId with email and spotid for display
-    const deposits = await DepositSession.find(filter)
-      .sort({ createdAt: -1 })
-      .populate('userId', 'email spotid');
+    // Find all deposit sessions with status 'pending', populate user info
+    const deposits = await DepositSession.find({ status: 'pending' })
+      .populate('userId', 'email spotid')
+      .sort({ createdAt: -1 });
     res.json({ deposits });
-  } catch (err: any) {
-    res.status(500).json({ error: 'Failed to fetch deposits' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch deposit requests' });
   }
 });
 
@@ -1686,6 +1678,7 @@ app.post('/api/send-funds-privacy-code', authenticateToken, async (req: Request,
     }
 });
 
+// Admin: Get all deposit sessions (optionally filter by status)
 app.get('/api/admin/deposits', authenticateAdmin, async (req: Request, res: Response) => {
   try {
     // Find all deposit sessions with status 'pending', populate user info
