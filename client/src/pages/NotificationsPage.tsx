@@ -50,11 +50,13 @@ const NotificationsPage: React.FC = () => {
       <h2 style={{ fontWeight: 700, color: '#1e3c72', marginBottom: 18, fontSize: 22, letterSpacing: 1 }}>Notifications</h2>
       {loading && <div>Loading...</div>}
       {error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
-      {!loading && notifications.length === 0 && !error && (
+      {!loading && notifications.filter(n => n.message !== "Market refreshed: New stock plans are now available.").length === 0 && !error && (
         <div style={{ color: '#888', fontSize: 15 }}>No notifications.</div>
       )}
       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-        {notifications.map((n, idx) => (
+        {notifications
+          .filter(n => n.message !== "Market refreshed: New stock plans are now available.")
+          .map((n, idx) => (
           <li key={n._id || idx} style={{
             marginBottom: 12,
             background: n.read ? '#f7faff' : '#eaf1fb',
