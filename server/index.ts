@@ -1512,17 +1512,17 @@ app.post('/api/chat/send', authenticateToken, asyncHandler(async (req: Request, 
 app.post('/api/chat-messages/:spotid', authenticateToken, async (req: Request, res: Response) => {
   console.log('POST /api/chat-messages/:spotid called', req.body, req.params);
   const userId = (req as any).user.userId;
-  const { spotid } = req.params;
   const { text, image } = req.body;
   if (!text && !image) {
     console.log('No text or image provided');
     return res.status(400).json({ error: 'Message text or image required' });
   }
   const user = await User.findById(userId);
-  if (!user || user.spotid !== spotid) {
-    console.log('User not found or spotid mismatch', user, spotid);
+  if (!user) {
+    console.log('User not found', userId);
     return res.status(404).json({ error: 'User not found' });
   }
+  // Save message regardless of spotid in URL
   const chatMsg = new ChatMessage({
     userId: user._id,
     spotid: user.spotid,
