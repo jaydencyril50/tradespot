@@ -1141,6 +1141,23 @@ app.get('/api/deposit/status', authenticateToken, async (req: Request, res: Resp
   }
 });
 
+// Admin: Get all deposit sessions (optionally filter by status)
+app.get('/api/admin/deposits', authenticateAdmin, async (req: Request, res: Response) => {
+  try {
+    // Optionally filter by status: ?status=pending
+    const status = req.query.status as string | undefined;
+    const filter: any = {};
+    if (status) filter.status = status;
+    // Populate userId with email and spotid for display
+    const deposits = await DepositSession.find(filter)
+      .sort({ createdAt: -1 })
+      .populate('userId', 'email spotid');
+    res.json({ deposits });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch deposits' });
+  }
+});
+
 // --- Manual Deposit Endpoint ---
 app.post('/api/deposit/manual', authenticateToken, async (req: Request, res: Response) => {
   const userId = (req as any).user.userId;
@@ -1361,11 +1378,17 @@ app.post('/admin/withdrawals/:id/approve', asyncHandler(async (req: Request, res
 // --- ADMIN: GET ALL DEPOSIT REQUESTS ---
 app.get('/api/admin/deposits', authenticateAdmin, async (req: Request, res: Response) => {
   try {
-    const DepositSession = (await import('./models/DepositSession')).default;
-    const sessions = await DepositSession.find({}).populate('userId', 'email spotid');
-    res.json({ deposits: sessions });
+    // Optionally filter by status: ?status=pending
+    const status = req.query.status as string | undefined;
+    const filter: any = {};
+    if (status) filter.status = status;
+    // Populate userId with email and spotid for display
+    const deposits = await DepositSession.find(filter)
+      .sort({ createdAt: -1 })
+      .populate('userId', 'email spotid');
+    res.json({ deposits });
   } catch (err: any) {
-    res.status(500).json({ error: err.message || 'Failed to fetch deposits' });
+    res.status(500).json({ error: 'Failed to fetch deposits' });
   }
 });
 
