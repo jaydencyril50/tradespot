@@ -163,9 +163,9 @@ const Market: React.FC = () => {
                 <table style={{ width: '600px', minWidth: '500px', borderCollapse: 'collapse', fontSize: 15 }}>
                   <thead>
                     <tr style={{ background: '#f1f3f6' }}>
-                      <th style={{ padding: 8, border: '1px solid #eaeaea' }}>Plan</th>
+                      <th style={{ padding: 8, border: '1px solid #eaeaea' }}>Plan Name</th>
                       <th style={{ padding: 8, border: '1px solid #eaeaea' }}>Amount</th>
-                      <th style={{ padding: 8, border: '1px solid #eaeaea' }}>Status</th>
+                      <th style={{ padding: 8, border: '1px solid #eaeaea' }}>Daily Profit</th>
                       <th style={{ padding: 8, border: '1px solid #eaeaea' }}>Date Purchased</th>
                       <th style={{ padding: 8, border: '1px solid #eaeaea' }}>Expiry</th>
                     </tr>
@@ -174,11 +174,11 @@ const Market: React.FC = () => {
                     {history.length === 0 && <tr><td colSpan={5} style={{ textAlign: 'center', padding: 12 }}>No history found.</td></tr>}
                     {history.map((h, i) => (
                       <tr key={i}>
-                        <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{h.stockName || h.planName || '-'}</td>
+                        <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{h.stockName || h.planName || ''}</td>
                         <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{h.purchaseAmount}</td>
-                        <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{h.completed ? 'Completed' : 'Active'}</td>
-                        <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{new Date(h.startDate).toLocaleString()}</td>
-                        <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{new Date(h.expiresAt).toLocaleString()}</td>
+                        <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{(h.purchaseAmount && h.profit ? (h.purchaseAmount * h.profit).toFixed(4) : '-')}</td>
+                        <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{h.startDate ? new Date(h.startDate).toLocaleString() : '-'}</td>
+                        <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{h.expiresAt ? new Date(h.expiresAt).toLocaleString() : '-'}</td>
                       </tr>
                     ))}
                   </tbody>
