@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import io from 'socket.io-client';
 
 interface Message {
   from: 'admin' | 'user';
@@ -10,54 +9,65 @@ interface Message {
 }
 
 const API = process.env.REACT_APP_API_BASE_URL;
-const SOCKET_URL = API;
 
 const AdminChat: React.FC = () => {
   const { spotid } = useParams<{ spotid: string }>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [image, setImage] = useState<string | undefined>(undefined);
-  const [connected, setConnected] = useState(false);
-  const socketRef = useRef<any>(null);
+  const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  // Fetch chat history from backend
+  const fetchMessages = async () => {
     if (!spotid) return;
-    const token = localStorage.getItem('adminToken');
-    const socket = io(SOCKET_URL, {
-      query: { spotid, role: 'admin' },
-      auth: { token },
-      transports: ['websocket'],
-    });
-    socketRef.current = socket;
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const res = await fetch(`${API}/api/admin/chat-messages/${spotid}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setMessages(data.messages || []);
+    } catch {
+      setMessages([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    socket.on('connect', () => setConnected(true));
-    socket.on('disconnect', () => setConnected(false));
-
-    socket.on('chat_history', (history: Message[]) => {
-      setMessages(history);
-    });
-
-    socket.on('chat_message', (msg: Message) => {
-      setMessages(prev => [...prev, msg]);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
+  useEffect(() => {
+    fetchMessages();
+    // eslint-disable-next-line
   }, [spotid]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input && !image) return;
-    socketRef.current?.emit('chat_message', { spotid, text: input, image, from: 'admin' });
-    setInput('');
-    setImage(undefined);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      await fetch(`${API}/api/admin/chat-messages/${spotid}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ text: input, image }),
+      });
+      setInput('');
+      setImage(undefined);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      await fetchMessages();
+    } catch {
+      // Optionally handle error
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Send on Enter key
@@ -83,11 +93,9 @@ const AdminChat: React.FC = () => {
     <div style={{ maxWidth: 600, margin: '0 auto', background: '#fff', minHeight: '100vh', display: 'flex', flexDirection: 'column', boxShadow: '0 2px 16px rgba(30,60,114,0.10)' }}>
       <div style={{ padding: 18, borderBottom: '1px solid #e3e6ef', fontWeight: 700, fontSize: 22, color: '#25324B', letterSpacing: 1, fontFamily: 'serif', textAlign: 'center' }}>
         Admin Chat - Spot ID: {spotid}
-        <span style={{ marginLeft: 16, fontSize: 13, color: connected ? '#10c98f' : '#e74c3c' }}>
-          {connected ? 'Connected' : 'Disconnected'}
-        </span>
       </div>
       <div style={{ flex: 1, overflowY: 'auto', padding: 18, background: '#f7faff' }}>
+        {loading && <div>Loading...</div>}
         {messages.map((msg, idx) => (
           <div key={idx} style={{
             marginBottom: 16,
@@ -131,7 +139,8 @@ const AdminChat: React.FC = () => {
         >📷</button>
         <button
           onClick={handleSend}
-          style={{ background: '#10c98f', color: '#fff', border: 'none', borderRadius: 4, fontSize: 16, fontWeight: 600, padding: '8px 18px', cursor: 'pointer' }}
+          disabled={loading || (!input && !image)}
+          style={{ background: '#1e3c72', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 600, padding: '8px 18px', cursor: loading ? 'not-allowed' : 'pointer' }}
         >Send</button>
       </div>
     </div>

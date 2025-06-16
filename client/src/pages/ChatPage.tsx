@@ -1,100 +1,80 @@
 import React, { useEffect, useRef, useState } from 'react';
-import './ChatPage.css';
-import { sendChatMessage, getPortfolio } from '../services/api';
-import io from 'socket.io-client';
 import { useParams, useNavigate } from 'react-router-dom';
+import './ChatPage.css';
+import { getPortfolio } from '../services/api';
+
+interface Message {
+  _id?: string;
+  text?: string;
+  image?: string;
+  from?: 'admin' | 'user';
+  createdAt?: string;
+}
 
 const API = process.env.REACT_APP_API_BASE_URL;
-const SOCKET_URL = API;
 
 const ChatPage: React.FC = () => {
   const { spotid } = useParams<{ spotid: string }>();
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Array<{
-    _id?: string;
-    text?: string;
-    image?: string;
-    from?: 'admin' | 'user';
-    createdAt?: string;
-    status?: string;
-    unread?: boolean;
-  }>>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [image, setImage] = useState<string | undefined>(undefined);
   const [user, setUser] = useState<{ email: string; spotid: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const socketRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Fetch user info and redirect if needed
     getPortfolio().then(data => {
       setUser({ email: data.email, spotid: data.spotid });
-      // If spotid param exists and doesn't match user, redirect to own chat
       if (spotid && spotid !== data.spotid) navigate('/chat/' + data.spotid, { replace: true });
     });
   }, [spotid, navigate]);
 
-  useEffect(() => {
+  const fetchMessages = async () => {
     if (!user?.spotid) return;
-    const token = localStorage.getItem('token');
-    const socket = io(SOCKET_URL, {
-      query: { spotid: user.spotid, role: 'user' },
-      auth: { token },
-      transports: ['websocket'],
-    });
-    socketRef.current = socket;
-    socket.on('chat_history', (history: any[]) => {
-      setMessages(history.map(msg => ({
-        ...msg,
-        from: msg.from === 'admin' ? 'admin' : 'user',
-      })));
-      // Mark all admin messages as read
-      if (history.some(msg => msg.from === 'admin' && msg.unread)) {
-        fetch(`${API}/api/chat/mark-read`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-          body: JSON.stringify({ spotid: user.spotid, from: 'admin' }),
-        });
-      }
-    });
-    socket.on('chat_message', (msg: any) => {
-      setMessages(prev => [
-        ...prev,
-        { ...msg, from: msg.from === 'admin' ? 'admin' : 'user' }
-      ]);
-      // Mark as read if from admin
-      if (msg.from === 'admin') {
-        fetch(`${API}/api/chat/mark-read`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-          body: JSON.stringify({ spotid: user.spotid, from: 'admin' }),
-        });
-      }
-    });
-    return () => {
-      socket.disconnect();
-    };
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API}/api/chat-messages/${user.spotid}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setMessages(data.messages || []);
+    } catch {
+      setMessages([]);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.spotid) fetchMessages();
+    // eslint-disable-next-line
   }, [user?.spotid]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = () => {
-  if (!input && !image) return;
-  socketRef.current?.emit('chat_message', { spotid: user?.spotid, text: input, image, from: 'user' });
-  setInput('');
-  setImage(undefined);
-  if (fileInputRef.current) fileInputRef.current.value = '';
-};
+  const handleSend = async () => {
+    if (!input && !image) return;
+    try {
+      const token = localStorage.getItem('token');
+      await fetch(`${API}/api/chat-messages/${user?.spotid}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ text: input, image }),
+      });
+      setInput('');
+      setImage(undefined);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      await fetchMessages();
+    } catch {
+      // Optionally handle error
+    }
+  };
 
-  // Send on Enter key
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -151,12 +131,6 @@ const ChatPage: React.FC = () => {
             <div style={{ fontSize: 11, color: '#888', marginTop: 4, textAlign: 'right' }}>
               <div><strong>From:</strong> {msg.from}</div>
               <div><strong>Created:</strong> {msg.createdAt ? new Date(msg.createdAt).toLocaleString() : 'N/A'}</div>
-              <div><strong>Status:</strong> {msg.status ? (
-                <span style={{ marginLeft: 8, color: msg.status === 'read' ? '#10c98f' : msg.status === 'delivered' ? '#1e3c72' : '#aaa' }}>
-                  {msg.status.charAt(0).toUpperCase() + msg.status.slice(1)}
-                </span>
-              ) : 'N/A'}</div>
-              <div><strong>Unread:</strong> {msg.unread !== undefined ? (msg.unread ? 'Yes' : 'No') : 'N/A'}</div>
             </div>
           </div>
         ))}
@@ -183,9 +157,11 @@ const ChatPage: React.FC = () => {
           onClick={() => fileInputRef.current?.click()}
           title="Upload Image"
         >📷</button>
-        <button className="chat-send-btn" onClick={handleSend}>
-          Send
-        </button>
+        <button
+          className="chat-send-btn"
+          onClick={handleSend}
+          disabled={!input && !image}
+        >Send</button>
       </div>
     </div>
   );

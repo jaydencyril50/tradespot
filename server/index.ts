@@ -1507,72 +1507,59 @@ app.post('/api/chat/send', authenticateToken, asyncHandler(async (req: Request, 
   res.json({ message: 'Message sent', chatMsg });
 }));
 
-// --- ADMIN: GET ALL CHAT MESSAGES ---
-app.get('/api/admin/chat-messages', authenticateAdmin, async (req: Request, res: Response) => {
-  try {
-    const messages = await ChatMessageModel.find({}, 'email spotid text image createdAt').sort({ createdAt: -1 }).lean();
-    res.json({ messages });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch chat messages' });
-  }
+// --- USER: SEND MESSAGE ---
+app.post('/api/chat-messages/:spotid', authenticateToken, async (req: Request, res: Response) => {
+  const userId = (req as any).user.userId;
+  const { spotid } = req.params;
+  const { text, image } = req.body;
+  if (!text && !image) return res.status(400).json({ error: 'Message text or image required' });
+  const user = await User.findById(userId);
+  if (!user || user.spotid !== spotid) return res.status(404).json({ error: 'User not found' });
+  const chatMsg = new ChatMessage({
+    userId: user._id,
+    spotid: user.spotid,
+    email: user.email,
+    text,
+    image
+  });
+  await chatMsg.save();
+  res.json({ message: 'Message sent', chatMsg });
 });
 
-// --- API: Get chat inbox for user (latest message per conversation, unread count) ---
-app.get('/api/chat/inbox', async (req: Request, res: Response) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'Not authenticated' });
-    const decoded: any = jwt.verify(token, JWT_SECRET);
-    const user = await User.findById(decoded.userId);
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    // Find all conversations for this user (by spotid)
-    const messages = await ChatMessageModel.find({ spotid: user.spotid }).sort({ createdAt: -1 }).lean();
-    // For user, only one conversation (with admin)
-    const unreadCount = messages.filter(m => m.from === 'admin' && m.unread).length;
-    const latest = messages[0] || {};
-    res.json({
-      inbox: [
-        {
-          spotid: user.spotid,
-          latest: {
-            _id: latest._id,
-            text: latest.text,
-            image: latest.image,
-            createdAt: latest.createdAt,
-            from: latest.email === 'admin@tradespot.com' ? 'admin' : 'user',
-            unread: unreadCount > 0
-          },
-          unreadCount
-        }
-      ]
-    });
-  } catch (e) {
-    res.status(500).json({ error: 'Failed to fetch chat inbox' });
-  }
+// --- USER: FETCH MESSAGES ---
+app.get('/api/chat-messages/:spotid', authenticateToken, async (req: Request, res: Response) => {
+  const userId = (req as any).user.userId;
+  const { spotid } = req.params;
+  const user = await User.findById(userId);
+  if (!user || user.spotid !== spotid) return res.status(404).json({ error: 'User not found' });
+  const messages = await ChatMessage.find({ spotid }).sort({ createdAt: 1 }).lean();
+  res.json({ messages });
 });
 
-// --- API: Get chat inbox for admin (all users, latest message per conversation, unread count) ---
-app.get('/api/admin/chat-inbox', async (req: Request, res: Response) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'Not authenticated' });
-    // Optionally verify admin token here
-    // Get all spotids with messages
-    const allMessages = await ChatMessageModel.find({}).sort({ createdAt: -1 }).lean();
-    const grouped: { [spotid: string]: any[] } = {};
-    allMessages.forEach(msg => {
-      if (!grouped[msg.spotid]) grouped[msg.spotid] = [];
-      grouped[msg.spotid].push(msg);
-    });
-    const inbox = Object.entries(grouped).map(([spotid, msgs]) => {
-      const latest = msgs[0];
-      const unreadCount = msgs.filter(m => m.from !== 'admin' && m.unread).length;
-      return { spotid, latest, unreadCount };
-    });
-    res.json({ inbox });
-  } catch (e) {
-    res.status(500).json({ error: 'Failed to fetch admin inbox' });
-  }
+// --- ADMIN: SEND MESSAGE ---
+app.post('/api/admin/chat-messages/:spotid', authenticateAdmin, async (req: Request, res: Response) => {
+  const { spotid } = req.params;
+  const { text, image } = req.body;
+  if (!text && !image) return res.status(400).json({ error: 'Message text or image required' });
+  const user = await User.findOne({ spotid });
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  const chatMsg = new ChatMessage({
+    userId: null,
+    spotid,
+    email: 'admin@tradespot.com',
+    text,
+    image,
+    from: 'admin'
+  });
+  await chatMsg.save();
+  res.json({ message: 'Message sent', chatMsg });
+});
+
+// --- ADMIN: FETCH MESSAGES ---
+app.get('/api/admin/chat-messages/:spotid', authenticateAdmin, async (req: Request, res: Response) => {
+  const { spotid } = req.params;
+  const messages = await ChatMessage.find({ spotid }).sort({ createdAt: 1 }).lean();
+  res.json({ messages });
 });
 
 // --- 2FA SETUP ENDPOINT ---
@@ -1801,7 +1788,7 @@ app.post('/api/send-funds-privacy-code', authenticateToken, async (req: Request,
     try {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
-            auth: {
+                       auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
             }
