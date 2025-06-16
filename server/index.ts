@@ -1085,7 +1085,7 @@ app.post('/api/deposit/start', authenticateToken, async (req: Request, res: Resp
   const now = new Date();
   const existingSession = await DepositSession.findOne({
     userId,
-    credited: { $in: [false, null] },
+    status: { $in: ['pending', 'approved'] },
     expiresAt: { $gt: now },
   });
   if (existingSession) {
@@ -1103,7 +1103,7 @@ app.post('/api/deposit/start', authenticateToken, async (req: Request, res: Resp
     amount: Number(amount),
     address,
     createdAt: now,
-    credited: false,
+    status: 'pending',
     expiresAt,
   });
   res.json({ address, expiresAt: expiresAt.getTime(), sessionId: session._id });
@@ -1115,7 +1115,7 @@ app.get('/api/deposit/status', authenticateToken, async (req: Request, res: Resp
     // Find the most recent pending deposit session for this user
     const session = await DepositSession.findOne({
       userId: (req as any).user._id,
-      credited: { $in: [false, null] },
+      status: { $in: ['pending', 'approved'] },
       expiresAt: { $gt: new Date() },
     }).sort({ createdAt: -1 });
 
@@ -1123,7 +1123,7 @@ app.get('/api/deposit/status', authenticateToken, async (req: Request, res: Resp
       // No pending session found, check if any session expired recently
       const expired = await DepositSession.findOne({
         userId: (req as any).user._id,
-        credited: false,
+        status: 'pending',
         expiresAt: { $lte: new Date() },
       }).sort({ createdAt: -1 });
       if (expired) {
@@ -1131,7 +1131,7 @@ app.get('/api/deposit/status', authenticateToken, async (req: Request, res: Resp
       }
       return res.json({ status: 'failed' });
     }
-    if (session.credited) {
+    if (session.status === 'approved') {
       return res.json({ status: 'success' });
     }
     // Still pending
@@ -1156,7 +1156,6 @@ app.post('/api/deposit/manual', authenticateToken, async (req: Request, res: Res
     amount: Number(amount),
     address: 'TSNHcwrdH83nh16RGdFQizYKQaDUyTnd7W',
     txid,
-    credited: false,
     status: 'pending',
     createdAt: new Date(),
     expiresAt: new Date(Date.now() + 24*60*60*1000),
@@ -1564,7 +1563,7 @@ app.get('/api/deposit/status', authenticateToken, async (req: Request, res: Resp
     // Find the most recent pending deposit session for this user
     const session = await DepositSession.findOne({
       userId: (req as any).user._id,
-      credited: { $in: [false, null] },
+      status: { $in: ['pending', 'approved'] },
       expiresAt: { $gt: new Date() },
     }).sort({ createdAt: -1 });
 
@@ -1572,7 +1571,7 @@ app.get('/api/deposit/status', authenticateToken, async (req: Request, res: Resp
       // No pending session found, check if any session expired recently
       const expired = await DepositSession.findOne({
         userId: (req as any).user._id,
-        credited: false,
+        status: 'pending',
         expiresAt: { $lte: new Date() },
       }).sort({ createdAt: -1 });
       if (expired) {
@@ -1580,7 +1579,7 @@ app.get('/api/deposit/status', authenticateToken, async (req: Request, res: Resp
       }
       return res.json({ status: 'failed' });
     }
-    if (session.credited) {
+    if (session.status === 'approved') {
       return res.json({ status: 'success' });
     }
     // Still pending
@@ -1677,7 +1676,6 @@ app.get('/api/admin/deposits', authenticateAdmin, async (req: Request, res: Resp
 app.post('/api/admin/deposits/:id/approve', authenticateAdmin, async (req: Request, res: Response) => {
   const deposit = await DepositSession.findById(req.params.id).populate('userId');
   if (!deposit || deposit.status === 'approved') return res.status(404).json({ error: 'Deposit not found or already approved' });
-  deposit.credited = true;
   deposit.status = 'approved';
   await deposit.save();
   if (deposit.userId) {
