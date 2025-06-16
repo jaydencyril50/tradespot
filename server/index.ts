@@ -183,9 +183,9 @@ const User = mongoose.model<IUser>('User', userSchema);
 const stockSchema = new mongoose.Schema({
     name: String,
     price: Number, // price in SPOT
-    profit: Number, // daily profit rate (e.g. 0.04 for 4%)
+    profit: { type: Number, default: 0.02 }, // daily profit rate (2%)
     purchaseAmount: Number, // minimum purchase amount in SPOT
-    durationDays: Number, // e.g. 60
+    durationDays: { type: Number, default: 365 }, // e.g. 365
     createdAt: { type: Date, default: Date.now }
 });
 const Stock = mongoose.model('Stock', stockSchema);
