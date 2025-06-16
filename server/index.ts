@@ -574,9 +574,7 @@ cron.schedule('0 * * * *', async () => {
         for (let j = 0; j < 5; j++) {
             // Random purchase amount in range
             const purchaseAmount = +(Math.random() * (max - min) + min).toFixed(4);
-            // Random profit between 3.5% and 4%
-            const profit = +(Math.random() * (0.04 - 0.035) + 0.035).toFixed(4);
-            // Unique name
+            const profit = 0.02;
             let name;
             do {
                 const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
