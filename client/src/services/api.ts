@@ -255,4 +255,14 @@ export const getAllUsers = async () => {
     return res.data;
 };
 
+// ADMIN: Get all users who have team members and the number of members they have
+export const getAdminTeamUsers = async () => {
+    const adminToken = localStorage.getItem('adminToken');
+    if (!adminToken) throw new Error('Not authenticated as admin');
+    const res = await axios.get(`${API}/api/admin/team-users`, {
+        headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    return res.data;
+};
+
 // All axios requests use `${API}/...` for endpoint URLs

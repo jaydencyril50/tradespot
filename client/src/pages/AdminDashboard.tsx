@@ -12,14 +12,14 @@ const adminButtons = [
   { label: 'RECENTS', icon: '🕒' },
   { label: 'SOCIALS', icon: '🌐' },
   { label: 'TRASH', icon: '🗑️' },
-  { label: 'LOGOUT', icon: '🚪' }, // Add logout as a card
+  { label: 'TEAM', icon: '👥' }, 
+  { label: 'LOGOUT', icon: '🚪' }, 
 ];
 
 const userDetails = [
   { key: 'email', label: 'Email' },
   { key: 'usdt', label: 'USDT Balance' },
   { key: 'username', label: 'Username' },
-  // ...add more as needed
 ];
 
 const AdminDashboard: React.FC = () => {
@@ -82,7 +82,8 @@ const AdminDashboard: React.FC = () => {
                 navigate('/admin/recents');
               } else if (btn.label === 'TRASH') {
                 navigate('/admin/trash');
-              } else if (btn.label === 'LOGOUT') {
+              } else if (btn.label === 'TEAM') {
+                navigate('/admin/team'); 
                 handleLogout();
               }
             }}

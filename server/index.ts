@@ -1711,3 +1711,15 @@ app.post('/api/admin/deposits/:id/reject', authenticateAdmin, async (req: Reques
   await deposit.save();
   res.json({ message: 'Deposit rejected' });
 });
+
+// ADMIN: Get all users who have team members and the number of members they have
+app.get('/api/admin/team-users', authenticateAdmin, async (req: Request, res: Response) => {
+    const users = await User.find({ 'teamMembers.0': { $exists: true } });
+    const result = users.map((u: any) => ({
+        id: u._id,
+        fullName: u.fullName,
+        email: u.email,
+        teamCount: u.teamMembers.length
+    }));
+    res.json(result);
+});
