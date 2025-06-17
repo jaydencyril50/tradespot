@@ -1526,23 +1526,23 @@ function getStyledEmailHtml(subject: string, body: string) {
       <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6fb;padding:0;margin:0;">
         <tr>
           <td align="center" style="padding:48px 0 32px 0;">
-            <table width="480" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;box-shadow:0 4px 32px rgba(30,60,114,0.10);padding:0;overflow:hidden;">
+            <table width="380" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:0;border:1px solid #e3e6ef;box-shadow:0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22);padding:0;overflow:hidden;">
               <tr>
-                <td align="center" style="background:#1e3c72;padding:40px 0 24px 0;">
-                  <span style="display:block;font-size:40px;font-weight:900;letter-spacing:2px;color:#fff;line-height:1.1;">TRADESPOT</span>
+                <td align="center" style="background:#1e3c72;padding:32px 0 18px 0;">
+                  <span style="display:block;font-size:32px;font-weight:900;letter-spacing:2px;color:#fff;line-height:1.1;">TRADESPOT</span>
                 </td>
               </tr>
               <tr>
-                <td style="padding:32px 36px 0 36px;">
-                  <h2 style="color:#1e3c72;font-size:24px;font-weight:700;margin:0 0 18px 0;letter-spacing:1px;">${subject}</h2>
-                  <div style="font-size:17px;color:#25324B;margin-bottom:18px;line-height:1.7;">
+                <td style="padding:12px 16px 0 16px;">
+                  <h2 style="color:#1e3c72;font-size:20px;font-weight:700;margin:0 0 12px 0;letter-spacing:1px;">${subject}</h2>
+                  <div style="font-size:16px;color:#25324B;margin-bottom:12px;line-height:1.7;">
                     ${body}
                   </div>
                 </td>
               </tr>
               <tr>
-                <td style="padding:0 36px 32px 36px;">
-                  <div style="margin-top:32px;font-size:14px;color:#888;text-align:center;">
+                <td style="padding:0 16px 12px 16px;">
+                  <div style="margin-top:18px;font-size:13px;color:#888;text-align:center;">
                     If you did not request this, please ignore this email.<br>
                     <span style="color:#1e3c72;font-weight:700;">Tradespot Security Team</span>
                   </div>
