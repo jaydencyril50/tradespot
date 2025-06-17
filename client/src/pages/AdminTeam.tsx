@@ -12,6 +12,7 @@ interface TeamUser {
 
 interface TeamMember {
   spotid: string;
+  email?: string;
 }
 
 const AdminTeam: React.FC = () => {

@@ -3,7 +3,7 @@ import React from 'react';
 interface TeamMembersTableModalProps {
   open: boolean;
   onClose: () => void;
-  members: { spotid: string }[];
+  members: { spotid: string; email?: string }[];
 }
 
 const TeamMembersTableModal: React.FC<TeamMembersTableModalProps> = ({ open, onClose, members }) => {
@@ -26,9 +26,10 @@ const TeamMembersTableModal: React.FC<TeamMembersTableModalProps> = ({ open, onC
         borderRadius: 8,
         boxShadow: '0 8px 32px 0 rgba(30,60,114,0.18)',
         padding: 24,
-        minWidth: 320,
-        maxWidth: '95vw',
-        maxHeight: '80vh',
+        minWidth: 340,
+        maxWidth: '98vw',
+        minHeight: 320,
+        maxHeight: '90vh',
         overflowY: 'auto',
         position: 'relative',
       }}>
@@ -50,25 +51,45 @@ const TeamMembersTableModal: React.FC<TeamMembersTableModalProps> = ({ open, onC
         </button>
         <h2 style={{ marginBottom: 16, fontSize: '1.1rem', fontWeight: 700, color: '#25324B', letterSpacing: 1 }}>Team Members' Spot IDs</h2>
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 18 }}>
             <thead>
               <tr style={{ background: '#f6f9fe' }}>
-                <th style={{ padding: 8, border: '1px solid #e3e6ef' }}>Spot ID</th>
+                <th style={{ padding: 12, border: '1px solid #e3e6ef' }}>Spot ID</th>
+                <th style={{ padding: 12, border: '1px solid #e3e6ef' }}>Email</th>
               </tr>
             </thead>
             <tbody>
               {members.length === 0 ? (
-                <tr><td style={{ textAlign: 'center', color: '#888', padding: 16 }}>No team members found.</td></tr>
+                <tr><td colSpan={2} style={{ textAlign: 'center', color: '#888', padding: 20 }}>No team members found.</td></tr>
               ) : (
                 members.map((m, idx) => (
                   <tr key={m.spotid + idx}>
-                    <td style={{ padding: 8, border: '1px solid #e3e6ef', textAlign: 'center' }}>{m.spotid}</td>
+                    <td style={{ padding: 12, border: '1px solid #e3e6ef', textAlign: 'center', wordBreak: 'break-all' }}>{m.spotid}</td>
+                    <td style={{ padding: 12, border: '1px solid #e3e6ef', textAlign: 'center', wordBreak: 'break-all' }}>{m.email || '-'}</td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
         </div>
+        <style>{`
+          @media (max-width: 600px) {
+            div[style*='box-shadow'] {
+              min-width: 0 !important;
+              width: 98vw !important;
+              max-width: 98vw !important;
+              min-height: 220px !important;
+              max-height: 80vh !important;
+              padding: 10px 2vw !important;
+            }
+            table {
+              font-size: 16px !important;
+            }
+            th, td {
+              padding: 8px !important;
+            }
+          }
+        `}</style>
       </div>
     </div>
   );
