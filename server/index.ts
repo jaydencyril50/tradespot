@@ -1692,7 +1692,23 @@ app.post('/api/admin/deposits/:id/approve', authenticateAdmin, async (req: Reque
   deposit.status = 'approved';
   await deposit.save();
   if (deposit.userId) {
-    await (await import('./models/User')).default.findByIdAndUpdate(deposit.userId._id, { $inc: { usdtBalance: deposit.amount } });
+    // Update balance and add to transaction history
+    const user = await (await import('./models/User')).default.findById(deposit.userId._id);
+    if (user) {
+      user.usdtBalance += deposit.amount;
+      user.recentTransactions = user.recentTransactions || [];
+      user.recentTransactions.push({
+        type: 'Deposit',
+        amount: deposit.amount,
+        currency: 'USDT',
+        date: new Date(),
+        txid: deposit.txid || undefined
+      });
+      await user.save();
+    } else {
+      // fallback for old logic
+      await (await import('./models/User')).default.findByIdAndUpdate(deposit.userId._id, { $inc: { usdtBalance: deposit.amount } });
+    }
   }
   res.json({ message: 'Deposit approved' });
 });
