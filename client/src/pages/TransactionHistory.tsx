@@ -36,56 +36,75 @@ const TransactionHistory: React.FC = () => {
   }, []);
 
   return (
-    <div style={{
-      maxWidth: 700,
-      margin: '0 auto', // Removed top margin to eliminate the up gap
-      background: 'linear-gradient(135deg, #f8fafc 0%, #eaf1fb 100%)',
-      boxShadow: '0 4px 32px rgba(30,60,114,0.13)',
-      padding: 40,
-      borderRadius: 18,
-      minHeight: 420,
-      fontFamily: 'Segoe UI, Arial, sans-serif',
-    }}>
-      <h2 style={{ fontWeight: 800, color: '#1e3c72', marginBottom: 24, fontSize: 26, letterSpacing: 1 }}>Transaction History</h2>
-      {loading && <div style={{ color: '#1e3c72', fontWeight: 500 }}>Loading...</div>}
-      {error && <div style={{ color: '#e74c3c', marginBottom: 16, fontWeight: 500 }}>{error}</div>}
-      {!loading && !error && transactions.length === 0 && (
-        <div style={{ color: '#888', fontSize: 16, textAlign: 'center', margin: '40px 0' }}>No transactions found.</div>
-      )}
-      {!loading && !error && transactions.length > 0 && (
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: 16, background: '#fff', borderRadius: 12, boxShadow: '0 1px 8px rgba(30,60,114,0.04)' }}>
-            <thead>
-              <tr style={{ background: '#f4f8fb' }}>
-                <th style={{ textAlign: 'left', padding: '14px 10px', color: '#25324B', fontWeight: 700, borderTopLeftRadius: 12 }}>Type</th>
-                <th style={{ textAlign: 'right', padding: '14px 10px', color: '#25324B', fontWeight: 700 }}>Amount</th>
-                <th style={{ textAlign: 'right', padding: '14px 10px', color: '#25324B', fontWeight: 700 }}>Currency</th>
-                <th style={{ textAlign: 'right', padding: '14px 10px', color: '#25324B', fontWeight: 700, borderTopRightRadius: 12 }}>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.map((tx, idx) => {
-                const isDeposit = tx.type.toLowerCase().includes('deposit');
-                const isWithdraw = tx.type.toLowerCase().includes('withdraw');
-                return (
-                  <tr key={idx} style={{ background: idx % 2 === 0 ? '#f8fafc' : '#fff', transition: 'background 0.2s', borderBottom: '1px solid #eaf1fb' }}>
-                    <td style={{ padding: '12px 10px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                      {isDeposit && <span style={{ color: '#27ae60', fontSize: 18, marginRight: 4 }} title="Deposit">⬆️</span>}
-                      {isWithdraw && <span style={{ color: '#e74c3c', fontSize: 18, marginRight: 4 }} title="Withdraw">⬇️</span>}
-                      <span style={{ fontWeight: 500 }}>{tx.type}</span>
-                    </td>
-                    <td style={{ padding: '12px 10px', textAlign: 'right', fontWeight: 600, color: isDeposit ? '#27ae60' : isWithdraw ? '#e74c3c' : '#25324B' }}>
-                      {isDeposit ? '+' : isWithdraw ? '-' : ''}{tx.amount}
-                    </td>
-                    <td style={{ padding: '12px 10px', textAlign: 'right', color: '#25324B', fontWeight: 500 }}>{tx.currency}</td>
-                    <td style={{ padding: '12px 10px', textAlign: 'right', color: '#888', fontWeight: 400 }}>{new Date(tx.date).toLocaleString()}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+    <div style={{ minHeight: '100vh', background: '#fff' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+          TRANSACTION HISTORY
+        </span>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
+        {loading && <div style={{ color: '#1e3c72', fontWeight: 500 }}>Loading...</div>}
+        {error && <div style={{ color: '#e74c3c', marginBottom: 16, fontWeight: 500 }}>{error}</div>}
+        {!loading && !error && transactions.length === 0 && (
+          <div style={{ color: '#888', fontSize: 16, textAlign: 'center', margin: '40px 0' }}>No transactions found.</div>
+        )}
+        {!loading && !error && transactions.length > 0 && (
+          transactions.map((tx, idx) => {
+            const isDeposit = tx.type.toLowerCase().includes('deposit');
+            const isWithdraw = tx.type.toLowerCase().includes('withdraw');
+            return (
+              <div
+                key={idx}
+                style={{
+                  background: '#fff',
+                  borderRadius: 0,
+                  boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+                  border: '1px solid #e3e6ef',
+                  padding: '12px 16px',
+                  minWidth: 200,
+                  maxWidth: 380,
+                  width: '100%',
+                  textAlign: 'center',
+                  marginBottom: 0,
+                  fontFamily: 'inherit',
+                  height: 120,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginBottom: 6 }}>
+                  {isDeposit && <span style={{ color: '#27ae60', fontSize: 20 }} title="Deposit">⬆️</span>}
+                  {isWithdraw && <span style={{ color: '#e74c3c', fontSize: 20 }} title="Withdraw">⬇️</span>}
+                  <span style={{ fontWeight: 700, color: '#25324B', fontSize: '1.1rem', letterSpacing: 1 }}>{tx.type}</span>
+                </div>
+                <div style={{ fontSize: '1.05rem', color: isDeposit ? '#27ae60' : isWithdraw ? '#e74c3c' : '#25324B', fontWeight: 600, marginBottom: 2 }}>
+                  {isDeposit ? '+' : isWithdraw ? '-' : ''}{tx.amount} {tx.currency}
+                </div>
+                <div style={{ fontSize: '0.95rem', color: '#555', marginBottom: 2 }}>
+                  {new Date(tx.date).toLocaleString()}
+                </div>
+              </div>
+            );
+          })
+        )}
+        <style>
+          {`
+            @media (max-width: 600px) {
+              div[style*="box-shadow"] {
+                max-width: 90vw !important;
+                min-width: 0 !important;
+                width: 90vw !important;
+                margin-left: 5vw !important;
+                margin-right: 5vw !important;
+                padding: 10px 2vw !important;
+                height: 90px !important;
+              }
+            }
+          `}
+        </style>
+      </div>
     </div>
   );
 };
