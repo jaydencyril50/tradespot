@@ -31,6 +31,7 @@ const AdminActiveStocks: React.FC = () => {
     dailyProfits: 0,
     completed: false,
   });
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const fetchAllStocks = async () => {
@@ -125,13 +126,30 @@ const AdminActiveStocks: React.FC = () => {
         </span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
+        {/* Search Bar */}
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search stocks..."
+          style={{ maxWidth: 365, width: '100%', padding: 8, fontSize: 15, border: '1px solid #e3e6ef', borderRadius: 0, marginBottom: 0 }}
+        />
         {loading && <div style={{ color: '#1e3c72', fontWeight: 500 }}>Loading...</div>}
         {error && <div style={{ color: '#e74c3c', marginBottom: 16, fontWeight: 500 }}>{error}</div>}
-        {!loading && !error && activeStocks.length === 0 && (
+        {!loading && !error && activeStocks.filter(stock =>
+          stock.email.toLowerCase().includes(search.toLowerCase()) ||
+          stock.spotid.toLowerCase().includes(search.toLowerCase())
+        ).length === 0 && (
           <div style={{ color: '#888', fontSize: 16, textAlign: 'center', margin: '40px 0' }}>No stock plans found.</div>
         )}
-        {!loading && !error && activeStocks.length > 0 && (
-          activeStocks.map((stock) => {
+        {!loading && !error && activeStocks.filter(stock =>
+          stock.email.toLowerCase().includes(search.toLowerCase()) ||
+          stock.spotid.toLowerCase().includes(search.toLowerCase())
+        ).length > 0 && (
+          activeStocks.filter(stock =>
+            stock.email.toLowerCase().includes(search.toLowerCase()) ||
+            stock.spotid.toLowerCase().includes(search.toLowerCase())
+          ).map((stock) => {
             const isCompleted = Boolean((stock as any).completed);
             return (
               <div
@@ -173,7 +191,7 @@ const AdminActiveStocks: React.FC = () => {
                   Status: {isCompleted ? 'Completed' : 'Active'}
                 </div>
                 <button
-                  style={{ position: 'absolute', top: 10, right: 10, background: '#1e3c72', color: '#fff', border: 'none', borderRadius: 4, padding: '4px 12px', fontWeight: 600, cursor: 'pointer', fontSize: 13 }}
+                  style={{ position: 'absolute', top: 10, right: 10, background: '#1e3c72', color: '#fff', border: 'none', borderRadius: 0, padding: '4px 12px', fontWeight: 600, cursor: 'pointer', fontSize: 13 }}
                   onClick={() => openEditModal(stock)}
                 >
                   Edit

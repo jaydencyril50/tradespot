@@ -21,6 +21,7 @@ const AdminUsers: React.FC = () => {
   const [error, setError] = useState('');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -94,18 +95,41 @@ const AdminUsers: React.FC = () => {
         </span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
+        {/* Search Bar */}
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search users..."
+          style={{ maxWidth: 364, width: '100%', padding: 8, fontSize: 15, border: '1px solid #e3e6ef', borderRadius: 0, marginBottom: 0 }}
+        />
         {loading && <div style={{ color: '#1e3c72', fontWeight: 500 }}>Loading...</div>}
         {error && <div style={{ color: '#e74c3c', marginBottom: 16, fontWeight: 500 }}>{error}</div>}
-        {!loading && users.length === 0 && (
+        {!loading && users.filter(user =>
+          user.fullName.toLowerCase().includes(search.toLowerCase()) ||
+          user.email.toLowerCase().includes(search.toLowerCase()) ||
+          user.spotid.toLowerCase().includes(search.toLowerCase()) ||
+          user.wallet.toLowerCase().includes(search.toLowerCase())
+        ).length === 0 && (
           <div style={{ color: '#888', fontSize: 16, textAlign: 'center', margin: '40px 0' }}>No users found.</div>
         )}
-        {!loading && users.length > 0 && (
-          users.map((user) => (
+        {!loading && users.filter(user =>
+          user.fullName.toLowerCase().includes(search.toLowerCase()) ||
+          user.email.toLowerCase().includes(search.toLowerCase()) ||
+          user.spotid.toLowerCase().includes(search.toLowerCase()) ||
+          user.wallet.toLowerCase().includes(search.toLowerCase())
+        ).length > 0 && (
+          users.filter(user =>
+            user.fullName.toLowerCase().includes(search.toLowerCase()) ||
+            user.email.toLowerCase().includes(search.toLowerCase()) ||
+            user.spotid.toLowerCase().includes(search.toLowerCase()) ||
+            user.wallet.toLowerCase().includes(search.toLowerCase())
+          ).map((user) => (
             <div
               key={user._id}
               style={{
                 background: '#fff',
-                borderRadius: 8,
+                borderRadius: 0,
                 boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
                 border: '1px solid #e3e6ef',
                 padding: '12px 16px',
@@ -123,7 +147,7 @@ const AdminUsers: React.FC = () => {
               }}
             >
               <button
-                style={{ position: 'absolute', top: 10, right: 10, background: '#1e3c72', color: '#fff', border: 'none', borderRadius: 4, padding: '4px 12px', fontWeight: 600, cursor: 'pointer', fontSize: 13 }}
+                style={{ position: 'absolute', top: 10, right: 10, background: '#1e3c72', color: '#fff', border: 'none', borderRadius: 0, padding: '4px 12px', fontWeight: 600, cursor: 'pointer', fontSize: 13 }}
                 onClick={() => {
                   setSelectedUser(user);
                   setModalOpen(true);
@@ -175,7 +199,7 @@ const AdminUsers: React.FC = () => {
                     type="text"
                     value={selectedUser.fullName}
                     onChange={e => setSelectedUser({ ...selectedUser, fullName: e.target.value })}
-                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 0, border: '1px solid #ccc' }}
                   />
                 </div>
                 <div style={{ marginBottom: 12 }}>
@@ -184,7 +208,7 @@ const AdminUsers: React.FC = () => {
                     type="email"
                     value={selectedUser.email}
                     onChange={e => setSelectedUser({ ...selectedUser, email: e.target.value })}
-                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 0, border: '1px solid #ccc' }}
                   />
                 </div>
                 <div style={{ marginBottom: 12 }}>
@@ -193,7 +217,7 @@ const AdminUsers: React.FC = () => {
                     type="text"
                     value={selectedUser.spotid}
                     onChange={e => setSelectedUser({ ...selectedUser, spotid: e.target.value })}
-                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 0, border: '1px solid #ccc' }}
                   />
                 </div>
                 <div style={{ marginBottom: 12 }}>
@@ -202,7 +226,7 @@ const AdminUsers: React.FC = () => {
                     type="text"
                     value={selectedUser.wallet}
                     onChange={e => setSelectedUser({ ...selectedUser, wallet: e.target.value })}
-                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 0, border: '1px solid #ccc' }}
                   />
                 </div>
                 <div style={{ marginBottom: 12 }}>
@@ -211,7 +235,7 @@ const AdminUsers: React.FC = () => {
                     type="number"
                     value={selectedUser.usdtBalance}
                     onChange={e => setSelectedUser({ ...selectedUser, usdtBalance: parseFloat(e.target.value) })}
-                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 0, border: '1px solid #ccc' }}
                   />
                 </div>
                 <div style={{ marginBottom: 12 }}>
@@ -220,7 +244,7 @@ const AdminUsers: React.FC = () => {
                     type="number"
                     value={selectedUser.spotBalance}
                     onChange={e => setSelectedUser({ ...selectedUser, spotBalance: parseFloat(e.target.value) })}
-                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 0, border: '1px solid #ccc' }}
                   />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16, gap: 8 }}>
@@ -232,7 +256,7 @@ const AdminUsers: React.FC = () => {
                       background: '#eee',
                       color: '#333',
                       border: 'none',
-                      borderRadius: 4,
+                      borderRadius: 0,
                       cursor: 'pointer'
                     }}
                   >
@@ -245,7 +269,7 @@ const AdminUsers: React.FC = () => {
                       background: '#1e3c72',
                       color: '#fff',
                       border: 'none',
-                      borderRadius: 4,
+                      borderRadius: 0,
                       cursor: 'pointer'
                     }}
                     disabled={loading}

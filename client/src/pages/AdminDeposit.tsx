@@ -3,36 +3,6 @@ import axios from 'axios';
 
 const API = process.env.REACT_APP_API_BASE_URL;
 
-const tableStyles = {
-  width: '100%',
-  borderCollapse: 'separate' as const,
-  borderSpacing: 0,
-  fontSize: 14,
-  background: '#f9fbfd',
-  borderRadius: 8,
-  overflow: 'hidden',
-  boxShadow: '0 2px 12px rgba(30,60,114,0.07)'
-};
-const thStyles = {
-  background: '#eaf1fb',
-  color: '#1e3c72',
-  fontWeight: 700,
-  padding: '12px 16px',
-  textAlign: 'left' as const,
-  borderBottom: '2px solid #dbeafe',
-  letterSpacing: 0.5,
-};
-const tdStyles = {
-  padding: '12px 16px',
-  borderBottom: '1px solid #e3e8f0',
-  color: '#1e293b',
-  background: '#fff',
-  fontWeight: 500,
-};
-const trHover = {
-  transition: 'background 0.2s',
-};
-
 const AdminDeposit: React.FC = () => {
   const [deposits, setDeposits] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,12 +11,12 @@ const AdminDeposit: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [selectedDeposit, setSelectedDeposit] = useState<any | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [search, setSearch] = useState('');
 
   const fetchDeposits = async () => {
     setLoading(true);
     setError('');
     try {
-      // Get admin token from localStorage or sessionStorage
       const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
       const res = await axios.get(`${API}/api/admin/deposits?status=pending`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -98,91 +68,111 @@ const AdminDeposit: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: 520, margin: '0 auto', background: '#fff', boxShadow: '0 2px 16px rgba(30,60,114,0.10)', padding: 18, borderRadius: 8 }}>
-      <h2 style={{ fontWeight: 700, color: '#1e3c72', marginBottom: 18, fontSize: 22, letterSpacing: 1 }}>Deposit Requests</h2>
-      {loading && <div>Loading...</div>}
-      {error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
-      {!loading && deposits.length === 0 && <div>No deposit requests found.</div>}
-      {!loading && deposits.length > 0 && (
-        <div style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-          <table style={tableStyles}>
-            <thead>
-              <tr>
-                <th style={thStyles}>User Email</th>
-                <th style={thStyles}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {deposits.map((d) => (
-                <tr key={d._id} style={{ ...trHover, background: d.status === 'pending' ? '#f6f9fe' : '#fff' }}>
-                  <td style={tdStyles}>{d.userId?.email || d.userId?.spotid || '-'}</td>
-                  <td style={tdStyles}>
-                    <button
-                      style={{ background: '#1e3c72', color: '#fff', border: 'none', padding: '6px 18px', borderRadius: 4, cursor: 'pointer', fontWeight: 600, fontSize: 15, boxShadow: '0 1px 4px rgba(30,60,114,0.08)' }}
-                      onClick={() => openModal(d)}
-                    >
-                      View
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-      {/* Modal for viewing TxID and Approve/Reject */}
-      {modalOpen && selectedDeposit && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(30,60,114,0.18)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center'
-        }}>
-          <div style={{ background: '#fff', borderRadius: 10, padding: 28, minWidth: 320, maxWidth: 400, boxShadow: '0 4px 32px rgba(30,60,114,0.18)', position: 'relative' }}>
-            <button onClick={closeModal} style={{ position: 'absolute', top: 10, right: 14, background: 'none', border: 'none', fontSize: 22, color: '#1e3c72', cursor: 'pointer' }}>&times;</button>
-            <h3 style={{ color: '#1e3c72', fontWeight: 700, marginBottom: 16, fontSize: 18 }}>Deposit Details</h3>
-            <div style={{ marginBottom: 12 }}>
-              <strong>User:</strong> {selectedDeposit.userId?.email || selectedDeposit.userId?.spotid || '-'}
-            </div>
-            <div style={{ marginBottom: 12 }}>
-              <strong>Amount:</strong> {selectedDeposit.amount} USDT
-            </div>
-            <div style={{ marginBottom: 12 }}>
-              <strong>TxID:</strong>
-              <span
-                style={{ color: '#1e3c72', wordBreak: 'break-all', cursor: 'pointer', textDecoration: copied ? 'underline solid' : 'underline dotted', fontWeight: 500, marginLeft: 8, transition: 'text-decoration 0.2s' }}
-                title={copied ? 'Copied!' : 'Click to copy'}
-                onClick={() => handleCopyTxid(selectedDeposit.txid)}
-              >
-                {selectedDeposit.txid}
-              </span>
-              {copied && <span style={{ color: '#10c98f', marginLeft: 6, fontSize: 13 }}>Copied!</span>}
-            </div>
-            <div style={{ marginBottom: 18 }}>
-              <strong>Status:</strong> {selectedDeposit.status ? selectedDeposit.status.charAt(0).toUpperCase() + selectedDeposit.status.slice(1) : (selectedDeposit.credited ? 'Approved' : 'Pending')}
-            </div>
-            {selectedDeposit.status === 'approved' ? (
-              <span style={{ color: '#10c98f', fontWeight: 600 }}>Approved</span>
-            ) : selectedDeposit.status === 'rejected' ? (
-              <span style={{ color: '#e74c3c', fontWeight: 600 }}>Rejected</span>
-            ) : (
-              <div style={{ display: 'flex', gap: 12 }}>
-                <button
-                  style={{ background: '#1e3c72', color: '#fff', border: 'none', padding: '8px 18px', cursor: 'pointer', borderRadius: 4, fontSize: 15, fontWeight: 600 }}
-                  disabled={actionLoading === selectedDeposit._id + 'approve'}
-                  onClick={() => handleAction(selectedDeposit._id, 'approve')}
-                >
-                  {actionLoading === selectedDeposit._id + 'approve' ? 'Approving...' : 'Approve'}
-                </button>
-                <button
-                  style={{ background: '#e74c3c', color: '#fff', border: 'none', padding: '8px 18px', cursor: 'pointer', borderRadius: 4, fontSize: 15, fontWeight: 600 }}
-                  disabled={actionLoading === selectedDeposit._id + 'reject'}
-                  onClick={() => handleAction(selectedDeposit._id, 'reject')}
-                >
-                  {actionLoading === selectedDeposit._id + 'reject' ? 'Rejecting...' : 'Reject'}
-                </button>
+    <div style={{ minHeight: '100vh', background: '#fff' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+          DEPOSIT REQUESTS
+        </span>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
+        {/* Search Bar */}
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search deposits..."
+          style={{ maxWidth: 365, width: '100%', padding: 8, fontSize: 15, border: '1px solid #e3e6ef', borderRadius: 0, marginBottom: 0 }}
+        />
+        {loading && <div style={{ color: '#1e3c72', fontWeight: 500 }}>Loading...</div>}
+        {error && <div style={{ color: 'red', marginBottom: 16, fontWeight: 500 }}>{error}</div>}
+        {!loading && deposits.filter(d =>
+          (d.userId?.email || '').toLowerCase().includes(search.toLowerCase()) ||
+          (d.userId?.spotid || '').toLowerCase().includes(search.toLowerCase())
+        ).length === 0 && (
+          <div style={{ color: '#888', fontSize: 16, textAlign: 'center', margin: '40px 0' }}>No deposit requests found.</div>
+        )}
+        {!loading && deposits.filter(d =>
+          (d.userId?.email || '').toLowerCase().includes(search.toLowerCase()) ||
+          (d.userId?.spotid || '').toLowerCase().includes(search.toLowerCase())
+        ).length > 0 && (
+          deposits.filter(d =>
+            (d.userId?.email || '').toLowerCase().includes(search.toLowerCase()) ||
+            (d.userId?.spotid || '').toLowerCase().includes(search.toLowerCase())
+          ).map((d) => (
+            <div key={d._id} style={{
+              background: '#fff',
+              borderRadius: 0,
+              boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+              border: '1px solid #e3e6ef',
+              padding: '18px 20px',
+              minWidth: 200,
+              maxWidth: 420,
+              width: '100%',
+              textAlign: 'center',
+              marginBottom: 0,
+              fontFamily: 'inherit',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 10,
+              position: 'relative',
+            }}>
+              <div style={{ fontWeight: 700, color: '#1e3c72', fontSize: 18, marginBottom: 2 }}>
+                {d.userId?.email || d.userId?.spotid || '-'}
               </div>
-            )}
-          </div>
-        </div>
-      )}
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 2 }}>
+                Amount: <b>{d.amount} USDT</b>
+              </div>
+              <div style={{ fontSize: 15, color: '#888', marginBottom: 2, wordBreak: 'break-all' }}>
+                TxID: <span style={{ color: '#1e3c72', cursor: 'pointer', textDecoration: copied ? 'underline solid' : 'underline dotted', fontWeight: 500, marginLeft: 4, transition: 'text-decoration 0.2s' }} title={copied ? 'Copied!' : 'Click to copy'} onClick={() => handleCopyTxid(d.txid)}>{d.txid}</span>
+                {copied && <span style={{ color: '#10c98f', marginLeft: 6, fontSize: 13 }}>Copied!</span>}
+              </div>
+              <div style={{ fontSize: 15, color: '#555', marginBottom: 2 }}>
+                Status: <b>{d.status ? d.status.charAt(0).toUpperCase() + d.status.slice(1) : (d.credited ? 'Approved' : 'Pending')}</b>
+              </div>
+              <div style={{ display: 'flex', gap: 18, marginTop: 4, justifyContent: 'center' }}>
+                {d.status === 'approved' ? (
+                  <span style={{ color: '#10c98f', fontWeight: 600 }}>Approved</span>
+                ) : d.status === 'rejected' ? (
+                  <span style={{ color: '#e74c3c', fontWeight: 600 }}>Rejected</span>
+                ) : (
+                  <>
+                    <button
+                      style={{ background: '#1e3c72', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: 0, cursor: 'pointer', fontWeight: 600, fontSize: 14 }}
+                      disabled={actionLoading === d._id + 'approve'}
+                      onClick={() => handleAction(d._id, 'approve')}
+                    >
+                      {actionLoading === d._id + 'approve' ? 'Approving...' : 'Approve'}
+                    </button>
+                    <button
+                      style={{ background: '#e74c3c', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: 0, cursor: 'pointer', fontWeight: 600, fontSize: 14 }}
+                      disabled={actionLoading === d._id + 'reject'}
+                      onClick={() => handleAction(d._id, 'reject')}
+                    >
+                      {actionLoading === d._id + 'reject' ? 'Rejecting...' : 'Reject'}
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          ))
+        )}
+        <style>
+          {`
+            @media (max-width: 600px) {
+              div[style*="box-shadow"] {
+                max-width: 90vw !important;
+                min-width: 0 !important;
+                width: 90vw !important;
+                margin-left: 5vw !important;
+                margin-right: 5vw !important;
+                padding: 10px 2vw !important;
+              }
+            }
+          `}
+        </style>
+      </div>
     </div>
   );
 };
