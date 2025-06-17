@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-// Use production URL for admin endpoints
-const PROD_API = 'https://api.tradespot.pro';
+const API = process.env.REACT_APP_API_BASE_URL;
 
 const AdminDeposit: React.FC = () => {
   const [deposits, setDeposits] = useState<any[]>([]);
@@ -17,7 +16,7 @@ const AdminDeposit: React.FC = () => {
     try {
       // Get admin token from localStorage or sessionStorage
       const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
-      const res = await axios.get(`${PROD_API}/api/admin/deposits?status=pending`, {
+      const res = await axios.get(`${API}/api/admin/deposits?status=pending`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       setDeposits(res.data.deposits || []);
@@ -37,7 +36,7 @@ const AdminDeposit: React.FC = () => {
     setError('');
     try {
       const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
-      await axios.post(`${PROD_API}/api/admin/deposits/${id}/${action}`, {}, {
+      await axios.post(`${API}/api/admin/deposits/${id}/${action}`, {}, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       fetchDeposits();

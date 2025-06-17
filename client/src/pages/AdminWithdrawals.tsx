@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-// Use production URL for admin endpoints
-const PROD_API = 'https://api.tradespot.pro';
+const API = process.env.REACT_APP_API_BASE_URL;
 
 const AdminWithdrawals: React.FC = () => {
   const [withdrawals, setWithdrawals] = useState<any[]>([]);
@@ -18,7 +17,7 @@ const AdminWithdrawals: React.FC = () => {
     try {
       // Get admin token from localStorage or sessionStorage
       const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
-      const res = await axios.get(`${PROD_API}/admin/withdrawals`, {
+      const res = await axios.get(`${API}/admin/withdrawals`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       setWithdrawals(res.data.withdrawals || []);
@@ -46,7 +45,7 @@ const AdminWithdrawals: React.FC = () => {
     setError('');
     try {
       const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
-      await axios.post(`${PROD_API}/admin/withdrawals/${id}/${action}`, {}, {
+      await axios.post(`${API}/admin/withdrawals/${id}/${action}`, {}, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       fetchWithdrawals();
