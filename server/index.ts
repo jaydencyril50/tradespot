@@ -13,7 +13,6 @@ import { Server as SocketIOServer } from 'socket.io';
 import Announcement from './models/Announcement';
 import Activity from './models/Activity';
 import DepositSession from './models/DepositSession';
-import trashRoutes from './routes/trash';
 
 dotenv.config();
 
@@ -1514,8 +1513,6 @@ cron.schedule('0 * * * *', async () => {
     console.error('[Activity Cleanup] Error:', err);
   }
 });
-
-app.use('/api/trash', trashRoutes);
 
 server.listen(5000, () => console.log('Server running on port 5000'));
 

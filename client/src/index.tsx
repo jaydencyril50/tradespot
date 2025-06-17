@@ -28,7 +28,6 @@ import AdminNotice from './pages/AdminNotice';
 import AdminMessage from './pages/adminmessage';
 import AdminChat from './pages/AdminChat';
 import AdminRecent from './pages/AdminRecent';
-import AdminTrash from './pages/AdminTrash';
 import AdminDeposit from './pages/AdminDeposit';
 import AdminTeam from './pages/AdminTeam';
 
@@ -120,7 +119,6 @@ root.render(
           <Route path="/admin/messages" element={<AdminMessage />} />
           <Route path="/admin/chat/:spotid" element={<AdminChat />} />
           <Route path="/admin/recents" element={<AdminRecent />} />
-          <Route path="/admin/trash" element={<AdminTrash />} />
           <Route path="/admin/deposit" element={<AdminDeposit />} />
           <Route path="/admin/team" element={<AdminTeam />} />
         </Routes>
