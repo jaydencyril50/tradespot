@@ -15,6 +15,7 @@ const Trash: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [search, setSearch] = useState('');
 
   const fetchItems = async () => {
     setLoading(true);
@@ -66,32 +67,78 @@ const Trash: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: 500, margin: '0 auto', background: '#fff', boxShadow: '0 4px 32px rgba(30,60,114,0.18)', padding: 24, borderRadius: 0, minHeight: 400 }}>
-      <h2 style={{ fontWeight: 700, color: '#1e3c72', marginBottom: 18, fontSize: 22, letterSpacing: 1 }}>Admin Trash Bin</h2>
-      <form onSubmit={handleAdd} style={{ display: 'flex', gap: 8, marginBottom: 18 }}>
+    <div style={{ minHeight: '100vh', background: '#fff' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+          Admin Trash Bin
+        </span>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
+        <form onSubmit={handleAdd} style={{ display: 'flex', gap: 8, marginBottom: 0, maxWidth: 380, width: '100%' }}>
+          <input
+            type="text"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder="Enter text to save..."
+            style={{ flex: 1, padding: 8, fontSize: 15, border: '1px solid #e3e6ef', borderRadius: 4 }}
+          />
+          <button type="submit" style={{ background: '#1e3c72', color: '#fff', border: 'none', borderRadius: 4, padding: '8px 18px', fontWeight: 600, cursor: 'pointer' }} disabled={loading}>
+            Save
+          </button>
+        </form>
+        {/* Search Bar */}
         <input
           type="text"
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          placeholder="Enter text to save..."
-          style={{ flex: 1, padding: 8, fontSize: 15, border: '1px solid #e3e6ef', borderRadius: 4 }}
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search saved items..."
+          style={{ maxWidth: 363, width: '100%', padding: 8, fontSize: 15, border: '1px solid #e3e6ef', borderRadius: 4, marginBottom: 0 }}
         />
-        <button type="submit" style={{ background: '#1e3c72', color: '#fff', border: 'none', borderRadius: 4, padding: '8px 18px', fontWeight: 600, cursor: 'pointer' }} disabled={loading}>
-          Save
-        </button>
-      </form>
-      {error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
-      {success && <div style={{ color: 'green', marginBottom: 12 }}>{success}</div>}
-      {loading && <div>Loading...</div>}
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {items.map(item => (
-          <li key={item._id} style={{ borderBottom: '1px solid #eaf1fb', padding: '10px 0', color: '#25324B' }}>
-            <div>{item.text}</div>
+        {error && <div style={{ color: 'red', marginBottom: 0, maxWidth: 380, width: '100%' }}>{error}</div>}
+        {success && <div style={{ color: 'green', marginBottom: 0, maxWidth: 380, width: '100%' }}>{success}</div>}
+        {loading && <div>Loading...</div>}
+        {/* Trash Items */}
+        {items.filter(item => item.text.toLowerCase().includes(search.toLowerCase())).length === 0 && !loading && (
+          <div style={{ color: '#888', fontSize: 15, maxWidth: 380, width: '100%', textAlign: 'center' }}>No items in trash.</div>
+        )}
+        {items.filter(item => item.text.toLowerCase().includes(search.toLowerCase())).map(item => (
+          <div key={item._id} style={{
+            background: '#fff',
+            borderRadius: 0,
+            boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+            border: '1px solid #e3e6ef',
+            padding: '12px 16px',
+            minWidth: 200,
+            maxWidth: 380,
+            width: '100%',
+            textAlign: 'left',
+            marginBottom: 0,
+            fontFamily: 'inherit',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            gap: 4,
+          }}>
+            <div style={{ fontWeight: 600, color: '#25324B', fontSize: 16 }}>{item.text}</div>
             <div style={{ fontSize: 12, color: '#888' }}>{new Date(item.createdAt).toLocaleString()}</div>
-          </li>
+          </div>
         ))}
-        {!loading && items.length === 0 && <li>No items in trash.</li>}
-      </ul>
+        <style>
+          {`
+            @media (max-width: 600px) {
+              div[style*="box-shadow"] {
+                max-width: 90vw !important;
+                min-width: 0 !important;
+                width: 90vw !important;
+                margin-left: 5vw !important;
+                margin-right: 5vw !important;
+                padding: 10px 2vw !important;
+              }
+            }
+          `}
+        </style>
+      </div>
     </div>
   );
 };
