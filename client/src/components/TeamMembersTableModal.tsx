@@ -26,10 +26,10 @@ const TeamMembersTableModal: React.FC<TeamMembersTableModalProps> = ({ open, onC
         borderRadius: 8,
         boxShadow: '0 8px 32px 0 rgba(30,60,114,0.18)',
         padding: 24,
-        minWidth: 340,
-        maxWidth: '98vw',
-        minHeight: 320,
-        maxHeight: '90vh',
+        minWidth: 360,
+        maxWidth: '100vw',
+        minHeight: 440,
+        maxHeight: '100vh',
         overflowY: 'auto',
         position: 'relative',
       }}>
@@ -78,8 +78,8 @@ const TeamMembersTableModal: React.FC<TeamMembersTableModalProps> = ({ open, onC
               min-width: 0 !important;
               width: 98vw !important;
               max-width: 98vw !important;
-              min-height: 220px !important;
-              max-height: 80vh !important;
+              min-height: 320px !important;
+              max-height: 95vh !important;
               padding: 10px 2vw !important;
             }
             table {
