@@ -112,6 +112,7 @@ const Stock = mongoose.model('Stock', stockSchema);
 const stockPurchaseSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     stockId: { type: mongoose.Schema.Types.ObjectId, ref: 'Stock' },
+    planName: String, // Store the plan/stock name at purchase time
     purchaseAmount: Number, // in SPOT
     profit: Number, // daily profit rate
     startDate: { type: Date, default: Date.now },
@@ -465,6 +466,7 @@ app.post('/api/stock/purchase', authenticateToken, async (req: Request, res: Res
     const purchase = new StockPurchase({
         userId,
         stockId: stock._id,
+        planName: stock.name, // Save the plan/stock name
         purchaseAmount: stock.purchaseAmount,
         profit: stock.profit,
         startDate: new Date(),

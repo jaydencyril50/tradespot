@@ -10,12 +10,12 @@ const AdminWithdrawals: React.FC = () => {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [modalWithdrawal, setModalWithdrawal] = useState<any | null>(null);
   const [copied, setCopied] = useState(false);
+  const [search, setSearch] = useState('');
 
   const fetchWithdrawals = async () => {
     setLoading(true);
     setError('');
     try {
-      // Get admin token from localStorage or sessionStorage
       const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
       const res = await axios.get(`${API}/admin/withdrawals`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -66,88 +66,111 @@ const AdminWithdrawals: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: 380, margin: '0 auto', background: '#fff', boxShadow: '0 2px 16px rgba(30,60,114,0.10)', padding: 8, borderRadius: 0 }}>
-      <h2 style={{ fontWeight: 700, color: '#1e3c72', marginBottom: 18, fontSize: 22, letterSpacing: 1 }}>Withdrawal Orders</h2>
-      {loading && <div>Loading...</div>}
-      {error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
-      {!loading && withdrawals.length === 0 && <div>No withdrawal orders found.</div>}
-      {!loading && withdrawals.length > 0 && (
-        <div style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-          <table style={{ minWidth: 240, width: '100%', borderCollapse: 'collapse', fontSize: 13, tableLayout: 'fixed' }}>
-            <thead>
-              <tr>
-                <th style={{ padding: '8px 4px', color: '#25324B', whiteSpace: 'nowrap', textAlign: 'center', width: '18%' }}>ID</th>
-                <th style={{ padding: '8px 4px', color: '#25324B', whiteSpace: 'nowrap', textAlign: 'center', width: '25%' }}>Spot ID</th>
-                <th style={{ padding: '8px 4px', color: '#25324B', whiteSpace: 'nowrap', textAlign: 'center', width: '25%' }}>Status</th>
-                <th style={{ padding: '8px 4px', color: '#25324B', whiteSpace: 'nowrap', textAlign: 'center', width: '26%' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedWithdrawals.map((w) => (
-                <tr key={w._id} style={{ borderBottom: '1px solid #eaf1fb' }}>
-                  <td style={{ padding: '8px 4px', textAlign: 'center', verticalAlign: 'middle' }}>
-                    {w.shortId || (w._id ? w._id.replace(/[^a-zA-Z0-9]/g, '').slice(0, 4).toUpperCase() : '----')}
-                  </td>
-                  <td style={{ padding: '8px 4px', textAlign: 'center', verticalAlign: 'middle' }}>{w.userId?.spotid || '-'}</td>
-                  <td style={{ padding: '8px 4px', textAlign: 'center', verticalAlign: 'middle' }}>{w.status}</td>
-                  <td style={{ padding: '8px 4px', textAlign: 'center', verticalAlign: 'middle' }}>
-                    {w.status === 'pending' && (
-                      <>
-                        <button
-                          style={{ background: '#1e3c72', color: '#fff', border: 'none', padding: '6px 16px', cursor: 'pointer', borderRadius: 4, fontSize: 14, fontWeight: 600 }}
-                          onClick={() => setModalWithdrawal(w)}
-                        >
-                          Manage
-                        </button>
-                      </>
-                    )}
-                    {w.status !== 'pending' && <span style={{ color: w.status === 'approved' ? '#10c98f' : '#e74c3c', fontWeight: 600 }}>{w.status.charAt(0).toUpperCase() + w.status.slice(1)}</span>}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-      {modalWithdrawal && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(30,60,114,0.10)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s' }}>
-          <div style={{ background: '#f9fbff', borderRadius: 10, padding: '18px 12px 14px 12px', minWidth: 220, maxWidth: 320, boxShadow: '0 4px 16px rgba(30,60,114,0.13)', border: '1px solid #eaf1fb', fontFamily: 'inherit' }}>
-            <h3 style={{ margin: 0, marginBottom: 10, color: '#1e3c72', fontWeight: 700, fontSize: 18, letterSpacing: 0.5 }}>Manage Withdrawal</h3>
-            <div style={{ marginBottom: 14, fontSize: 14, color: '#25324B', lineHeight: 1.5 }}>
-              <div><b style={{ color: '#1e3c72' }}>Spot ID:</b> <span style={{ color: '#1e3c72', fontWeight: 600 }}>{modalWithdrawal.userId?.spotid || '-'}</span></div>
-              <div><b style={{ color: '#1e3c72' }}>Wallet:</b> <span
-                style={{ color: '#1e3c72', wordBreak: 'break-all', cursor: 'pointer', textDecoration: 'underline dotted', fontWeight: 500 }}
-                title={copied ? 'Copied!' : 'Click to copy'}
-                onClick={() => handleCopyWallet(modalWithdrawal.wallet)}
-              >{modalWithdrawal.wallet}</span>{copied && <span style={{ color: '#10c98f', marginLeft: 6, fontSize: 13 }}>Copied!</span>}</div>
-              <div><b style={{ color: '#1e3c72' }}>Amount:</b> <span style={{ color: '#1e3c72', fontWeight: 600 }}>{modalWithdrawal.amount} USDT</span></div>
+    <div style={{ minHeight: '100vh', background: '#fff' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+          WITHDRAWAL ORDERS
+        </span>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20, marginBottom: 40 }}>
+        {/* Search Bar */}
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search withdrawals..."
+          style={{ maxWidth: 365, width: '100%', padding: 8, fontSize: 15, border: '1px solid #e3e6ef', borderRadius: 0, marginBottom: 0 }}
+        />
+        {loading && <div style={{ color: '#1e3c72', fontWeight: 500 }}>Loading...</div>}
+        {error && <div style={{ color: 'red', marginBottom: 16, fontWeight: 500 }}>{error}</div>}
+        {!loading && sortedWithdrawals.filter(w =>
+          (w.userId?.spotid || '').toLowerCase().includes(search.toLowerCase()) ||
+          (w.wallet || '').toLowerCase().includes(search.toLowerCase())
+        ).length === 0 && (
+          <div style={{ color: '#888', fontSize: 16, textAlign: 'center', margin: '40px 0' }}>No withdrawal orders found.</div>
+        )}
+        {!loading && sortedWithdrawals.filter(w =>
+          (w.userId?.spotid || '').toLowerCase().includes(search.toLowerCase()) ||
+          (w.wallet || '').toLowerCase().includes(search.toLowerCase())
+        ).length > 0 && (
+          sortedWithdrawals.filter(w =>
+            (w.userId?.spotid || '').toLowerCase().includes(search.toLowerCase()) ||
+            (w.wallet || '').toLowerCase().includes(search.toLowerCase())
+          ).map((w) => (
+            <div key={w._id} style={{
+              background: '#fff',
+              borderRadius: 0,
+              boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+              border: '1px solid #e3e6ef',
+              padding: '14px 18px',
+              minWidth: 200,
+              maxWidth: 420,
+              width: '100%',
+              textAlign: 'center',
+              marginBottom: 0,
+              fontFamily: 'inherit',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 8,
+              position: 'relative',
+            }}>
+              <div style={{ fontWeight: 700, color: '#1e3c72', fontSize: 17, marginBottom: 2 }}>
+                Spot ID: {w.userId?.spotid || '-'}
+              </div>
+              <div style={{ fontSize: 15, color: '#25324B', marginBottom: 2 }}>
+                Amount: <b>{w.amount} USDT</b>
+              </div>
+              <div style={{ fontSize: 14, color: '#888', marginBottom: 2, wordBreak: 'break-all' }}>
+                Wallet: <span style={{ color: '#1e3c72', cursor: 'pointer', textDecoration: copied ? 'underline solid' : 'underline dotted', fontWeight: 500, marginLeft: 4, transition: 'text-decoration 0.2s' }} title={copied ? 'Copied!' : 'Click to copy'} onClick={() => handleCopyWallet(w.wallet)}>{w.wallet}</span>
+                {copied && <span style={{ color: '#10c98f', marginLeft: 6, fontSize: 13 }}>Copied!</span>}
+              </div>
+              <div style={{ fontSize: 14, color: '#555', marginBottom: 2 }}>
+                Status: <b>{w.status ? w.status.charAt(0).toUpperCase() + w.status.slice(1) : 'Pending'}</b>
+              </div>
+              <div style={{ display: 'flex', gap: 14, marginTop: 4, justifyContent: 'center' }}>
+                {w.status === 'approved' ? (
+                  <span style={{ color: '#10c98f', fontWeight: 600 }}>Approved</span>
+                ) : w.status === 'rejected' ? (
+                  <span style={{ color: '#e74c3c', fontWeight: 600 }}>Rejected</span>
+                ) : (
+                  <>
+                    <button
+                      style={{ background: '#1e3c72', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: 0, cursor: 'pointer', fontWeight: 600, fontSize: 14 }}
+                      disabled={actionLoading === w._id + 'approve'}
+                      onClick={() => handleAction(w._id, 'approve')}
+                    >
+                      {actionLoading === w._id + 'approve' ? 'Approving...' : 'Approve'}
+                    </button>
+                    <button
+                      style={{ background: '#e74c3c', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: 0, cursor: 'pointer', fontWeight: 600, fontSize: 14 }}
+                      disabled={actionLoading === w._id + 'reject'}
+                      onClick={() => handleAction(w._id, 'reject')}
+                    >
+                      {actionLoading === w._id + 'reject' ? 'Rejecting...' : 'Reject'}
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 0, justifyContent: 'center' }}>
-              <button
-                style={{ background: '#10c98f', color: '#fff', border: 'none', padding: '7px 16px', cursor: 'pointer', borderRadius: 6, fontSize: 14, fontWeight: 600, boxShadow: '0 1px 4px rgba(16,201,143,0.08)', transition: 'background 0.2s' }}
-                disabled={actionLoading === modalWithdrawal._id + 'approve'}
-                onClick={() => { setModalWithdrawal(null); handleAction(modalWithdrawal._id, 'approve'); }}
-              >
-                {actionLoading === modalWithdrawal._id + 'approve' ? 'Approving...' : 'Approve'}
-              </button>
-              <button
-                style={{ background: '#e74c3c', color: '#fff', border: 'none', padding: '7px 16px', cursor: 'pointer', borderRadius: 6, fontSize: 14, fontWeight: 600, boxShadow: '0 1px 4px rgba(231,76,60,0.08)', transition: 'background 0.2s' }}
-                disabled={actionLoading === modalWithdrawal._id + 'reject'}
-                onClick={() => { setModalWithdrawal(null); handleAction(modalWithdrawal._id, 'reject'); }}
-              >
-                {actionLoading === modalWithdrawal._id + 'reject' ? 'Rejecting...' : 'Reject'}
-              </button>
-              <button
-                style={{ background: '#888', color: '#fff', border: 'none', padding: '7px 16px', borderRadius: 6, fontSize: 14, fontWeight: 600, marginLeft: 0, boxShadow: '0 1px 4px rgba(136,136,136,0.08)', transition: 'background 0.2s' }}
-                onClick={() => setModalWithdrawal(null)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          ))
+        )}
+        <style>
+          {`
+            @media (max-width: 600px) {
+              div[style*="box-shadow"] {
+                max-width: 90vw !important;
+                min-width: 0 !important;
+                width: 90vw !important;
+                margin-left: 5vw !important;
+                margin-right: 5vw !important;
+                padding: 10px 2vw !important;
+              }
+            }
+          `}
+        </style>
+      </div>
     </div>
   );
 };

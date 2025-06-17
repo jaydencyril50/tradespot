@@ -71,6 +71,7 @@ const AdminRecent: React.FC = () => {
           justifyContent: 'center',
           marginTop: 30,
           gap: 20,
+          marginBottom: 40,
         }}
       >
         {loading && <div style={{ color: '#1e3c72', fontWeight: 500 }}>Loading...</div>}

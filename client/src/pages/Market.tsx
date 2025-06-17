@@ -252,53 +252,71 @@ const Market: React.FC = () => {
           left: 0,
           width: '100vw',
           height: '100vh',
-          background: 'rgba(30, 44, 80, 0.18)',
+          background: 'rgba(30, 44, 80, 0.22)',
           zIndex: 1000,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          overflow: 'auto', // Ensure modal is scrollable
+          overflow: 'auto',
         }}>
           <div style={{
             background: '#fff',
-            border: '1px solid #e3e6ef',
-            borderRadius: 8,
-            padding: 20,
-            maxWidth: 600,
+            border: 'none',
+            borderRadius: 18,
+            padding: 0,
+            maxWidth: 620,
             width: '95vw',
-            maxHeight: '90vh',
-            overflow: 'auto', // Make modal content scrollable
-            boxShadow: '0 8px 32px 0 rgba(30,60,114,0.18)'
+            maxHeight: '92vh',
+            overflow: 'hidden',
+            boxShadow: '0 16px 48px 0 rgba(30,60,114,0.22), 0 2px 8px 0 rgba(30,60,114,0.10)',
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <span style={{ fontWeight: 700, fontSize: 18 }}>Purchase History</span>
-              <button onClick={() => setShowHistory(false)} style={{ background: 'none', border: 'none', fontSize: 18, cursor: 'pointer' }}>✕</button>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '12px 18px 6px 18px', // Reduced header size
+              borderTopLeftRadius: 18,
+              borderTopRightRadius: 18,
+              background: 'linear-gradient(90deg, #eaf1fb 0%, #f6f9fe 100%)',
+              borderBottom: '1px solid #e3e6ef',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="#1e3c72"/><path d="M12 6v6l4 2" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <span style={{ fontWeight: 800, fontSize: 15, color: '#1e3c72', letterSpacing: 1 }}>Purchase History</span>
+              </div>
+              <button onClick={() => setShowHistory(false)} style={{ background: 'none', border: 'none', fontSize: 22, color: '#888', cursor: 'pointer', fontWeight: 700, marginLeft: 8, marginTop: -2, transition: 'color 0.2s' }} title="Close" onMouseOver={e => (e.currentTarget.style.color = '#e74c3c')} onMouseOut={e => (e.currentTarget.style.color = '#888')}>
+                ✕
+              </button>
             </div>
-            {loadingHistory ? <div>Loading...</div> : (
-              <div style={{ overflowX: 'auto', overflowY: 'auto', maxWidth: '100%', maxHeight: 320 }}>
-                <table style={{ width: '600px', minWidth: '500px', borderCollapse: 'collapse', fontSize: 15 }}>
+            <div style={{ borderBottom: '1px solid #e3e6ef', margin: '0 0 0 0' }} />
+            <div style={{ flex: 1, overflow: 'auto', padding: '12px 12px 18px 12px' }}>
+              {loadingHistory ? <div>Loading...</div> : (
+                <table style={{ width: '100%', minWidth: 480, borderCollapse: 'collapse', fontSize: 15, background: '#f7f8fa', borderRadius: 10, overflow: 'hidden', boxShadow: '0 2px 8px #eaf1fb' }}>
                   <thead>
-                    <tr style={{ background: '#f1f3f6' }}>
-                      <th style={{ padding: 8, border: '1px solid #eaeaea' }}>Plan Name</th>
-                      <th style={{ padding: 8, border: '1px solid #eaeaea' }}>Amount</th>
-                      <th style={{ padding: 8, border: '1px solid #eaeaea' }}>Date Purchased</th>
-                      <th style={{ padding: 8, border: '1px solid #eaeaea' }}>Expiry</th>
+                    <tr style={{ background: '#f1f3f6', color: '#1e3c72' }}>
+                      <th style={{ padding: 10, border: 'none', fontWeight: 700 }}>Plan Name</th>
+                      <th style={{ padding: 10, border: 'none', fontWeight: 700 }}>Amount</th>
+                      <th style={{ padding: 10, border: 'none', fontWeight: 700 }}>Date Purchased</th>
+                      <th style={{ padding: 10, border: 'none', fontWeight: 700 }}>Expiry</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {history.length === 0 && <tr><td colSpan={4} style={{ textAlign: 'center', padding: 12 }}>No history found.</td></tr>}
+                    {history.length === 0 && <tr><td colSpan={4} style={{ textAlign: 'center', padding: 16, color: '#888' }}>No history found.</td></tr>}
                     {history.map((h, i) => (
-                      <tr key={i}>
-                        <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{h.stockName || h.planName || ''}</td>
-                        <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{h.purchaseAmount}</td>
-                        <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{h.startDate ? new Date(h.startDate).toLocaleString() : '-'}</td>
-                        <td style={{ padding: 8, border: '1px solid #eaeaea' }}>{h.expiresAt ? new Date(h.expiresAt).toLocaleString() : '-'}</td>
+                      <tr key={i} style={{ background: i % 2 === 0 ? '#fff' : '#f7f8fa', transition: 'background 0.2s' }} onMouseOver={e => (e.currentTarget.style.background = '#eaf1fb')} onMouseOut={e => (e.currentTarget.style.background = i % 2 === 0 ? '#fff' : '#f7f8fa')}>
+                        <td style={{ padding: 10, border: 'none', fontWeight: 600, color: '#25324B' }}>{h.stockName || h.planName || ''}</td>
+                        <td style={{ padding: 10, border: 'none', color: '#10c98f', fontWeight: 700 }}>{h.purchaseAmount}</td>
+                        <td style={{ padding: 10, border: 'none', color: '#2a5298' }}>{h.startDate ? new Date(h.startDate).toLocaleString() : '-'}</td>
+                        <td style={{ padding: 10, border: 'none', color: '#e67e22' }}>{h.expiresAt ? new Date(h.expiresAt).toLocaleString() : '-'}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       )}
