@@ -1723,3 +1723,20 @@ app.get('/api/admin/team-users', authenticateAdmin, async (req: Request, res: Re
     }));
     res.json(result);
 });
+
+// Add this to your Express app (e.g., after other admin routes)
+app.get('/api/admin/team-members/:userId', authenticateAdmin, async (req, res) => {
+  const { userId } = req.params;
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  // Get all team member userIds
+  const teamUserIds = (user.teamMembers || []).map(tm => tm.userId);
+  if (!teamUserIds.length) {
+    return res.json({ members: [] });
+  }
+  // Fetch only spotid for each team member
+  const members = await User.find({ _id: { $in: teamUserIds } }, 'spotid');
+  res.json({ members: members.map(m => ({ spotid: m.spotid })) });
+});
