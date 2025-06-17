@@ -563,9 +563,7 @@ node_cron_1.default.schedule('0 * * * *', () => __awaiter(void 0, void 0, void 0
         for (let j = 0; j < 5; j++) {
             // Random purchase amount in range
             const purchaseAmount = +(Math.random() * (max - min) + min).toFixed(4);
-            // Random profit between 3.5% and 4%
-            const profit = +(Math.random() * (0.04 - 0.035) + 0.035).toFixed(4);
-            // Unique name
+            const profit = 0.02;
             let name;
             do {
                 const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
@@ -1115,19 +1113,14 @@ app.get('/api/deposit/status', authenticateToken, (req, res) => __awaiter(void 0
 // Admin: Get all deposit sessions (optionally filter by status)
 app.get('/api/admin/deposits', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Optionally filter by status: ?status=pending
-        const status = req.query.status;
-        const filter = {};
-        if (status)
-            filter.status = status;
-        // Populate userId with email and spotid for display
-        const deposits = yield DepositSession_1.default.find(filter)
-            .sort({ createdAt: -1 })
-            .populate('userId', 'email spotid');
+        // Find all deposit sessions with status 'pending', populate user info
+        const deposits = yield DepositSession_1.default.find({ status: 'pending' })
+            .populate('userId', 'email spotid')
+            .sort({ createdAt: -1 });
         res.json({ deposits });
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to fetch deposits' });
+        res.status(500).json({ error: 'Failed to fetch deposit requests' });
     }
 }));
 // --- Manual Deposit Endpoint ---
@@ -1356,19 +1349,14 @@ app.post('/admin/withdrawals/:id/approve', asyncHandler((req, res) => __awaiter(
 // --- ADMIN: GET ALL DEPOSIT REQUESTS ---
 app.get('/api/admin/deposits', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Optionally filter by status: ?status=pending
-        const status = req.query.status;
-        const filter = {};
-        if (status)
-            filter.status = status;
-        // Populate userId with email and spotid for display
-        const deposits = yield DepositSession_1.default.find(filter)
-            .sort({ createdAt: -1 })
-            .populate('userId', 'email spotid');
+        // Find all deposit sessions with status 'pending', populate user info
+        const deposits = yield DepositSession_1.default.find({ status: 'pending' })
+            .populate('userId', 'email spotid')
+            .sort({ createdAt: -1 });
         res.json({ deposits });
     }
     catch (err) {
-        res.status(500).json({ error: 'Failed to fetch deposits' });
+        res.status(500).json({ error: 'Failed to fetch deposit requests' });
     }
 }));
 // Admin: Reject withdrawal
@@ -1552,7 +1540,7 @@ function getStyledEmailHtml(subject, body) {
   `;
 }
 // Start deposit monitor polling service
-require("./services/depositMonitor");
+// import "./services/depositMonitor"; // Removed: no longer needed for manual deposit
 // --- DEPOSIT STATUS ENDPOINT ---
 // (import removed to avoid duplicate identifier error)
 app.get('/api/deposit/status', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -1654,6 +1642,7 @@ app.post('/api/send-funds-privacy-code', authenticateToken, (req, res) => __awai
         res.status(500).json({ error: 'Failed to send email' });
     }
 }));
+// Admin: Get all deposit sessions (optionally filter by status)
 app.get('/api/admin/deposits', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Find all deposit sessions with status 'pending', populate user info

@@ -1566,12 +1566,6 @@ function getStyledEmailHtml(subject: string, body: string) {
   `;
 }
 
-// Start deposit monitor polling service
-// import "./services/depositMonitor"; // Removed: no longer needed for manual deposit
-
-// --- DEPOSIT STATUS ENDPOINT ---
-// (import removed to avoid duplicate identifier error)
-
 app.get('/api/deposit/status', authenticateToken, async (req: Request, res: Response) => {
   try {
     // Find the most recent pending deposit session for this user
