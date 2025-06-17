@@ -24,7 +24,9 @@ const TransactionHistory: React.FC = () => {
         const res = await axios.get(`${API}/api/transactions`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setTransactions(res.data.transactions || []);
+        // Sort transactions by date descending (newest first)
+        const sortedTransactions = (res.data.transactions || []).sort((a: Transaction, b: Transaction) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        setTransactions(sortedTransactions);
       } catch (e: any) {
         setError('Failed to load transactions.');
       }
