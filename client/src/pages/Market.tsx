@@ -25,6 +25,7 @@ const Market: React.FC = () => {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [spotBalance, setSpotBalance] = useState<number>(0);
   const [showInsufficientOverlay, setShowInsufficientOverlay] = useState(false);
+  const [confirmPurchase, setConfirmPurchase] = useState<{ open: boolean; product?: Product } | null>(null);
 
   useEffect(() => {
     const fetchStocks = async () => {
@@ -77,10 +78,21 @@ const Market: React.FC = () => {
       setLoading(false);
       return;
     }
+    // Show confirmation modal
+    setConfirmPurchase({ open: true, product });
+    setLoading(false);
+  };
+
+  const confirmAndPurchase = async () => {
+    if (!confirmPurchase?.product) return;
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
     try {
-      const res = await purchaseStock(stockId);
+      const res = await purchaseStock(confirmPurchase.product.id);
       setSuccess(res.message || 'Purchase successful!');
       setShowSuccessOverlay(true);
+      setConfirmPurchase(null);
       // Refresh balance after purchase
       try {
         const portfolio = await getPortfolio();
@@ -243,6 +255,59 @@ const Market: React.FC = () => {
           );
         })}
       </div>
+      {/* Confirmation Modal */}
+      {confirmPurchase?.open && confirmPurchase.product && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(30,60,114,0.18)',
+          zIndex: 4000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <div style={{
+            background: '#fff',
+            border: '2px solid #1e3c72',
+            color: '#1e3c72',
+            fontWeight: 700,
+            fontSize: 20,
+            borderRadius: 10,
+            padding: '32px 36px',
+            boxShadow: '0 8px 32px 0 rgba(30,60,114,0.18)',
+            textAlign: 'center',
+            minWidth: 260,
+            maxWidth: 380,
+            position: 'relative',
+          }}>
+            <button onClick={() => setConfirmPurchase(null)} style={{
+              position: 'absolute',
+              top: 10,
+              right: 16,
+              background: 'none',
+              border: 'none',
+              fontSize: 22,
+              color: '#1e3c72',
+              cursor: 'pointer',
+            }}>&times;</button>
+            <div style={{ fontSize: 24, marginBottom: 12 }}>Confirm Purchase</div>
+            <div style={{ fontSize: 17, color: '#25324B', marginBottom: 8 }}>
+              Are you sure you want to purchase <b>{confirmPurchase.product.name}</b> for <b>{confirmPurchase.product.purchaseAmount.toFixed(2)} SPOT</b>?
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 18, marginTop: 18 }}>
+              <button onClick={confirmAndPurchase} style={{ background: '#10c98f', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 24px', fontWeight: 700, fontSize: 16, cursor: 'pointer', boxShadow: '0 1px 4px #eaf1fb' }} disabled={loading}>
+                {loading ? 'Processing...' : 'Yes, Purchase'}
+              </button>
+              <button onClick={() => setConfirmPurchase(null)} style={{ background: '#ffeaea', color: '#d32f2f', border: 'none', borderRadius: 6, padding: '8px 24px', fontWeight: 700, fontSize: 16, cursor: 'pointer', boxShadow: '0 1px 4px #eaf1fb' }}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Remove the inline error for insufficient balance, keep only for other errors */}
       {error && error !== 'Insufficient SPOT balance to purchase this plan.' && <div style={{ color: 'red', marginTop: 12 }}>{error}</div>}
       {showHistory && (
