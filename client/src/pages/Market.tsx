@@ -215,9 +215,9 @@ const Market: React.FC = () => {
           </div>
         </div>
       )}
-      <div className="market-header-center" style={{ width: '100%', marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 0 }}>
-        <h1 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 900, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#25324B' }}>SPOT MARKET</h1>
-        <button onClick={fetchHistory} style={{ background: 'none', border: 'none', cursor: 'pointer', marginRight: 16, padding: 0 }} title="View Purchase History">
+      <div className="market-header-center" style={{ width: '100%', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 170, paddingLeft: 3 }}>
+        <h1 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 900, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#25324B', flex: 'none' }}>SPOT MARKET</h1>
+        <button onClick={fetchHistory} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginLeft: 12 }} title="View Purchase History">
           <FaHistory size={22} color="#25324B" />
         </button>
       </div>
