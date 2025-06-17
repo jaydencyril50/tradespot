@@ -593,16 +593,6 @@ cron.schedule('0 * * * *', async () => {
     }
     await Stock.insertMany(plans);
     console.log('Regenerated 50 random stock plans at', now.toISOString());
-
-    // Notify all users of market refresh
-    const allUsers = await User.find({}, '_id');
-    for (const u of allUsers) {
-      await Notification.create({
-        userId: u._id,
-        message: 'Market refreshed: New stock plans are now available.',
-        read: false
-      });
-    }
 });
 
 app.post('/api/transfer', authenticateToken, (req: Request, res: Response) => {
