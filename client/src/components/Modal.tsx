@@ -26,7 +26,11 @@ const Modal: React.FC<ModalProps> = ({ onClose, children }) => {
         padding: 32,
         minWidth: 320,
         maxWidth: '90vw',
+        minHeight: 250, // Increased height for better content fit
         position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center', // Center all children horizontally
       }}>
         <button
           onClick={onClose}
