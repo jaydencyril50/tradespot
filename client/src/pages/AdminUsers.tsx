@@ -77,180 +77,201 @@ const AdminUsers: React.FC = () => {
   };
 
   return (
-    <div style={{
-      maxWidth: 900,
-      margin: '0 auto', // changed from '24px auto' to '0 auto'
-      background: '#fff',
-      boxShadow: '0 4px 32px rgba(30,60,114,0.18)',
-      padding: 24,
-      borderRadius: 0,
-      minHeight: 400,
-    }}>
-      <h2 style={{ fontWeight: 700, color: '#1e3c72', marginBottom: 18, fontSize: 22, letterSpacing: 1 }}>Users Management</h2>
-      {loading && <div>Loading...</div>}
-      {error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
-      <div style={{ overflowX: 'auto', maxHeight: 420 }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 15, minWidth: 700 }}>
-          <thead>
-            <tr style={{ background: '#f7faff' }}>
-              <th style={{ padding: 10, textAlign: 'left', color: '#1e3c72' }}>Name</th>
-              <th style={{ padding: 10, textAlign: 'left', color: '#1e3c72' }}>Email</th>
-              <th style={{ padding: 10, textAlign: 'left', color: '#1e3c72' }}>Spot ID</th>
-              <th style={{ padding: 10, textAlign: 'left', color: '#1e3c72' }}>Wallet</th>
-              <th style={{ padding: 10, textAlign: 'right', color: '#1e3c72' }}>USDT</th>
-              <th style={{ padding: 10, textAlign: 'right', color: '#1e3c72' }}>SPOT</th>
-              <th style={{ padding: 10, textAlign: 'center', color: '#1e3c72' }}>Edit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.length === 0 && !loading ? (
-              <tr><td colSpan={7} style={{ textAlign: 'center', padding: 18 }}>No users found.</td></tr>
-            ) : (
-              users.map((user) => (
-                <tr key={user._id} style={{ borderBottom: '1px solid #eaf1fb' }}>
-                  <td style={{ padding: 10 }}>{user.fullName}</td>
-                  <td style={{ padding: 10 }}>{user.email}</td>
-                  <td style={{ padding: 10 }}>{user.spotid}</td>
-                  <td style={{ padding: 10, wordBreak: 'break-all' }}>{user.wallet}</td>
-                  <td style={{ padding: 10, textAlign: 'right' }}>{user.usdtBalance?.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                  <td style={{ padding: 10, textAlign: 'right' }}>{user.spotBalance?.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                  <td style={{ padding: 10, textAlign: 'center' }}>
-                    <button style={{
+    <div style={{ minHeight: '100vh', background: '#fff' }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        background: '#f6f9fe',
+        padding: '16px 24px 10px 18px',
+        border: '1.5px solid #232b36',
+        borderTop: 0,
+        borderLeft: 0,
+        borderRight: 0
+      }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+          USERS MANAGEMENT
+        </span>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
+        {loading && <div style={{ color: '#1e3c72', fontWeight: 500 }}>Loading...</div>}
+        {error && <div style={{ color: '#e74c3c', marginBottom: 16, fontWeight: 500 }}>{error}</div>}
+        {!loading && users.length === 0 && (
+          <div style={{ color: '#888', fontSize: 16, textAlign: 'center', margin: '40px 0' }}>No users found.</div>
+        )}
+        {!loading && users.length > 0 && (
+          users.map((user) => (
+            <div
+              key={user._id}
+              style={{
+                background: '#fff',
+                borderRadius: 8,
+                boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+                border: '1px solid #e3e6ef',
+                padding: '12px 16px',
+                minWidth: 200,
+                maxWidth: 420,
+                width: '100%',
+                textAlign: 'center',
+                marginBottom: 0,
+                fontFamily: 'inherit',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                position: 'relative',
+              }}
+            >
+              <button
+                style={{ position: 'absolute', top: 10, right: 10, background: '#1e3c72', color: '#fff', border: 'none', borderRadius: 4, padding: '4px 12px', fontWeight: 600, cursor: 'pointer', fontSize: 13 }}
+                onClick={() => {
+                  setSelectedUser(user);
+                  setModalOpen(true);
+                }}
+              >
+                Edit
+              </button>
+              <div style={{ fontWeight: 700, color: '#25324B', fontSize: '1.1rem', letterSpacing: 1, marginBottom: 6 }}>{user.fullName}</div>
+              <div style={{ fontSize: '1.05rem', color: '#1e3c72', fontWeight: 600, marginBottom: 2 }}>{user.email}</div>
+              <div style={{ fontSize: '1rem', color: '#555', marginBottom: 2 }}><b>Spot ID:</b> {user.spotid}</div>
+              <div style={{ fontSize: '1rem', color: '#555', marginBottom: 2, wordBreak: 'break-all' }}><b>Wallet:</b> {user.wallet}</div>
+              <div style={{ fontSize: '1rem', color: '#27ae60', marginBottom: 2 }}><b>USDT:</b> {user.usdtBalance?.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+              <div style={{ fontSize: '1rem', color: '#1e3c72', marginBottom: 2 }}><b>SPOT:</b> {user.spotBalance?.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+            </div>
+          ))
+        )}
+        {/* User Details Modal */}
+        {modalOpen && selectedUser && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0, left: 0, right: 0, bottom: 0,
+              background: 'rgba(0,0,0,0.35)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000
+            }}
+          >
+            <div
+              style={{
+                background: '#fff',
+                borderRadius: 0,
+                boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+                border: '1px solid #e3e6ef',
+                padding: '24px 20px',
+                minWidth: 320,
+                maxWidth: 400,
+                width: '100%',
+                fontFamily: 'inherit',
+              }}
+            >
+              <h2 style={{ margin: 0, marginBottom: 16, fontSize: 18, color: '#232b36', fontWeight: 700, letterSpacing: 1 }}>Edit User Details</h2>
+              {error && <div style={{ color: '#e74c3c', marginBottom: 10 }}>{error}</div>}
+              <form onSubmit={handleSaveUserEdit}>
+                <div style={{ marginBottom: 12 }}>
+                  <b>Name:</b>
+                  <input
+                    type="text"
+                    value={selectedUser.fullName}
+                    onChange={e => setSelectedUser({ ...selectedUser, fullName: e.target.value })}
+                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+                  />
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <b>Email:</b>
+                  <input
+                    type="email"
+                    value={selectedUser.email}
+                    onChange={e => setSelectedUser({ ...selectedUser, email: e.target.value })}
+                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+                  />
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <b>Spot ID:</b>
+                  <input
+                    type="text"
+                    value={selectedUser.spotid}
+                    onChange={e => setSelectedUser({ ...selectedUser, spotid: e.target.value })}
+                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+                  />
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <b>Wallet:</b>
+                  <input
+                    type="text"
+                    value={selectedUser.wallet}
+                    onChange={e => setSelectedUser({ ...selectedUser, wallet: e.target.value })}
+                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+                  />
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <b>USDT Balance:</b>
+                  <input
+                    type="number"
+                    value={selectedUser.usdtBalance}
+                    onChange={e => setSelectedUser({ ...selectedUser, usdtBalance: parseFloat(e.target.value) })}
+                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+                  />
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <b>SPOT Balance:</b>
+                  <input
+                    type="number"
+                    value={selectedUser.spotBalance}
+                    onChange={e => setSelectedUser({ ...selectedUser, spotBalance: parseFloat(e.target.value) })}
+                    style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16, gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => { setModalOpen(false); setSelectedUser(null); }}
+                    style={{
+                      padding: '6px 16px',
+                      background: '#eee',
+                      color: '#333',
+                      border: 'none',
+                      borderRadius: 4,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      padding: '6px 16px',
                       background: '#1e3c72',
                       color: '#fff',
                       border: 'none',
                       borderRadius: 4,
-                      padding: '6px 14px',
-                      fontWeight: 600,
                       cursor: 'pointer'
                     }}
-                    onClick={() => {
-                      setSelectedUser(user);
-                      setModalOpen(true);
-                    }}
-                    >
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-      {/* User Details Modal */}
-      {modalOpen && selectedUser && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(0,0,0,0.35)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000
-          }}
-        >
-          <div
-            style={{
-              background: '#fff',
-              borderRadius: 8,
-              padding: 24,
-              minWidth: 320,
-              boxShadow: '0 8px 32px rgba(30,60,114,0.40)'
-            }}
-          >
-            <h2 style={{ margin: 0, marginBottom: 16, fontSize: 18 }}>Edit User Details</h2>
-            {error && <div style={{ color: 'red', marginBottom: 10 }}>{error}</div>}
-            <form onSubmit={handleSaveUserEdit}>
-              <div style={{ marginBottom: 12 }}>
-                <b>Name:</b>
-                <input
-                  type="text"
-                  value={selectedUser.fullName}
-                  onChange={e => setSelectedUser({ ...selectedUser, fullName: e.target.value })}
-                  style={{ width: '100%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
-                />
-              </div>
-              <div style={{ marginBottom: 12 }}>
-                <b>Email:</b>
-                <input
-                  type="email"
-                  value={selectedUser.email}
-                  onChange={e => setSelectedUser({ ...selectedUser, email: e.target.value })}
-                  style={{ width: '100%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
-                />
-              </div>
-              <div style={{ marginBottom: 12 }}>
-                <b>Spot ID:</b>
-                <input
-                  type="text"
-                  value={selectedUser.spotid}
-                  onChange={e => setSelectedUser({ ...selectedUser, spotid: e.target.value })}
-                  style={{ width: '100%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
-                />
-              </div>
-              <div style={{ marginBottom: 12 }}>
-                <b>Wallet:</b>
-                <input
-                  type="text"
-                  value={selectedUser.wallet}
-                  onChange={e => setSelectedUser({ ...selectedUser, wallet: e.target.value })}
-                  style={{ width: '100%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
-                />
-              </div>
-              <div style={{ marginBottom: 12 }}>
-                <b>USDT Balance:</b>
-                <input
-                  type="number"
-                  value={selectedUser.usdtBalance}
-                  onChange={e => setSelectedUser({ ...selectedUser, usdtBalance: parseFloat(e.target.value) })}
-                  style={{ width: '100%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
-                />
-              </div>
-              <div style={{ marginBottom: 12 }}>
-                <b>SPOT Balance:</b>
-                <input
-                  type="number"
-                  value={selectedUser.spotBalance}
-                  onChange={e => setSelectedUser({ ...selectedUser, spotBalance: parseFloat(e.target.value) })}
-                  style={{ width: '100%', padding: 6, marginTop: 4, borderRadius: 4, border: '1px solid #ccc' }}
-                />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16, gap: 8 }}>
-                <button
-                  type="button"
-                  onClick={() => { setModalOpen(false); setSelectedUser(null); }}
-                  style={{
-                    padding: '6px 16px',
-                    background: '#eee',
-                    color: '#333',
-                    border: 'none',
-                    borderRadius: 4,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  style={{
-                    padding: '6px 16px',
-                    background: '#1e3c72',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 4,
-                    cursor: 'pointer'
-                  }}
-                  disabled={loading}
-                >
-                  {loading ? 'Saving...' : 'Save'}
-                </button>
-              </div>
-            </form>
+                    disabled={loading}
+                  >
+                    {loading ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+        <style>
+          {`
+            @media (max-width: 600px) {
+              div[style*="box-shadow"] {
+                max-width: 90vw !important;
+                min-width: 0 !important;
+                width: 90vw !important;
+                margin-left: 5vw !important;
+                margin-right: 5vw !important;
+                padding: 10px 2vw !important;
+              }
+            }
+          `}
+        </style>
+      </div>
     </div>
   );
 };
