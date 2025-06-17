@@ -38,7 +38,7 @@ const TransactionHistory: React.FC = () => {
   return (
     <div style={{
       maxWidth: 700,
-      margin: '40px auto',
+      margin: '0 auto', // Removed top margin to eliminate the up gap
       background: 'linear-gradient(135deg, #f8fafc 0%, #eaf1fb 100%)',
       boxShadow: '0 4px 32px rgba(30,60,114,0.13)',
       padding: 40,
