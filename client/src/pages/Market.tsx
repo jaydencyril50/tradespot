@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './Market.css';
-import { getStocks, purchaseStock } from '../services/api';
+import { getStocks, purchaseStock, getPortfolio } from '../services/api';
 import { FaHistory } from 'react-icons/fa';
 
 const API = process.env.REACT_APP_API_BASE_URL;
@@ -23,6 +23,8 @@ const Market: React.FC = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [spotBalance, setSpotBalance] = useState<number>(0);
+  const [showInsufficientOverlay, setShowInsufficientOverlay] = useState(false);
 
   useEffect(() => {
     const fetchStocks = async () => {
@@ -46,17 +48,44 @@ const Market: React.FC = () => {
         setLoading(false);
       }
     };
+    const fetchBalance = async () => {
+      try {
+        const portfolio = await getPortfolio();
+        setSpotBalance(portfolio.spotBalance || 0);
+      } catch {
+        setSpotBalance(0);
+      }
+    };
     fetchStocks();
+    fetchBalance();
   }, []);
 
   const handlePurchase = async (stockId: string) => {
     setLoading(true);
     setError(null);
     setSuccess(null);
+    // Find the product
+    const product = products.find(p => p.id === stockId);
+    if (!product) {
+      setError('Product not found');
+      setLoading(false);
+      return;
+    }
+    // Check spot balance
+    if (spotBalance < product.purchaseAmount) {
+      setShowInsufficientOverlay(true);
+      setLoading(false);
+      return;
+    }
     try {
       const res = await purchaseStock(stockId);
       setSuccess(res.message || 'Purchase successful!');
       setShowSuccessOverlay(true);
+      // Refresh balance after purchase
+      try {
+        const portfolio = await getPortfolio();
+        setSpotBalance(portfolio.spotBalance || 0);
+      } catch {}
       setTimeout(() => {
         setShowSuccessOverlay(false);
       }, 2500);
@@ -86,8 +115,62 @@ const Market: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (showInsufficientOverlay) {
+      const timer = setTimeout(() => setShowInsufficientOverlay(false), 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [showInsufficientOverlay]);
+
   return (
     <div className="market-page" style={{ marginTop: 0, paddingTop: 0 }}>
+      {showInsufficientOverlay && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(231,76,60,0.13)',
+          zIndex: 3000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <div style={{
+            background: '#fff',
+            border: '2px solid #e74c3c',
+            color: '#e74c3c',
+            fontWeight: 700,
+            fontSize: 22,
+            borderRadius: 10,
+            padding: '32px 48px',
+            boxShadow: '0 8px 32px 0 rgba(231,76,60,0.18)',
+            textAlign: 'center',
+            minWidth: 260,
+            maxWidth: 380,
+            position: 'relative',
+          }}>
+            <button onClick={() => setShowInsufficientOverlay(false)} style={{
+              position: 'absolute',
+              top: 10,
+              right: 16,
+              background: 'none',
+              border: 'none',
+              fontSize: 22,
+              color: '#e74c3c',
+              cursor: 'pointer',
+            }}>&times;</button>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>Insufficient Balance</div>
+            <div style={{ fontSize: 18, color: '#25324B', marginBottom: 8 }}>
+              You do not have enough SPOT to purchase this plan.
+            </div>
+            <div style={{ fontSize: 15, color: '#888' }}>
+              Please deposit or convert funds to SPOT and try again.
+            </div>
+          </div>
+        </div>
+      )}
       {showSuccessOverlay && (
         <div style={{
           position: 'fixed',
@@ -95,8 +178,8 @@ const Market: React.FC = () => {
           left: 0,
           width: '100vw',
           height: '100vh',
-          background: 'rgba(30,44,80,0.10)',
-          zIndex: 2000,
+          background: 'rgba(16,201,143,0.13)',
+          zIndex: 3000,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -109,11 +192,26 @@ const Market: React.FC = () => {
             fontSize: 22,
             borderRadius: 10,
             padding: '32px 48px',
-            boxShadow: '0 8px 32px 0 rgba(30,60,114,0.18)',
+            boxShadow: '0 8px 32px 0 rgba(16,201,143,0.18)',
             textAlign: 'center',
-            minWidth: 220,
+            minWidth: 260,
+            maxWidth: 380,
+            position: 'relative',
           }}>
-            {success}
+            <button onClick={() => setShowSuccessOverlay(false)} style={{
+              position: 'absolute',
+              top: 10,
+              right: 16,
+              background: 'none',
+              border: 'none',
+              fontSize: 22,
+              color: '#10c98f',
+              cursor: 'pointer',
+            }}>&times;</button>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>Purchase Successful</div>
+            <div style={{ fontSize: 18, color: '#25324B', marginBottom: 8 }}>
+              {success}
+            </div>
           </div>
         </div>
       )}
@@ -145,7 +243,8 @@ const Market: React.FC = () => {
           );
         })}
       </div>
-      {error && <div style={{ color: 'red', marginTop: 12 }}>{error}</div>}
+      {/* Remove the inline error for insufficient balance, keep only for other errors */}
+      {error && error !== 'Insufficient SPOT balance to purchase this plan.' && <div style={{ color: 'red', marginTop: 12 }}>{error}</div>}
       {showHistory && (
         <div style={{
           position: 'fixed',
