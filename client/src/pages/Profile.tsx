@@ -206,16 +206,17 @@ const Profile: React.FC = () => {
           textAlign: 'center',
           marginBottom: 0,
           fontFamily: 'inherit',
-          minHeight: 100,
+          minHeight: 320, // Ensure it's taller than the other cards
+          height: 380, // Explicitly set a larger height
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
           alignItems: 'center',
         }}>
           <div style={{ fontWeight: 700, color: '#1e3c72', fontSize: 17, marginBottom: 8 }}>Recent Transactions</div>
           {user.recentTransactions && user.recentTransactions.length > 0 ? (
             <>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, maxHeight: showAllTransactions ? 400 : 'none', overflowY: showAllTransactions ? 'auto' : 'visible', width: '100%' }}>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, width: '100%', flex: 1, overflowY: 'auto' }}>
                 {(showAllTransactions
                   ? user.recentTransactions
                   : user.recentTransactions.slice(0, 5)
