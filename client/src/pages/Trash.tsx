@@ -43,6 +43,11 @@ const Trash: React.FC = () => {
     setError('');
     setSuccess('');
     if (!input.trim()) return;
+    // Prevent duplicate items
+    if (items.some(item => item.text.trim().toLowerCase() === input.trim().toLowerCase())) {
+      setError('Duplicate item: This text already exists in trash.');
+      return;
+    }
     setLoading(true);
     try {
       const token = localStorage.getItem('adminToken');
