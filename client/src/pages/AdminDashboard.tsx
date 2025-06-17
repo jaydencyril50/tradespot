@@ -83,7 +83,8 @@ const AdminDashboard: React.FC = () => {
               } else if (btn.label === 'TRASH') {
                 navigate('/admin/trash');
               } else if (btn.label === 'TEAM') {
-                navigate('/admin/team'); 
+                navigate('/admin/team');
+              } else if (btn.label === 'LOGOUT') {
                 handleLogout();
               }
             }}
