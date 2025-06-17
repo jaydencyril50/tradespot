@@ -79,9 +79,6 @@ const AdminDeposit: React.FC = () => {
             <thead>
               <tr>
                 <th>User</th>
-                <th>Amount</th>
-                <th>TxID</th>
-                <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -89,16 +86,6 @@ const AdminDeposit: React.FC = () => {
               {deposits.map((d) => (
                 <tr key={d._id} style={{ background: d.status === 'pending' ? '#f6f9fe' : '#fff' }}>
                   <td>{d.userId?.email || d.userId?.spotid || '-'}</td>
-                  <td>{d.amount} USDT</td>
-                  <td>
-                    <button
-                      style={{ background: '#f0f4fa', color: '#1e3c72', border: '1px solid #dbeafe', padding: '4px 10px', borderRadius: 4, cursor: 'pointer', fontWeight: 500 }}
-                      onClick={() => openModal(d)}
-                    >
-                      View
-                    </button>
-                  </td>
-                  <td>{d.status ? d.status.charAt(0).toUpperCase() + d.status.slice(1) : (d.credited ? 'Approved' : 'Pending')}</td>
                   <td>
                     <button
                       style={{ background: '#f0f4fa', color: '#1e3c72', border: '1px solid #dbeafe', padding: '4px 10px', borderRadius: 4, cursor: 'pointer', fontWeight: 500 }}
