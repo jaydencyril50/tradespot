@@ -32,7 +32,6 @@ const AdminActiveStocks: React.FC = () => {
     completed: false,
   });
 
-  // Fetch ALL stock plans (active and completed)
   useEffect(() => {
     const fetchAllStocks = async () => {
       setLoading(true);
@@ -119,46 +118,85 @@ const AdminActiveStocks: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', background: '#fff', boxShadow: '0 4px 32px rgba(30,60,114,0.18)', padding: 24, borderRadius: 0, minHeight: 400 }}>
-      <h2 style={{ fontWeight: 700, color: '#1e3c72', marginBottom: 18, fontSize: 22, letterSpacing: 1 }}>Stock Management</h2>
-      {loading && <div>Loading...</div>}
-      {error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
-      <div style={{ overflowX: 'auto', maxHeight: 420 }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 15, minWidth: 700 }}>
-          <thead>
-            <tr style={{ background: '#f7faff' }}>
-              <th style={{ padding: 10, textAlign: 'center', color: '#1e3c72' }}>Email</th>
-              <th style={{ padding: 10, textAlign: 'center', color: '#1e3c72' }}>Spot ID</th>
-              <th style={{ padding: 10, textAlign: 'center', color: '#1e3c72' }}>Amount</th>
-              <th style={{ padding: 10, textAlign: 'center', color: '#1e3c72' }}>Profits</th>
-              <th style={{ padding: 10, textAlign: 'center', color: '#1e3c72' }}>Status</th>
-              <th style={{ padding: 10, textAlign: 'center', color: '#1e3c72' }}>Edit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {activeStocks.length === 0 && !loading ? (
-              <tr><td colSpan={6} style={{ textAlign: 'center', padding: 18 }}>No stock plans found.</td></tr>
-            ) : (
-              activeStocks.map((stock) => (
-                <tr key={stock._id} style={{ borderBottom: '1px solid #eaf1fb' }}>
-                  <td style={{ padding: 10, textAlign: 'center' }}>{stock.email}</td>
-                  <td style={{ padding: 10, textAlign: 'center' }}>{stock.spotid}</td>
-                  <td style={{ padding: 10, textAlign: 'center' }}>{stock.purchaseAmount?.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                  <td style={{ padding: 10, textAlign: 'center' }}>{stock.dailyProfits?.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                  <td style={{ padding: 10, textAlign: 'center' }}>{(stock as any).completed ? 'Completed' : 'Active'}</td>
-                  <td style={{ padding: 10, textAlign: 'center' }}>
-                    <button
-                      style={{ background: '#1e3c72', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 14px', fontWeight: 600, cursor: 'pointer' }}
-                      onClick={() => openEditModal(stock)}
-                    >
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+    <div style={{ minHeight: '100vh', background: '#fff' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+          STOCK MANAGEMENT
+        </span>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
+        {loading && <div style={{ color: '#1e3c72', fontWeight: 500 }}>Loading...</div>}
+        {error && <div style={{ color: '#e74c3c', marginBottom: 16, fontWeight: 500 }}>{error}</div>}
+        {!loading && !error && activeStocks.length === 0 && (
+          <div style={{ color: '#888', fontSize: 16, textAlign: 'center', margin: '40px 0' }}>No stock plans found.</div>
+        )}
+        {!loading && !error && activeStocks.length > 0 && (
+          activeStocks.map((stock) => {
+            const isCompleted = Boolean((stock as any).completed);
+            return (
+              <div
+                key={stock._id}
+                style={{
+                  background: '#fff',
+                  borderRadius: 0,
+                  boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+                  border: '1px solid #e3e6ef',
+                  padding: '12px 16px',
+                  minWidth: 200,
+                  maxWidth: 420,
+                  width: '100%',
+                  textAlign: 'center',
+                  marginBottom: 0,
+                  fontFamily: 'inherit',
+                  height: 150,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  position: 'relative',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginBottom: 6 }}>
+                  <span style={{ fontWeight: 700, color: '#25324B', fontSize: '1.1rem', letterSpacing: 1 }}>Spot ID: {stock.spotid}</span>
+                  <span style={{ color: isCompleted ? '#27ae60' : '#1e3c72', fontSize: 18, fontWeight: 700, marginLeft: 8 }}>{isCompleted ? '✔️' : '⏳'}</span>
+                </div>
+                <div style={{ fontSize: '1.05rem', color: '#1e3c72', fontWeight: 600, marginBottom: 2 }}>
+                  {stock.email}
+                </div>
+                <div style={{ fontSize: '1rem', color: '#555', marginBottom: 2 }}>
+                  Amount: {stock.purchaseAmount?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </div>
+                <div style={{ fontSize: '1rem', color: '#555', marginBottom: 2 }}>
+                  Profits: {stock.dailyProfits?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </div>
+                <div style={{ fontSize: '1rem', color: isCompleted ? '#27ae60' : '#1e3c72', marginBottom: 2, fontWeight: 600 }}>
+                  Status: {isCompleted ? 'Completed' : 'Active'}
+                </div>
+                <button
+                  style={{ position: 'absolute', top: 10, right: 10, background: '#1e3c72', color: '#fff', border: 'none', borderRadius: 4, padding: '4px 12px', fontWeight: 600, cursor: 'pointer', fontSize: 13 }}
+                  onClick={() => openEditModal(stock)}
+                >
+                  Edit
+                </button>
+              </div>
+            );
+          })
+        )}
+        <style>
+          {`
+            @media (max-width: 600px) {
+              div[style*="box-shadow"] {
+                max-width: 90vw !important;
+                min-width: 0 !important;
+                width: 90vw !important;
+                margin-left: 5vw !important;
+                margin-right: 5vw !important;
+                padding: 10px 2vw !important;
+                height: 120px !important;
+              }
+            }
+          `}
+        </style>
       </div>
       {editModal.open && editModal.stock && (
         <Modal onClose={closeEditModal}>
