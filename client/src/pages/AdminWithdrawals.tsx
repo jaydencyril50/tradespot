@@ -13,7 +13,11 @@ const AdminWithdrawals: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.get('/admin/withdrawals');
+      // Get admin token from localStorage or sessionStorage
+      const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+      const res = await axios.get('/admin/withdrawals', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       setWithdrawals(res.data.withdrawals || []);
     } catch (e: any) {
       setError(e?.response?.data?.error || e.message || 'Failed to fetch withdrawals');
@@ -38,7 +42,10 @@ const AdminWithdrawals: React.FC = () => {
     setActionLoading(id + action);
     setError('');
     try {
-      await axios.post(`/admin/withdrawals/${id}/${action}`);
+      const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+      await axios.post(`/admin/withdrawals/${id}/${action}`, {}, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       fetchWithdrawals();
     } catch (e: any) {
       setError(e?.response?.data?.error || e.message || 'Action failed');
