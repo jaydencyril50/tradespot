@@ -3,6 +3,36 @@ import axios from 'axios';
 
 const API = process.env.REACT_APP_API_BASE_URL;
 
+const tableStyles = {
+  width: '100%',
+  borderCollapse: 'separate' as const,
+  borderSpacing: 0,
+  fontSize: 14,
+  background: '#f9fbfd',
+  borderRadius: 8,
+  overflow: 'hidden',
+  boxShadow: '0 2px 12px rgba(30,60,114,0.07)'
+};
+const thStyles = {
+  background: '#eaf1fb',
+  color: '#1e3c72',
+  fontWeight: 700,
+  padding: '12px 16px',
+  textAlign: 'left' as const,
+  borderBottom: '2px solid #dbeafe',
+  letterSpacing: 0.5,
+};
+const tdStyles = {
+  padding: '12px 16px',
+  borderBottom: '1px solid #e3e8f0',
+  color: '#1e293b',
+  background: '#fff',
+  fontWeight: 500,
+};
+const trHover = {
+  transition: 'background 0.2s',
+};
+
 const AdminDeposit: React.FC = () => {
   const [deposits, setDeposits] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,27 +98,27 @@ const AdminDeposit: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: 480, margin: '0 auto', background: '#fff', boxShadow: '0 2px 16px rgba(30,60,114,0.10)', padding: 8, borderRadius: 0 }}>
+    <div style={{ maxWidth: 520, margin: '0 auto', background: '#fff', boxShadow: '0 2px 16px rgba(30,60,114,0.10)', padding: 18, borderRadius: 8 }}>
       <h2 style={{ fontWeight: 700, color: '#1e3c72', marginBottom: 18, fontSize: 22, letterSpacing: 1 }}>Deposit Requests</h2>
       {loading && <div>Loading...</div>}
       {error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
       {!loading && deposits.length === 0 && <div>No deposit requests found.</div>}
       {!loading && deposits.length > 0 && (
         <div style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-          <table style={{ minWidth: 320, width: '100%', borderCollapse: 'collapse', fontSize: 13, tableLayout: 'fixed' }}>
+          <table style={tableStyles}>
             <thead>
               <tr>
-                <th>User</th>
-                <th>Actions</th>
+                <th style={thStyles}>User Email</th>
+                <th style={thStyles}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {deposits.map((d) => (
-                <tr key={d._id} style={{ background: d.status === 'pending' ? '#f6f9fe' : '#fff' }}>
-                  <td>{d.userId?.email || d.userId?.spotid || '-'}</td>
-                  <td>
+                <tr key={d._id} style={{ ...trHover, background: d.status === 'pending' ? '#f6f9fe' : '#fff' }}>
+                  <td style={tdStyles}>{d.userId?.email || d.userId?.spotid || '-'}</td>
+                  <td style={tdStyles}>
                     <button
-                      style={{ background: '#f0f4fa', color: '#1e3c72', border: '1px solid #dbeafe', padding: '4px 10px', borderRadius: 4, cursor: 'pointer', fontWeight: 500 }}
+                      style={{ background: '#1e3c72', color: '#fff', border: 'none', padding: '6px 18px', borderRadius: 4, cursor: 'pointer', fontWeight: 600, fontSize: 15, boxShadow: '0 1px 4px rgba(30,60,114,0.08)' }}
                       onClick={() => openModal(d)}
                     >
                       View
@@ -105,7 +135,7 @@ const AdminDeposit: React.FC = () => {
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(30,60,114,0.18)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center'
         }}>
-          <div style={{ background: '#fff', borderRadius: 8, padding: 24, minWidth: 320, maxWidth: 400, boxShadow: '0 4px 32px rgba(30,60,114,0.18)', position: 'relative' }}>
+          <div style={{ background: '#fff', borderRadius: 10, padding: 28, minWidth: 320, maxWidth: 400, boxShadow: '0 4px 32px rgba(30,60,114,0.18)', position: 'relative' }}>
             <button onClick={closeModal} style={{ position: 'absolute', top: 10, right: 14, background: 'none', border: 'none', fontSize: 22, color: '#1e3c72', cursor: 'pointer' }}>&times;</button>
             <h3 style={{ color: '#1e3c72', fontWeight: 700, marginBottom: 16, fontSize: 18 }}>Deposit Details</h3>
             <div style={{ marginBottom: 12 }}>
@@ -117,7 +147,7 @@ const AdminDeposit: React.FC = () => {
             <div style={{ marginBottom: 12 }}>
               <strong>TxID:</strong>
               <span
-                style={{ color: '#1e3c72', wordBreak: 'break-all', cursor: 'pointer', textDecoration: 'underline dotted', fontWeight: 500, marginLeft: 8 }}
+                style={{ color: '#1e3c72', wordBreak: 'break-all', cursor: 'pointer', textDecoration: copied ? 'underline solid' : 'underline dotted', fontWeight: 500, marginLeft: 8, transition: 'text-decoration 0.2s' }}
                 title={copied ? 'Copied!' : 'Click to copy'}
                 onClick={() => handleCopyTxid(selectedDeposit.txid)}
               >
