@@ -6,9 +6,10 @@ const NotificationsPage: React.FC = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [announcement, setAnnouncement] = useState('');
 
   useEffect(() => {
-    const fetchNotifications = async () => {
+    const fetchNotificationsAndAnnouncement = async () => {
       setLoading(true);
       setError('');
       try {
@@ -18,11 +19,16 @@ const NotificationsPage: React.FC = () => {
           setLoading(false);
           return;
         }
+        // Fetch notifications
         const res = await fetch(`${API}/api/notifications`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
         setNotifications(data.notifications || []);
+        // Fetch announcement
+        const annRes = await fetch(`${API}/api/announcement`);
+        const annData = await annRes.json();
+        setAnnouncement(annData.notice || '');
         // Mark all as read
         await fetch(`${API}/api/notifications/mark-read`, {
           method: 'PATCH',
@@ -33,8 +39,13 @@ const NotificationsPage: React.FC = () => {
       }
       setLoading(false);
     };
-    fetchNotifications();
+    fetchNotificationsAndAnnouncement();
   }, []);
+
+  // Filter out notifications that match the announcement or the market refresh message
+  const filteredNotifications = notifications.filter(
+    n => n.message !== announcement && n.message !== "Market refreshed: New stock plans are now available."
+  );
 
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
@@ -46,40 +57,38 @@ const NotificationsPage: React.FC = () => {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20, marginBottom: 40 }}>
         {loading && <div style={{ color: '#1e3c72', fontWeight: 500 }}>Loading...</div>}
         {error && <div style={{ color: '#e74c3c', marginBottom: 16, fontWeight: 500 }}>{error}</div>}
-        {!loading && notifications.filter(n => n.message !== "Market refreshed: New stock plans are now available.").length === 0 && !error && (
+        {!loading && filteredNotifications.length === 0 && !error && (
           <div style={{ color: '#888', fontSize: 16, textAlign: 'center', margin: '40px 0' }}>No notifications.</div>
         )}
-        {!loading && !error && notifications.filter(n => n.message !== "Market refreshed: New stock plans are now available.").length > 0 && (
-          notifications
-            .filter(n => n.message !== "Market refreshed: New stock plans are now available.")
-            .map((n, idx) => (
-              <div
-                key={n._id || idx}
-                style={{
-                  background: '#fff',
-                  borderRadius: 0,
-                  boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-                  border: '1px solid #e3e6ef',
-                  padding: '12px 16px',
-                  minWidth: 200,
-                  maxWidth: 380,
-                  width: '100%',
-                  textAlign: 'center',
-                  marginBottom: 0,
-                  fontFamily: 'inherit',
-                  height: 100,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  fontWeight: n.read ? 400 : 600,
-                  color: '#25324B',
-                }}
-              >
-                <div style={{ fontWeight: 700, color: '#1e3c72', fontSize: 15, marginBottom: 4 }}>{n.message}</div>
-                <div style={{ color: '#888', fontSize: 13 }}>{new Date(n.createdAt).toLocaleString()}</div>
-              </div>
-            ))
+        {!loading && !error && filteredNotifications.length > 0 && (
+          filteredNotifications.map((n, idx) => (
+            <div
+              key={n._id || idx}
+              style={{
+                background: '#fff',
+                borderRadius: 0,
+                boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+                border: '1px solid #e3e6ef',
+                padding: '12px 16px',
+                minWidth: 200,
+                maxWidth: 380,
+                width: '100%',
+                textAlign: 'center',
+                marginBottom: 0,
+                fontFamily: 'inherit',
+                height: 100,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                fontWeight: n.read ? 400 : 600,
+                color: '#25324B',
+              }}
+            >
+              <div style={{ fontWeight: 700, color: '#1e3c72', fontSize: 15, marginBottom: 4 }}>{n.message}</div>
+              <div style={{ color: '#888', fontSize: 13 }}>{new Date(n.createdAt).toLocaleString()}</div>
+            </div>
+          ))
         )}
         <style>
           {`
