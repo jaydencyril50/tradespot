@@ -3,38 +3,39 @@ import React, { useState, useRef, useEffect } from 'react';
 const ProChat: React.FC = () => {
   const [messages, setMessages] = useState<any[]>([]); // Store array of chat objects
   const [input, setInput] = useState('');
+  const [error, setError] = useState<string | null>(null); // Add error state
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch messages on mount
   useEffect(() => {
     const fetchMessages = async () => {
-      const userEmail = localStorage.getItem('userEmail') || '';
+      setError(null);
       try {
         // @ts-ignore
         const { fetchProChatMessages } = await import('../services/api');
-        const chats = await fetchProChatMessages(userEmail);
+        const chats = await fetchProChatMessages();
         setMessages(chats);
       } catch (err) {
-        // Optionally handle error
+        setError('Failed to fetch messages.');
       }
     };
     fetchMessages();
   }, []);
 
   const handleSend = async () => {
+    setError(null); // Reset error
     if (input.trim()) {
-      const userEmail = localStorage.getItem('userEmail') || '';
       setInput('');
       try {
         // @ts-ignore
         const { sendProChatMessage, fetchProChatMessages } = await import('../services/api');
-        await sendProChatMessage(userEmail, input);
+        await sendProChatMessage(input);
         // Refetch messages after sending
-        const chats = await fetchProChatMessages(userEmail);
+        const chats = await fetchProChatMessages();
         setMessages(chats);
       } catch (err) {
-        // Optionally handle error
+        setError('Failed to send message.');
       }
     }
   };
@@ -57,6 +58,13 @@ const ProChat: React.FC = () => {
           SUPPORT CHAT
         </span>
       </div>
+
+      {/* Error message */}
+      {error && (
+        <div style={{ color: 'red', padding: '8px 24px', background: '#fff0f0', borderBottom: '1px solid #fbb' }}>
+          {error}
+        </div>
+      )}
 
       {/* Chat Messages */}
       <div style={{

@@ -24,6 +24,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Mount chat routes for ProChat functionality
+app.use('/api/chat', chatRoutes);
+
 // --- SOCKET.IO SETUP ---
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {
@@ -256,8 +259,6 @@ app.post('/auth/login', async (req: Request, res: Response): Promise<void> => {
     const token = jwt.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
     res.json({ token, user: { id: user._id, fullName: user.fullName, email: user.email, wallet: user.wallet, usdtBalance: user.usdtBalance, spotBalance: user.spotBalance } });
 });
-
-app.use('/api/chat', chatRoutes);
 
 // Admin login endpoint
 app.post('/auth/admin/login', async function (req: Request, res: Response) {
