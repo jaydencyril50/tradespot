@@ -10,7 +10,7 @@ const links = [
   { url: '/faq', changefreq: 'monthly', priority: 0.5 },
 ];
 
-const sitemap = new SitemapStream({ hostname: 'https://www.tradespot.com' });
+const sitemap = new SitemapStream({ hostname: 'https://www.tradespot.online' });
 
 streamToPromise(Readable.from(links).pipe(sitemap))
   .then((data) => {
