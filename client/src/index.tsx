@@ -121,6 +121,7 @@ root.render(
             <Route path="/admin/withdrawals" element={<AdminWithdrawals />} />
             <Route path="/admin/notice" element={<AdminNotice />} />
             <Route path="/admin/messages" element={<AdminMessage />} />
+            <Route path="/admin/chat" element={<AdminMessage />} />
             <Route path="/admin/chat/:spotid" element={<AdminChat />} />
             <Route path="/admin/recents" element={<AdminRecent />} />
             <Route path="/admin/deposit" element={<AdminDeposit />} />

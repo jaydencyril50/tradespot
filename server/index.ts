@@ -16,6 +16,7 @@ import DepositSession from './models/DepositSession';
 import Trash from './models/Trash';
 import trashRoutes from './routes/trash';
 import Chat from './models/Chat';
+import chatRoutes from './routes/chat';
 
 dotenv.config();
 
@@ -255,6 +256,8 @@ app.post('/auth/login', async (req: Request, res: Response): Promise<void> => {
     const token = jwt.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
     res.json({ token, user: { id: user._id, fullName: user.fullName, email: user.email, wallet: user.wallet, usdtBalance: user.usdtBalance, spotBalance: user.spotBalance } });
 });
+
+app.use('/api/chat', chatRoutes);
 
 // Admin login endpoint
 app.post('/auth/admin/login', async function (req: Request, res: Response) {
