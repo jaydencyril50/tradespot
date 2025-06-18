@@ -20,35 +20,38 @@ export const NetworkStatusProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <NetworkStatusContext.Provider value={{ online }}>
-      {!online && <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        background: 'rgba(30,40,60,0.85)',
-        zIndex: 99999,
-        pointerEvents: 'all',
-        transition: 'background 0.2s',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-      }}>
+      {!online && (
         <div style={{
-          width: '100%',
-          background: '#e74c3c',
-          color: '#fff',
-          fontWeight: 700,
-          textAlign: 'center',
-          padding: '10px 0',
-          fontSize: 18,
-          letterSpacing: 1,
-          boxShadow: '0 2px 8px rgba(231,76,60,0.18)',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0, 0, 0, 0.02)', // almost invisible overlay
+          backdropFilter: 'blur(1px)', // optional effect
+          zIndex: 9999,
+          pointerEvents: 'all', // blocks interaction
         }}>
-          Network error.
+          <div style={{
+            position: 'absolute',
+            top: 20,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: '#ffe9e9',
+            border: '1px solid #ff4d4f',
+            color: '#c0392b',
+            padding: '10px 18px',
+            fontSize: '14px',
+            fontWeight: 600,
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            animation: 'fadeInDown 0.3s ease',
+            zIndex: 10000,
+          }}>
+            🌐 currently offline. Please check your connection.
+          </div>
         </div>
-      </div>}
+      )}
       {children}
     </NetworkStatusContext.Provider>
   );
