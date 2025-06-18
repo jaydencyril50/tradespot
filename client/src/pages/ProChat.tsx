@@ -7,11 +7,13 @@ const ProChat: React.FC = () => {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const API = process.env.REACT_APP_API_BASE_URL;
+
   // Fetch messages from the database on mount
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await fetch('/api/chat');
+        const response = await fetch(`${API}/chat`);
         if (!response.ok) {
           throw new Error('Failed to fetch messages');
         }
