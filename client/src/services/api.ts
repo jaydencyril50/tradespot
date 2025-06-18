@@ -265,11 +265,11 @@ export const getAdminTeamUsers = async () => {
     return res.data;
 };
 
-export const sendProChatMessage = async (message: string, imageUrl?: string) => {
+export const sendProChatMessage = async (message: string, imageUrl?: string, userEmail?: string, spotid?: string) => {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('Not authenticated');
   const API = process.env.REACT_APP_API_BASE_URL;
-  const res = await axios.post(`${API}/api/chat`, { message, imageUrl }, {
+  const res = await axios.post(`${API}/api/chat`, { message, imageUrl, userEmail, spotid }, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;

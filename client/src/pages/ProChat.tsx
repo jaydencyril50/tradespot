@@ -4,33 +4,40 @@ const ProChat: React.FC = () => {
   const [messages, setMessages] = useState<any[]>([]); // Store array of chat objects
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null); // Add error state
+  const [userProfile, setUserProfile] = useState<{ email: string; spotid: string } | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Fetch messages on mount
+  // Fetch user profile and messages on mount
   useEffect(() => {
-    const fetchMessages = async () => {
+    const fetchProfileAndMessages = async () => {
       setError(null);
       try {
         // @ts-ignore
-        const { fetchProChatMessages } = await import('../services/api');
+        const { getPortfolio, fetchProChatMessages } = await import('../services/api');
+        const profile = await getPortfolio();
+        if (!profile.email || !profile.spotid) {
+          setError('User profile incomplete. Please log in again.');
+          return;
+        }
+        setUserProfile({ email: profile.email, spotid: profile.spotid });
         const chats = await fetchProChatMessages();
         setMessages(chats);
       } catch (err) {
-        setError('Failed to fetch messages.');
+        setError('Failed to fetch user profile or messages.');
       }
     };
-    fetchMessages();
+    fetchProfileAndMessages();
   }, []);
 
   const handleSend = async () => {
     setError(null); // Reset error
-    if (input.trim()) {
+    if (input.trim() && userProfile) {
       setInput('');
       try {
         // @ts-ignore
         const { sendProChatMessage, fetchProChatMessages } = await import('../services/api');
-        await sendProChatMessage(input);
+        await sendProChatMessage(input, undefined, userProfile.email, userProfile.spotid);
         // Refetch messages after sending
         const chats = await fetchProChatMessages();
         setMessages(chats);
