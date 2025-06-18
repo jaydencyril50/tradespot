@@ -247,7 +247,7 @@ const Market: React.FC = () => {
             <div className={`market-card ${product.name.toLowerCase().includes('gold') ? 'gold-card' : 'silver-card'}`} key={product.id}>
               <h2>{displayName}</h2>
               <div className="market-card-amount">Price: {formattedPrice} SPOT</div>
-              <div className="market-card-earn">Profit (365 days @ 2%/day): <span>{formattedProfit} SPOT</span></div>
+              <div className="market-card-earn">Profit: <span>{formattedProfit} SPOT</span></div>
               <button className={`market-card-btn ${product.name.toLowerCase().includes('gold') ? 'gold' : 'silver'}`} onClick={() => handlePurchase(product.id)} disabled={loading}>
                 {loading ? 'Processing...' : 'Purchase'}
               </button>

@@ -72,17 +72,23 @@ const Profile: React.FC = () => {
           maxWidth: 380,
           width: '100%',
           textAlign: 'center',
-          marginBottom: 0,
-          fontFamily: 'inherit',
           height: 140,
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
           gap: 18,
-          justifyContent: 'center',
+          justifyContent: 'flex-start', // center was making it odd
         }}>
-          <label htmlFor="profile-upload" style={{ cursor: 'pointer', marginRight: 0 }}>
-            <div style={{ width: 70, height: 70, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: '#eaf1fb' }}>
+          <label htmlFor="profile-upload" style={{ cursor: 'pointer', marginLeft: 50 }}>
+            <div style={{
+              width: 70,
+              height: 70,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 8,
+              background: '#eaf1fb',
+            }}>
               {uploading ? (
                 <svg width="36" height="36" viewBox="0 0 50 50">
                   <circle cx="25" cy="25" r="20" fill="none" stroke="#1e3c72" strokeWidth="5" strokeDasharray="31.4 31.4" strokeLinecap="round">

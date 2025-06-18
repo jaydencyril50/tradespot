@@ -12,6 +12,13 @@ const Deposit: React.FC = () => {
     const [checking, setChecking] = useState(false);
     const [copied, setCopied] = useState(false);
     const [copiedTxid, setCopiedTxid] = useState(false);
+    const [txidInputError, setTxidInputError] = useState('');
+
+    // Helper for txid validation
+    const isValidTxid = (value: string) => {
+        // Example: TRC20 txid is usually 64 hex chars, but allow 8+ for flexibility
+        return /^[a-fA-F0-9]{8,}$/.test(value);
+    };
 
     const handleDeposit = async () => {
         setError('');
@@ -20,7 +27,7 @@ const Deposit: React.FC = () => {
             setError('Minimum deposit is 10 USDT');
             return;
         }
-        if (!txid || txid.length < 8) {
+        if (!txid || !isValidTxid(txid)) {
             setError('Please enter a valid transaction ID (txid)');
             return;
         }
@@ -54,6 +61,18 @@ const Deposit: React.FC = () => {
             setTxid(text);
         } catch (err) {
             setError('Failed to read from clipboard');
+        }
+    };
+
+    const handleTxidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setTxid(value);
+        if (!value) {
+            setTxidInputError('Transaction ID is required');
+        } else if (!isValidTxid(value)) {
+            setTxidInputError('Invalid txid format (must be at least 8 hex characters)');
+        } else {
+            setTxidInputError('');
         }
     };
 
@@ -104,7 +123,7 @@ const Deposit: React.FC = () => {
                             <input
                                 type="text"
                                 value={txid}
-                                onChange={e => setTxid(e.target.value)}
+                                onChange={handleTxidChange}
                                 style={{ width: '80%', padding: '8px', border: '1px solid #ccc', fontSize: 16 }}
                             />
                             <button
@@ -116,6 +135,7 @@ const Deposit: React.FC = () => {
                                 Paste
                             </button>
                         </div>
+                        {txidInputError && <div style={{ color: '#e74c3c', marginTop: 4, fontSize: 13 }}>{txidInputError}</div>}
                     </div>
                     {error && <div style={{ color: '#e74c3c', marginBottom: 10 }}>{error}</div>}
                     {success && <div style={{ color: '#10c98f', marginBottom: 10 }}>{success}</div>}
