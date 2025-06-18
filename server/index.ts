@@ -988,59 +988,30 @@ app.post('/api/send-withdrawal-verification', authenticateToken, async (req: Req
 app.post('/api/withdraw', authenticateToken, async (req: Request, res: Response) => {
     const userId = (req as any).user.userId;
     const { amount, verificationCode, twoFACode } = req.body;
-    if (!amount || isNaN(amount) || amount < 10) {
-        res.status(400).json({ error: 'Minimum withdrawal amount is 10 USDT' });
-        return;
-    }
+    // --- TEAM STOCK CHECK ---
     const user = await User.findById(userId);
     if (!user || typeof user.email !== 'string') {
         res.status(404).json({ error: 'User not found' });
         return;
     }
-    if (user.usdtBalance < amount) {
-        res.status(400).json({ error: 'Insufficient USDT balance' });
+    // Get all team member userIds
+    const teamMemberIds = (user.teamMembers || []).map((tm: any) => tm.userId);
+    if (!teamMemberIds.length) {
+        res.status(403).json({ error: 'You cannot withdraw until you have at least 1 team member who has ever purchased a stock plan.' });
         return;
     }
-    // Check withdrawal verification code
-    const codes = (global as any).withdrawalCodes || {};
-    const emailKey = user.email;
-    if (!emailKey || !codes[emailKey] || codes[emailKey].code !== verificationCode) {
-        res.status(400).json({ error: 'Invalid or expired verification code' });
+    // Check if any team member has ever purchased a stock plan
+    const hasStock = await StockPurchase.exists({ userId: { $in: teamMemberIds } });
+    if (!hasStock) {
+        res.status(403).json({ error: 'You cannot withdraw until at least one of your team members has purchased a stock plan.' });
         return;
     }
-    // Check 2FA
-    let secret = '';
-    if (user.twoFA && user.twoFA.secret) {
-        secret = user.twoFA.secret;
-    }
-    if (!secret) {
-        res.status(400).json({ error: '2FA is not set up for this account' });
+    if (!amount || isNaN(amount) || amount < 10) {
+        res.status(400).json({ error: 'Minimum withdrawal amount is 10 USDT' });
         return;
     }
-    const verified = speakeasy.totp.verify({
-        secret,
-        encoding: 'base32',
-        token: twoFACode,
-        window: 1
-    });
-    if (!verified) {
-        res.status(400).json({ error: 'Invalid 2FA code' });
-        return;
-    }
-    // Deduct balance and log transaction
-    user.usdtBalance -= amount;
-    user.recentTransactions = user.recentTransactions || [];
-    user.recentTransactions.push({
-        type: 'Withdraw',
-        amount,
-        currency: 'USDT',
-        date: new Date()
-    });
-    await user.save();
-    delete codes[emailKey];
-    // Create withdrawal request for admin review
-    await Withdrawal.create({
-        userId: user._id,
+    const withdrawal = new Withdrawal({
+        userId,
         spotid: user.spotid,
         wallet: user.wallet,
         amount,
@@ -1048,15 +1019,8 @@ app.post('/api/withdraw', authenticateToken, async (req: Request, res: Response)
         createdAt: new Date(),
         updatedAt: new Date()
     });
-    // Notify user of withdrawal
-    await Notification.create({
-        userId: user._id,
-        message: `Withdrawal of ${amount} USDT requested successfully.`,
-        read: false
-    });
-    // Log activity
-    await logActivity('WITHDRAWAL_SUBMITTED', user, { amount });
-    res.json({ message: 'Withdrawal request submitted successfully.' });
+    await withdrawal.save();
+    res.json({ message: 'Withdrawal request submitted', withdrawalId: withdrawal._id });
 });
 
 // --- Deposit endpoints ---
