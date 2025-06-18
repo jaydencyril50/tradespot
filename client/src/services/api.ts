@@ -270,3 +270,11 @@ export const sendProChatMessage = async (userEmail: string, spotid: string, mess
   const res = await axios.post(`${API}/api/chat`, { userEmail, spotid, message, imageUrl });
   return res.data;
 };
+
+// Fetch ProChat messages for a user and spotid
+export async function fetchProChatMessages(userEmail: string, spotid: string) {
+  const response = await fetch(`${API}/api/chat?userEmail=${encodeURIComponent(userEmail)}&spotid=${encodeURIComponent(spotid)}`);
+  if (!response.ok) throw new Error('Failed to fetch chat messages');
+  const data = await response.json();
+  return data.chats;
+}

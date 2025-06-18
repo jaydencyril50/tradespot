@@ -18,4 +18,18 @@ router.post('/', async (req, res) => {
   }
 });
 
+// GET /api/chat - Fetch all chat messages for a user/spotid
+router.get('/', async (req, res) => {
+  try {
+    const { userEmail, spotid } = req.query;
+    if (!userEmail || !spotid) {
+      return res.status(400).json({ error: 'Missing required query parameters' });
+    }
+    const chats = await Chat.find({ userEmail, spotid }).sort({ createdAt: 1 });
+    res.status(200).json({ success: true, chats });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch chat messages' });
+  }
+});
+
 export default router;

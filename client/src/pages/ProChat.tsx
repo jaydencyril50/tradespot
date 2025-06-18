@@ -1,22 +1,40 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 const ProChat: React.FC = () => {
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<any[]>([]); // Store array of chat objects
   const [input, setInput] = useState('');
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSend = async () => {
-    if (input.trim()) {
-      // Get user email and spotid from localStorage (or auth context if available)
+  // Fetch messages on mount
+  useEffect(() => {
+    const fetchMessages = async () => {
       const userEmail = localStorage.getItem('userEmail') || '';
       const spotid = localStorage.getItem('spotid') || '';
-      setMessages(prev => [...prev, input]);
+      try {
+        // @ts-ignore
+        const { fetchProChatMessages } = await import('../services/api');
+        const chats = await fetchProChatMessages(userEmail, spotid);
+        setMessages(chats);
+      } catch (err) {
+        // Optionally handle error
+      }
+    };
+    fetchMessages();
+  }, []);
+
+  const handleSend = async () => {
+    if (input.trim()) {
+      const userEmail = localStorage.getItem('userEmail') || '';
+      const spotid = localStorage.getItem('spotid') || '';
       setInput('');
       try {
         // @ts-ignore
-        const { sendProChatMessage } = await import('../services/api');
+        const { sendProChatMessage, fetchProChatMessages } = await import('../services/api');
         await sendProChatMessage(userEmail, spotid, input);
+        // Refetch messages after sending
+        const chats = await fetchProChatMessages(userEmail, spotid);
+        setMessages(chats);
       } catch (err) {
         // Optionally handle error
       }
@@ -59,7 +77,7 @@ const ProChat: React.FC = () => {
           </p>
         )}
         {messages.map((msg, idx) => (
-          <div key={idx} style={{
+          <div key={msg._id || idx} style={{
             alignSelf: 'flex-end',
             background: '#2563eb',
             color: '#fff',
@@ -69,7 +87,7 @@ const ProChat: React.FC = () => {
             fontSize: 15,
             wordBreak: 'break-word'
           }}>
-            {msg}
+            {msg.message}
           </div>
         ))}
         <div ref={chatEndRef} />
