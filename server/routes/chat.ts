@@ -6,11 +6,11 @@ const router = express.Router();
 // POST /api/chat - Save a new chat message
 router.post('/', async (req, res) => {
   try {
-    const { userEmail, spotid, message, imageUrl } = req.body;
-    if (!userEmail || !spotid || !message) {
+    const { userEmail, message, imageUrl } = req.body;
+    if (!userEmail || !message) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-    const chat = new Chat({ userEmail, spotid, message, imageUrl });
+    const chat = new Chat({ userEmail, message, imageUrl });
     await chat.save();
     res.status(201).json({ success: true, chat });
   } catch (err) {
@@ -18,14 +18,14 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET /api/chat - Fetch all chat messages for a user/spotid
+// GET /api/chat - Fetch all chat messages for a user
 router.get('/', async (req, res) => {
   try {
-    const { userEmail, spotid } = req.query;
-    if (!userEmail || !spotid) {
+    const { userEmail } = req.query;
+    if (!userEmail) {
       return res.status(400).json({ error: 'Missing required query parameters' });
     }
-    const chats = await Chat.find({ userEmail, spotid }).sort({ createdAt: 1 });
+    const chats = await Chat.find({ userEmail }).sort({ createdAt: 1 });
     res.status(200).json({ success: true, chats });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch chat messages' });

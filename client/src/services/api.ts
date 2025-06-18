@@ -265,15 +265,16 @@ export const getAdminTeamUsers = async () => {
     return res.data;
 };
 
-export const sendProChatMessage = async (userEmail: string, spotid: string, message: string, imageUrl?: string) => {
+export const sendProChatMessage = async (userEmail: string, message: string, imageUrl?: string) => {
   const API = process.env.REACT_APP_API_BASE_URL;
-  const res = await axios.post(`${API}/api/chat`, { userEmail, spotid, message, imageUrl });
+  const res = await axios.post(`${API}/api/chat`, { userEmail, message, imageUrl });
   return res.data;
 };
 
-// Fetch ProChat messages for a user and spotid
-export async function fetchProChatMessages(userEmail: string, spotid: string) {
-  const response = await fetch(`${API}/api/chat?userEmail=${encodeURIComponent(userEmail)}&spotid=${encodeURIComponent(spotid)}`);
+// Fetch ProChat messages for a user
+export async function fetchProChatMessages(userEmail: string) {
+  const API = process.env.REACT_APP_API_BASE_URL;
+  const response = await fetch(`${API}/api/chat?userEmail=${encodeURIComponent(userEmail)}`);
   if (!response.ok) throw new Error('Failed to fetch chat messages');
   const data = await response.json();
   return data.chats;

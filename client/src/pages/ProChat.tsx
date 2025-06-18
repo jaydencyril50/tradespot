@@ -10,11 +10,10 @@ const ProChat: React.FC = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       const userEmail = localStorage.getItem('userEmail') || '';
-      const spotid = localStorage.getItem('spotid') || '';
       try {
         // @ts-ignore
         const { fetchProChatMessages } = await import('../services/api');
-        const chats = await fetchProChatMessages(userEmail, spotid);
+        const chats = await fetchProChatMessages(userEmail);
         setMessages(chats);
       } catch (err) {
         // Optionally handle error
@@ -26,14 +25,13 @@ const ProChat: React.FC = () => {
   const handleSend = async () => {
     if (input.trim()) {
       const userEmail = localStorage.getItem('userEmail') || '';
-      const spotid = localStorage.getItem('spotid') || '';
       setInput('');
       try {
         // @ts-ignore
         const { sendProChatMessage, fetchProChatMessages } = await import('../services/api');
-        await sendProChatMessage(userEmail, spotid, input);
+        await sendProChatMessage(userEmail, input);
         // Refetch messages after sending
-        const chats = await fetchProChatMessages(userEmail, spotid);
+        const chats = await fetchProChatMessages(userEmail);
         setMessages(chats);
       } catch (err) {
         // Optionally handle error
