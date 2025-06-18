@@ -17,6 +17,7 @@ import Trash from './models/Trash';
 import trashRoutes from './routes/trash';
 import Chat from './models/Chat';
 import chatRoutes from './routes/chat';
+import User from './models/User';
 
 dotenv.config();
 
@@ -42,65 +43,6 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 mongoose.connect(MONGO_URI)
 .then(() => console.log('MongoDB connected'))
 .catch((err: any) => console.error('MongoDB connection error:', err));
-
-const userSchema = new mongoose.Schema({
-    fullName: String,
-    email: { type: String, unique: true },
-    password: String,
-    wallet: String,
-    usdtBalance: { type: Number, default: 0 },
-    spotBalance: { type: Number, default: 0 },
-    recentTransactions: {
-        type: [
-            {
-                type: { type: String },
-                amount: Number,
-                currency: String,
-                date: Date
-            }
-        ],
-        default: []
-    },
-    profilePicture: String, // Add profilePicture field to schema
-    referralCode: { type: String, unique: true, required: true },
-    referredBy: String, // referral code of the user who referred
-    teamMembers: [
-        {
-            userId: mongoose.Schema.Types.ObjectId,
-            joinedAt: Date
-        }
-    ],
-    spotid: { type: String, unique: true, required: true }, // Add spotid field
-    fundsLocked: { type: Boolean, default: false } // Add this field
-});
-userSchema.add({
-    twoFA: {
-        enabled: { type: Boolean, default: false },
-        secret: { type: String, default: '' },
-    }
-});
-// Add a TypeScript interface for the User document to fix property errors
-interface IUser extends mongoose.Document {
-    fullName: string;
-    email: string;
-    password: string;
-    wallet: string;
-    usdtBalance: number;
-    spotBalance: number;
-    recentTransactions: Array<any>;
-    profilePicture?: string;
-    referralCode: string;
-    referredBy?: string;
-    teamMembers: Array<{ userId: mongoose.Types.ObjectId; joinedAt: Date }>;
-    spotid: string;
-    twoFA?: {
-        enabled: boolean;
-        secret?: string;
-    };
-    fundsLocked: boolean;
-}
-
-const User = mongoose.model<IUser>('User', userSchema);
 
 // Stock schema (available stocks in the market)
 const stockSchema = new mongoose.Schema({
