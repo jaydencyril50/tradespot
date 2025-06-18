@@ -852,7 +852,7 @@ const Dashboard: React.FC = () => {
 							boxShadow: '0 2px 8px rgba(30,60,114,0.10)'
 						}}
 						title="WhatsApp"
-						onClick={() => window.open('https://wa.me/1234567890', '_blank')}
+						onClick={() => window.open('', '_blank')}
 					>
 						<FaWhatsapp size={28} color="#25D366" />
 					</button>

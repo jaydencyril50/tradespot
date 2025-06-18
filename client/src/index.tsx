@@ -31,100 +31,103 @@ import AdminRecent from './pages/AdminRecent';
 import AdminDeposit from './pages/AdminDeposit';
 import AdminTeam from './pages/AdminTeam';
 import Trash from './pages/Trash';
+import { NetworkStatusProvider } from './NetworkStatusProvider';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Root container missing in index.html');
 const root = ReactDOM.createRoot(container);
 root.render(
   <React.StrictMode>
-    <ThemeProvider>
-      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          {/* Admin login route */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          {/* Add more admin/protected routes here later */}
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="/profile" element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          } />
-          <Route path="/team" element={
-            <ProtectedRoute>
-              <Team />
-            </ProtectedRoute>
-          } />
-          <Route path="/market" element={
-            <ProtectedRoute>
-              <Market />
-            </ProtectedRoute>
-          } />
-          <Route path="/settings" element={
-            <ProtectedRoute>
-              <Settings />
-            </ProtectedRoute>
-          } />
-          <Route path="/settings/edit-basic" element={
-            <ProtectedRoute>
-              <EditBasicSettings />
-            </ProtectedRoute>
-          } />
-          <Route path="/settings/privacy" element={
-            <ProtectedRoute>
-              <PrivacySettings />
-            </ProtectedRoute>
-          } />
-          <Route path="/settings/additional" element={
-            <ProtectedRoute>
-              <AdditionalSettings />
-            </ProtectedRoute>
-          } />
-          <Route path="/deposit" element={
-            <ProtectedRoute>
-              <Deposit />
-            </ProtectedRoute>
-          } />
-          <Route path="/withdraw" element={
-            <ProtectedRoute>
-              <Withdraw />
-            </ProtectedRoute>
-          } />
-          <Route path="/settings/2fa" element={
-            <ProtectedRoute>
-              <TwoFASettings />
-            </ProtectedRoute>
-          } />
-          <Route path="/transaction-history" element={
-            <ProtectedRoute>
-              <TransactionHistory />
-            </ProtectedRoute>
-          } />
-          <Route path="/notifications" element={
-            <ProtectedRoute>
-              <NotificationsPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
-          <Route path="/admin/stocks" element={<AdminActiveStocks />} />
-          <Route path="/admin/withdrawals" element={<AdminWithdrawals />} />
-          <Route path="/admin/notice" element={<AdminNotice />} />
-          <Route path="/admin/messages" element={<AdminMessage />} />
-          <Route path="/admin/chat/:spotid" element={<AdminChat />} />
-          <Route path="/admin/recents" element={<AdminRecent />} />
-          <Route path="/admin/deposit" element={<AdminDeposit />} />
-          <Route path="/admin/team" element={<AdminTeam />} />
-          <Route path="/admin/trash" element={<Trash />} />
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+    <NetworkStatusProvider>
+      <ThemeProvider>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            {/* Admin login route */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            {/* Add more admin/protected routes here later */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
+            <Route path="/team" element={
+              <ProtectedRoute>
+                <Team />
+              </ProtectedRoute>
+            } />
+            <Route path="/market" element={
+              <ProtectedRoute>
+                <Market />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings/edit-basic" element={
+              <ProtectedRoute>
+                <EditBasicSettings />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings/privacy" element={
+              <ProtectedRoute>
+                <PrivacySettings />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings/additional" element={
+              <ProtectedRoute>
+                <AdditionalSettings />
+              </ProtectedRoute>
+            } />
+            <Route path="/deposit" element={
+              <ProtectedRoute>
+                <Deposit />
+              </ProtectedRoute>
+            } />
+            <Route path="/withdraw" element={
+              <ProtectedRoute>
+                <Withdraw />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings/2fa" element={
+              <ProtectedRoute>
+                <TwoFASettings />
+              </ProtectedRoute>
+            } />
+            <Route path="/transaction-history" element={
+              <ProtectedRoute>
+                <TransactionHistory />
+              </ProtectedRoute>
+            } />
+            <Route path="/notifications" element={
+              <ProtectedRoute>
+                <NotificationsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/stocks" element={<AdminActiveStocks />} />
+            <Route path="/admin/withdrawals" element={<AdminWithdrawals />} />
+            <Route path="/admin/notice" element={<AdminNotice />} />
+            <Route path="/admin/messages" element={<AdminMessage />} />
+            <Route path="/admin/chat/:spotid" element={<AdminChat />} />
+            <Route path="/admin/recents" element={<AdminRecent />} />
+            <Route path="/admin/deposit" element={<AdminDeposit />} />
+            <Route path="/admin/team" element={<AdminTeam />} />
+            <Route path="/admin/trash" element={<Trash />} />
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
+    </NetworkStatusProvider>
   </React.StrictMode>
 );
