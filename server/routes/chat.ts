@@ -4,7 +4,7 @@ import User from '../models/User';
 import jwt from 'jsonwebtoken';
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+const JWT_SECRET = process.env.JWT_SECRET || '08142391074@Kjl';
 
 // Extend Express Request type to include user
 interface AuthRequest extends Request {
