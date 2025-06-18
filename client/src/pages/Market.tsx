@@ -233,6 +233,10 @@ const Market: React.FC = () => {
           <FaHistory size={22} color="#25324B" />
         </button>
       </div>
+      {/* Info text below header */}
+      <div style={{ width: '100%', textAlign: 'center', marginBottom: 16, fontSize: 15, color: '#1e3c72', fontWeight: 600, letterSpacing: 0.2 }}>
+        (All Stock Plans Are active for 365days)
+      </div>
       <div className="market-cards-row">
         {products.map((product) => {
           // Remove date/time from display name
