@@ -98,11 +98,11 @@ const Team: React.FC = () => {
         </div>
         {/* Members List Cards */}
         {loading ? (
-          <div style={{ background: '#fff', boxShadow: '0 1px 4px rgba(30,60,114,0.10)', border: '1px solid #e3e6ef', borderRadius: 0, padding: 18, width: '100%', maxWidth: 380, textAlign: 'center', fontSize: 16 }}>Loading...</div>
+          <div style={{ background: '#fff', boxShadow: '0 1px 4px rgba(30,60,114,0.10)', border: '1px solid #e3e6ef', borderRadius: 0, padding: 18, width: '100%', maxWidth: 380, textAlign: 'center', fontSize: 16, marginBottom: 20 }}>Loading...</div>
         ) : members.length === 0 ? (
-          <div style={{ background: '#fff', boxShadow: '0 1px 4px rgba(30,60,114,0.10)', border: '1px solid #e3e6ef', borderRadius: 0, padding: 18, width: '100%', maxWidth: 380, textAlign: 'center', fontSize: 16 }}>No team members yet.</div>
+          <div style={{ background: '#fff', boxShadow: '0 1px 4px rgba(30,60,114,0.10)', border: '1px solid #e3e6ef', borderRadius: 0, padding: 18, width: '100%', maxWidth: 380, textAlign: 'center', fontSize: 16, marginBottom: 20 }}>No team members yet.</div>
         ) : (
-          members.map((member: any) => (
+          members.map((member: any, idx: number) => (
             <div
               key={member.id}
               style={{
@@ -115,7 +115,7 @@ const Team: React.FC = () => {
                 maxWidth: 380,
                 width: '100%',
                 textAlign: 'center',
-                marginBottom: 0,
+                marginBottom: idx === members.length - 1 ? 20 : 0,
                 fontFamily: 'inherit',
                 height: 120,
                 display: 'flex',

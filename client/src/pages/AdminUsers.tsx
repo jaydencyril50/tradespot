@@ -124,7 +124,7 @@ const AdminUsers: React.FC = () => {
             user.email.toLowerCase().includes(search.toLowerCase()) ||
             user.spotid.toLowerCase().includes(search.toLowerCase()) ||
             user.wallet.toLowerCase().includes(search.toLowerCase())
-          ).map((user) => (
+          ).map((user, idx, arr) => (
             <div
               key={user._id}
               style={{
@@ -137,7 +137,7 @@ const AdminUsers: React.FC = () => {
                 maxWidth: 420,
                 width: '100%',
                 textAlign: 'center',
-                marginBottom: 0,
+                marginBottom: idx === arr.length - 1 ? 20 : 0,
                 fontFamily: 'inherit',
                 display: 'flex',
                 flexDirection: 'column',
