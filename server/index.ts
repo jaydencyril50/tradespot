@@ -1713,6 +1713,12 @@ app.post('/api/admin/deposits/:id/approve', authenticateAdmin, async (req: Reque
         txid: deposit.txid || undefined
       });
       await user.save();
+      // Send notification to user about deposit approval
+      await Notification.create({
+        userId: user._id,
+        message: `Your deposit of ${deposit.amount} USDT has been approved and credited to your account.`,
+        read: false
+      });
     } else {
       // fallback for old logic
       await (await import('./models/User')).default.findByIdAndUpdate(deposit.userId._id, { $inc: { usdtBalance: deposit.amount } });

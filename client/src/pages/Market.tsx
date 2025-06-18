@@ -372,7 +372,7 @@ const Market: React.FC = () => {
                     {history.length === 0 && <tr><td colSpan={4} style={{ textAlign: 'center', padding: 16, color: '#888' }}>No history found.</td></tr>}
                     {history.map((h, i) => (
                       <tr key={i} style={{ background: i % 2 === 0 ? '#fff' : '#f7f8fa', transition: 'background 0.2s' }} onMouseOver={e => (e.currentTarget.style.background = '#eaf1fb')} onMouseOut={e => (e.currentTarget.style.background = i % 2 === 0 ? '#fff' : '#f7f8fa')}>
-                        <td style={{ padding: 10, border: 'none', fontWeight: 600, color: '#25324B' }}>{h.stockName || h.planName || ''}</td>
+                        <td style={{ padding: 10, border: 'none', fontWeight: 600, color: '#25324B' }}>{h.planName || ''}</td>
                         <td style={{ padding: 10, border: 'none', color: '#10c98f', fontWeight: 700 }}>{h.purchaseAmount}</td>
                         <td style={{ padding: 10, border: 'none', color: '#2a5298' }}>{h.startDate ? new Date(h.startDate).toLocaleString() : '-'}</td>
                         <td style={{ padding: 10, border: 'none', color: '#e67e22' }}>{h.expiresAt ? new Date(h.expiresAt).toLocaleString() : '-'}</td>
