@@ -48,7 +48,7 @@ export const NetworkStatusProvider: React.FC<{ children: React.ReactNode }> = ({
             animation: 'fadeInDown 0.3s ease',
             zIndex: 10000,
           }}>
-            🌐 currently offline. Please check your connection.
+            🌐 You're currently offline. Please check your connection.
           </div>
         </div>
       )}
