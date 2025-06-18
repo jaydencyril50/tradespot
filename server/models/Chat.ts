@@ -7,5 +7,7 @@ const chatSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-const Chat = mongoose.models.Chat || mongoose.model('Chat', chatSchema);
+// Use global to avoid OverwriteModelError in dev/hot-reload and production
+const Chat = (global as any).Chat || mongoose.models.Chat || mongoose.model('Chat', chatSchema);
+(global as any).Chat = Chat;
 export default Chat;
