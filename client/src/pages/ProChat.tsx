@@ -32,7 +32,7 @@ const ProChat: React.FC = () => {
       try {
         // Replace with actual user email if available in your app context
         const userEmail = localStorage.getItem('userEmail') || 'anonymous@user.com';
-        const response = await fetch('/api/chat', {
+        const response = await fetch(`${API}/api/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userEmail, message: input })
