@@ -57,6 +57,8 @@ dotenv.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+// Mount chat routes for ProChat functionality
+app.use('/api/chat', chat_1.default);
 // --- SOCKET.IO SETUP ---
 const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(server, {
@@ -247,7 +249,6 @@ app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function
     const token = jsonwebtoken_1.default.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
     res.json({ token, user: { id: user._id, fullName: user.fullName, email: user.email, wallet: user.wallet, usdtBalance: user.usdtBalance, spotBalance: user.spotBalance } });
 }));
-app.use('/api/chat', chat_1.default);
 // Admin login endpoint
 app.post('/auth/admin/login', function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {

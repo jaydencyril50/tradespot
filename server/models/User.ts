@@ -35,5 +35,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-const User = mongoose.models.User || mongoose.model('User', userSchema);
+// Use global to avoid OverwriteModelError in dev/hot-reload
+const User = (global as any).User || mongoose.model('User', userSchema);
+(global as any).User = User;
 export default User;
