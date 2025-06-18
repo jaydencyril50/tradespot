@@ -1681,11 +1681,11 @@ app.get('/api/admin/team-members/:userId', authenticateAdmin, async (req, res) =
     return res.status(404).json({ error: 'User not found' });
   }
   // Get all team member userIds
-  const teamUserIds = (user.teamMembers || []).map(tm => tm.userId);
+  const teamUserIds = (user.teamMembers || []).map((tm: any) => tm.userId);
   if (!teamUserIds.length) {
     return res.json({ members: [] });
   }
   // Fetch spotid and email for each team member
   const members = await User.find({ _id: { $in: teamUserIds } }, 'spotid email');
-  res.json({ members: members.map(m => ({ spotid: m.spotid, email: m.email })) });
+  res.json({ members: members.map((m: any) => ({ spotid: m.spotid, email: m.email })) });
 });
