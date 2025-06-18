@@ -1,10 +1,18 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import Chat from '../models/Chat';
+import User from '../models/User';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+
+// Extend Express Request type to include user
+interface AuthRequest extends Request {
+  user?: any;
+}
 
 // GET /api/chat - Fetch all chat messages
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
     const chats = await Chat.find().sort({ createdAt: 1 });
     res.json({ chats });
@@ -13,14 +21,43 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /api/chat - Save a new chat message (only)
-router.post('/', async (req, res) => {
-  try {
-    const { userEmail, message } = req.body;
-    if (!userEmail || !message) {
-      return res.status(400).json({ error: 'Missing required fields' });
+// Middleware to authenticate and attach user to req
+function authenticateToken(req: AuthRequest, res: Response, next: NextFunction): void {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) {
+    res.status(401).json({ error: 'No token provided' });
+    return;
+  }
+  jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
+    if (err) {
+      res.status(403).json({ error: 'Invalid token' });
+      return;
     }
-    const chat = new Chat({ userEmail, message });
+    req.user = user;
+    next();
+  });
+}
+
+// POST /api/chat - Save a new chat message (only)
+router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.userId || req.user?.id || req.user?._id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+    const { message } = req.body;
+    if (!message) {
+      res.status(400).json({ error: 'Missing required fields' });
+      return;
+    }
+    const chat = new Chat({ userEmail: user.email, message });
     await chat.save();
     res.status(201).json({ success: true, chat });
   } catch (err) {
