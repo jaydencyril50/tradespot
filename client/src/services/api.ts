@@ -265,4 +265,8 @@ export const getAdminTeamUsers = async () => {
     return res.data;
 };
 
-// All axios requests use `${API}/...` for endpoint URLs
+export const sendProChatMessage = async (userEmail: string, spotid: string, message: string, imageUrl?: string) => {
+  const API = process.env.REACT_APP_API_BASE_URL;
+  const res = await axios.post(`${API}/api/chat`, { userEmail, spotid, message, imageUrl });
+  return res.data;
+};

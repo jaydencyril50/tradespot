@@ -858,25 +858,25 @@ const Dashboard: React.FC = () => {
 					</button>
 					{/* Chat Icon */}
 					<button
-		style={{
-			width: 48,
-			height: 48,
-			background: '#fff',
-			border: 'none',
-			borderRadius: 12,
-			display: 'flex',
-			alignItems: 'center',
-			justifyContent: 'center',
-			cursor: 'pointer',
-			margin: 0,
-			padding: 0,
-			boxShadow: '0 2px 8px rgba(30,60,114,0.10)'
-		}}
-		title="Chat"
-		onClick={() => navigate('/chat')}
-	>
-		<ChatIcon size={28} color="#25324B" />
-	</button>
+				style={{
+					width: 48,
+					height: 48,
+					background: '#fff',
+					border: 'none',
+					borderRadius: 12,
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center',
+					cursor: 'pointer',
+					margin: 0,
+					padding: 0,
+					boxShadow: '0 2px 8px rgba(30,60,114,0.10)'
+				}}
+				title="Chat"
+				onClick={() => navigate('/prochat')}
+			>
+				<ChatIcon size={28} color="#25324B" />
+			</button>
 				</div>
 				{/* End social/contact buttons row */}
 			</div>
