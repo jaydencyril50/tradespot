@@ -51,6 +51,8 @@ const Announcement_1 = __importDefault(require("./models/Announcement"));
 const Activity_1 = __importDefault(require("./models/Activity"));
 const DepositSession_1 = __importDefault(require("./models/DepositSession"));
 const trash_1 = __importDefault(require("./routes/trash"));
+const Chat_1 = __importDefault(require("./models/Chat"));
+const chat_1 = __importDefault(require("./routes/chat"));
 dotenv.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
@@ -119,6 +121,7 @@ const Stock = mongoose_1.default.model('Stock', stockSchema);
 const stockPurchaseSchema = new mongoose_1.default.Schema({
     userId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User' },
     stockId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Stock' },
+    planName: String,
     purchaseAmount: Number,
     profit: Number,
     startDate: { type: Date, default: Date.now },
@@ -244,6 +247,7 @@ app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function
     const token = jsonwebtoken_1.default.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
     res.json({ token, user: { id: user._id, fullName: user.fullName, email: user.email, wallet: user.wallet, usdtBalance: user.usdtBalance, spotBalance: user.spotBalance } });
 }));
+app.use('/api/chat', chat_1.default);
 // Admin login endpoint
 app.post('/auth/admin/login', function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -452,6 +456,7 @@ app.post('/api/stock/purchase', authenticateToken, (req, res) => __awaiter(void 
     const purchase = new StockPurchase({
         userId,
         stockId: stock._id,
+        planName: stock.name,
         purchaseAmount: stock.purchaseAmount,
         profit: stock.profit,
         startDate: new Date(),
@@ -582,15 +587,6 @@ node_cron_1.default.schedule('0 * * * *', () => __awaiter(void 0, void 0, void 0
     }
     yield Stock.insertMany(plans);
     console.log('Regenerated 50 random stock plans at', now.toISOString());
-    // Notify all users of market refresh
-    const allUsers = yield User.find({}, '_id');
-    for (const u of allUsers) {
-        yield Notification.create({
-            userId: u._id,
-            message: 'Market refreshed: New stock plans are now available.',
-            read: false
-        });
-    }
 }));
 app.post('/api/transfer', authenticateToken, (req, res) => {
     (() => __awaiter(void 0, void 0, void 0, function* () {
@@ -971,59 +967,30 @@ app.post('/api/send-withdrawal-verification', authenticateToken, (req, res) => _
 app.post('/api/withdraw', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
     const { amount, verificationCode, twoFACode } = req.body;
-    if (!amount || isNaN(amount) || amount < 10) {
-        res.status(400).json({ error: 'Minimum withdrawal amount is 10 USDT' });
-        return;
-    }
+    // --- TEAM STOCK CHECK ---
     const user = yield User.findById(userId);
     if (!user || typeof user.email !== 'string') {
         res.status(404).json({ error: 'User not found' });
         return;
     }
-    if (user.usdtBalance < amount) {
-        res.status(400).json({ error: 'Insufficient USDT balance' });
+    // Get all team member userIds
+    const teamMemberIds = (user.teamMembers || []).map((tm) => tm.userId);
+    if (!teamMemberIds.length) {
+        res.status(403).json({ error: 'You cannot withdraw until you have at least 1 team member who has ever purchased a stock plan.' });
         return;
     }
-    // Check withdrawal verification code
-    const codes = global.withdrawalCodes || {};
-    const emailKey = user.email;
-    if (!emailKey || !codes[emailKey] || codes[emailKey].code !== verificationCode) {
-        res.status(400).json({ error: 'Invalid or expired verification code' });
+    // Check if any team member has ever purchased a stock plan
+    const hasStock = yield StockPurchase.exists({ userId: { $in: teamMemberIds } });
+    if (!hasStock) {
+        res.status(403).json({ error: 'You cannot withdraw until at least one of your team members has purchased a stock plan.' });
         return;
     }
-    // Check 2FA
-    let secret = '';
-    if (user.twoFA && user.twoFA.secret) {
-        secret = user.twoFA.secret;
-    }
-    if (!secret) {
-        res.status(400).json({ error: '2FA is not set up for this account' });
+    if (!amount || isNaN(amount) || amount < 10) {
+        res.status(400).json({ error: 'Minimum withdrawal amount is 10 USDT' });
         return;
     }
-    const verified = speakeasy_1.default.totp.verify({
-        secret,
-        encoding: 'base32',
-        token: twoFACode,
-        window: 1
-    });
-    if (!verified) {
-        res.status(400).json({ error: 'Invalid 2FA code' });
-        return;
-    }
-    // Deduct balance and log transaction
-    user.usdtBalance -= amount;
-    user.recentTransactions = user.recentTransactions || [];
-    user.recentTransactions.push({
-        type: 'Withdraw',
-        amount,
-        currency: 'USDT',
-        date: new Date()
-    });
-    yield user.save();
-    delete codes[emailKey];
-    // Create withdrawal request for admin review
-    yield Withdrawal.create({
-        userId: user._id,
+    const withdrawal = new Withdrawal({
+        userId,
         spotid: user.spotid,
         wallet: user.wallet,
         amount,
@@ -1031,15 +998,8 @@ app.post('/api/withdraw', authenticateToken, (req, res) => __awaiter(void 0, voi
         createdAt: new Date(),
         updatedAt: new Date()
     });
-    // Notify user of withdrawal
-    yield Notification.create({
-        userId: user._id,
-        message: `Withdrawal of ${amount} USDT requested successfully.`,
-        read: false
-    });
-    // Log activity
-    yield logActivity('WITHDRAWAL_SUBMITTED', user, { amount });
-    res.json({ message: 'Withdrawal request submitted successfully.' });
+    yield withdrawal.save();
+    res.json({ message: 'Withdrawal request submitted', withdrawalId: withdrawal._id });
 }));
 // --- Deposit endpoints ---
 // Remove demo in-memory pendingDeposits
@@ -1361,19 +1321,37 @@ app.get('/api/admin/deposits', authenticateAdmin, (req, res) => __awaiter(void 0
 }));
 // Admin: Reject withdrawal
 app.post('/admin/withdrawals/:id/reject', asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     // TODO: Add admin authentication
     const withdrawal = yield Withdrawal.findById(req.params.id);
     if (!withdrawal)
         return res.status(404).json({ error: 'Withdrawal not found' });
+    if (withdrawal.status === 'rejected') {
+        return res.status(400).json({ error: 'Withdrawal already rejected' });
+    }
     withdrawal.status = 'rejected';
     withdrawal.updatedAt = new Date();
     yield withdrawal.save();
+    // Refund amount to user
+    const user = yield User.findById(withdrawal.userId);
+    if (user) {
+        user.usdtBalance += (_a = withdrawal.amount) !== null && _a !== void 0 ? _a : 0;
+        user.recentTransactions = user.recentTransactions || [];
+        user.recentTransactions.push({
+            type: 'Withdrawal Refund',
+            amount: (_b = withdrawal.amount) !== null && _b !== void 0 ? _b : 0,
+            currency: 'USDT',
+            date: new Date(),
+            note: 'Withdrawal rejected by admin'
+        });
+        yield user.save();
+    }
     // Notify user of rejection
     yield Notification.create({
         userId: withdrawal.userId,
-        message: `Your withdrawal of ${withdrawal.amount} USDT was rejected by admin.`
+        message: `Your withdrawal of ${withdrawal.amount} USDT was rejected by admin. Amount has been refunded to your balance.`
     });
-    res.json({ message: 'Withdrawal rejected and user notified' });
+    res.json({ message: 'Withdrawal rejected, user notified, and amount refunded' });
 })));
 // --- ANNOUNCEMENT ENDPOINTS ---
 app.get('/api/announcement', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -1501,35 +1479,48 @@ node_cron_1.default.schedule('0 * * * *', () => __awaiter(void 0, void 0, void 0
         console.error('[Activity Cleanup] Error:', err);
     }
 }));
-app.use('/api/trash', trash_1.default);
+app.use('/api/admin/trash', trash_1.default);
+// --- CHAT ENDPOINTS ---
+app.post('/api/chat', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userEmail, spotid, message, imageUrl } = req.body;
+        if (!userEmail || !spotid || !message) {
+            return res.status(400).json({ error: 'userEmail, spotid, and message are required' });
+        }
+        const chat = new Chat_1.default({ userEmail, spotid, message, imageUrl });
+        yield chat.save();
+        res.json({ chat });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to save chat message' });
+    }
+}));
 server.listen(5000, () => console.log('Server running on port 5000'));
-// --- EMAIL STYLING UTILITY ---
+// --- EMAIL STYLING UTILITY (PRO CENTERED EDITION - COMPACT HEADER) ---
 function getStyledEmailHtml(subject, body) {
     return `
-    <div style="background:#f4f6fb;padding:0;margin:0;font-family:'Segoe UI',Arial,sans-serif;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6fb;padding:0;margin:0;">
+    <div style="background-color:#f4f6fb;padding:0;margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;">
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#f4f6fb;margin:0;padding:0;">
         <tr>
-          <td align="center" style="padding:48px 0 32px 0;">
-            <table width="480" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;box-shadow:0 4px 32px rgba(30,60,114,0.10);padding:0;overflow:hidden;">
+          <td align="center" style="padding:40px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;background-color:#ffffff;border-radius:12px;border:1px solid #e0e6ed;box-shadow:0 10px 30px rgba(18,38,63,0.1);text-align:center;">
               <tr>
-                <td align="center" style="background:#1e3c72;padding:40px 0 24px 0;">
-                  <span style="display:block;font-size:40px;font-weight:900;letter-spacing:2px;color:#fff;line-height:1.1;">TRADESPOT</span>
+                <td style="background:#1e3c72;padding:20px 16px;text-align:center;border-top-left-radius:12px;border-top-right-radius:12px;">
+                  <h1 style="margin:0;font-size:24px;font-weight:800;color:#ffffff;letter-spacing:1px;">TRADESPOT</h1>
                 </td>
               </tr>
               <tr>
-                <td style="padding:32px 36px 0 36px;">
-                  <h2 style="color:#1e3c72;font-size:24px;font-weight:700;margin:0 0 18px 0;letter-spacing:1px;">${subject}</h2>
-                  <div style="font-size:17px;color:#25324B;margin-bottom:18px;line-height:1.7;">
+                <td style="padding:32px 24px 16px 24px;text-align:center;">
+                  <h2 style="font-size:20px;color:#1e3c72;font-weight:700;margin:0 0 16px 0;">${subject}</h2>
+                  <p style="font-size:16px;line-height:1.6;color:#3a3a3a;margin:0;">
                     ${body}
-                  </div>
+                  </p>
                 </td>
               </tr>
               <tr>
-                <td style="padding:0 36px 32px 36px;">
-                  <div style="margin-top:32px;font-size:14px;color:#888;text-align:center;">
-                    If you did not request this, please ignore this email.<br>
-                    <span style="color:#1e3c72;font-weight:700;">Tradespot Security Team</span>
-                  </div>
+                <td style="padding:24px;text-align:center;font-size:13px;color:#8c94a4;border-top:1px solid #e6eaf0;">
+                  <p style="margin:0;">If you did not request this email, you can safely ignore it.</p>
+                  <p style="margin:4px 0 0 0;font-weight:600;color:#1e3c72;">— Tradespot Security Team</p>
                 </td>
               </tr>
             </table>
@@ -1659,7 +1650,30 @@ app.post('/api/admin/deposits/:id/approve', authenticateAdmin, (req, res) => __a
     deposit.status = 'approved';
     yield deposit.save();
     if (deposit.userId) {
-        yield (yield Promise.resolve().then(() => __importStar(require('./models/User')))).default.findByIdAndUpdate(deposit.userId._id, { $inc: { usdtBalance: deposit.amount } });
+        // Update balance and add to transaction history
+        const user = yield (yield Promise.resolve().then(() => __importStar(require('./models/User')))).default.findById(deposit.userId._id);
+        if (user) {
+            user.usdtBalance += deposit.amount;
+            user.recentTransactions = user.recentTransactions || [];
+            user.recentTransactions.push({
+                type: 'Deposit',
+                amount: deposit.amount,
+                currency: 'USDT',
+                date: new Date(),
+                txid: deposit.txid || undefined
+            });
+            yield user.save();
+            // Send notification to user about deposit approval
+            yield Notification.create({
+                userId: user._id,
+                message: `Your deposit of ${deposit.amount} USDT has been approved and credited to your account.`,
+                read: false
+            });
+        }
+        else {
+            // fallback for old logic
+            yield (yield Promise.resolve().then(() => __importStar(require('./models/User')))).default.findByIdAndUpdate(deposit.userId._id, { $inc: { usdtBalance: deposit.amount } });
+        }
     }
     res.json({ message: 'Deposit approved' });
 }));
@@ -1671,4 +1685,30 @@ app.post('/api/admin/deposits/:id/reject', authenticateAdmin, (req, res) => __aw
     deposit.status = 'rejected';
     yield deposit.save();
     res.json({ message: 'Deposit rejected' });
+}));
+// ADMIN: Get all users who have team members and the number of members they have
+app.get('/api/admin/team-users', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const users = yield User.find({ 'teamMembers.0': { $exists: true } });
+    const result = users.map((u) => ({
+        id: u._id,
+        fullName: u.fullName,
+        email: u.email,
+        teamCount: u.teamMembers.length
+    }));
+    res.json(result);
+}));
+app.get('/api/admin/team-members/:userId', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.params;
+    const user = yield User.findById(userId);
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+    // Get all team member userIds
+    const teamUserIds = (user.teamMembers || []).map(tm => tm.userId);
+    if (!teamUserIds.length) {
+        return res.json({ members: [] });
+    }
+    // Fetch spotid and email for each team member
+    const members = yield User.find({ _id: { $in: teamUserIds } }, 'spotid email');
+    res.json({ members: members.map(m => ({ spotid: m.spotid, email: m.email })) });
 }));

@@ -1,0 +1,15 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const mongoose_1 = __importDefault(require("mongoose"));
+const chatSchema = new mongoose_1.default.Schema({
+    userEmail: { type: String, required: true },
+    spotid: { type: String, required: true },
+    message: { type: String, required: true },
+    imageUrl: { type: String },
+    createdAt: { type: Date, default: Date.now }
+});
+const Chat = mongoose_1.default.models.Chat || mongoose_1.default.model('Chat', chatSchema);
+exports.default = Chat;
