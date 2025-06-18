@@ -12,7 +12,8 @@ const adminButtons = [
   { label: 'RECENTS', icon: '🕒' },
   { label: 'SOCIALS', icon: '🌐' },
   { label: 'TRASH', icon: '🗑️' },
-  { label: 'TEAM', icon: '👥' }, 
+  { label: 'TEAM', icon: '👥' },
+  { label: 'MESSAGE', icon: '✉️' }, // Added MESSAGE button
   { label: 'LOGOUT', icon: '🚪' }, 
 ];
 
@@ -84,6 +85,8 @@ const AdminDashboard: React.FC = () => {
                 navigate('/admin/trash');
               } else if (btn.label === 'TEAM') {
                 navigate('/admin/team');
+              } else if (btn.label === 'MESSAGE') {
+                navigate('/admin/chat'); // Redirect to AdminChat page
               } else if (btn.label === 'LOGOUT') {
                 handleLogout();
               }
