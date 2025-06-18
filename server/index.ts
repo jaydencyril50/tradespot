@@ -1380,15 +1380,32 @@ app.post('/admin/withdrawals/:id/reject', asyncHandler(async (req: Request, res:
     // TODO: Add admin authentication
     const withdrawal = await Withdrawal.findById(req.params.id);
     if (!withdrawal) return res.status(404).json({ error: 'Withdrawal not found' });
+    if (withdrawal.status === 'rejected') {
+        return res.status(400).json({ error: 'Withdrawal already rejected' });
+    }
     withdrawal.status = 'rejected';
     withdrawal.updatedAt = new Date();
     await withdrawal.save();
+    // Refund amount to user
+    const user = await User.findById(withdrawal.userId);
+    if (user) {
+        user.usdtBalance += withdrawal.amount ?? 0;
+        user.recentTransactions = user.recentTransactions || [];
+        user.recentTransactions.push({
+            type: 'Withdrawal Refund',
+            amount: withdrawal.amount ?? 0,
+            currency: 'USDT',
+            date: new Date(),
+            note: 'Withdrawal rejected by admin'
+        });
+        await user.save();
+    }
     // Notify user of rejection
     await Notification.create({
         userId: withdrawal.userId,
-        message: `Your withdrawal of ${withdrawal.amount} USDT was rejected by admin.`
+        message: `Your withdrawal of ${withdrawal.amount} USDT was rejected by admin. Amount has been refunded to your balance.`
     });
-    res.json({ message: 'Withdrawal rejected and user notified' });
+    res.json({ message: 'Withdrawal rejected, user notified, and amount refunded' });
 }));
 
 // --- ANNOUNCEMENT ENDPOINTS ---
