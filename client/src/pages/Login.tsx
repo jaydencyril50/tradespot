@@ -62,16 +62,33 @@ const CaptchaModal: React.FC<{ onSuccess: () => void; onClose: () => void }> = (
             left: 0,
             width: '100vw',
             height: '100vh',
-            background: 'rgba(30,40,60,0.82)', // Much darker overlay for strong darkening
+            background: 'rgba(30,60,114,0.13)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 9999,
+            zIndex: 4000,
             transition: 'background 0.2s',
-            overflow: 'hidden', // Prevent scrollbars and page movement
+            overflow: 'hidden',
         }}>
-            <div style={{ background: '#fff', padding: 30, borderRadius: 12, boxShadow: '0 4px 24px rgba(30,60,114,0.15)', minWidth: 260, maxWidth: 320, width: 300, textAlign: 'center', position: 'relative' }}>
-                <h3 style={{ marginBottom: 16 }}>Slide to complete the puzzle</h3>
+            <div style={{
+                background: '#fff',
+                borderRadius: 0,
+                boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+                border: '1px solid #e3e6ef',
+                minWidth: 240,
+                maxWidth: 380,
+                width: '90vw',
+                padding: '32px 16px 24px 16px',
+                position: 'relative',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: 'inherit',
+            }}>
+                <button onClick={onClose} style={{ position: 'absolute', top: 10, right: 16, background: 'none', border: 'none', fontSize: 22, color: '#888', cursor: 'pointer', fontWeight: 700, transition: 'color 0.2s' }} onMouseOver={e => (e.currentTarget.style.color = '#e74c3c')} onMouseOut={e => (e.currentTarget.style.color = '#888')}>&times;</button>
+                <div style={{ fontWeight: 700, color: '#1e3c72', fontSize: '1.1rem', letterSpacing: 1, marginBottom: 10 }}>Slide to Verify</div>
                 <div style={{ position: 'relative', width: sliderWidth, height: 80, margin: '0 auto 18px auto', userSelect: 'none' }}>
                     {/* Main SVG with missing piece */}
                     <svg width={sliderWidth} height={80} style={{ display: 'block', borderRadius: 8, background: '#f4f7fa', boxShadow: '0 2px 8px #e0e7ef' }}>
@@ -105,32 +122,32 @@ const CaptchaModal: React.FC<{ onSuccess: () => void; onClose: () => void }> = (
                             <text x="20" y="26" fontSize="48" fontWeight="bold" fontFamily="Arial, sans-serif" fill="#1e3c72">Tradespot</text>
                         </g>
                     </svg>
-                    {/* Slider track for visual feedback */}
-                    <div id="captcha-slider-track" style={{ position: 'absolute', left: 0, bottom: -32, width: sliderWidth, height: 32, background: '#e0e7ef', borderRadius: 16, display: 'flex', alignItems: 'center', boxShadow: '0 1px 4px #e0e7ef', userSelect: 'none' }}>
-                        {/* Draggable slider handle (circle) */}
-                        <div
-                            style={{ position: 'absolute', left: dragX, width: pieceWidth, height: 32, background: dragging ? '#b3c6e6' : '#fff', borderRadius: 16, border: '1px solid #2a5298', transition: 'left 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: dragging ? 'grabbing' : 'grab', zIndex: 3 }}
-                            tabIndex={0}
-                            onMouseDown={handleDragStart}
-                            onTouchStart={handleDragStart}
-                            onMouseMove={dragging ? handleDrag : undefined}
-                            onTouchMove={dragging ? handleDrag : undefined}
-                            onMouseUp={handleDragEnd}
-                            onTouchEnd={handleDragEnd}
-                            onKeyDown={handleKeyDown}
-                            aria-label="Slider handle"
-                        >
-                            {/* Circle visual */}
-                            <svg width={pieceWidth} height={32}>
-                                <ellipse cx={pieceWidth / 2} cy={16} rx={pieceWidth / 2 - 2} ry={14} fill="#fff" stroke="#2a5298" strokeWidth={2} />
-                            </svg>
-                        </div>
-                        <span style={{ marginLeft: 12, color: '#888' }}>Slide to fit the missing part</span>
-                    </div>
                 </div>
-                {error && <div style={{ color: 'red', marginBottom: 8 }}>{error}</div>}
-                <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', fontSize: 20, color: '#888', cursor: 'pointer' }} aria-label="Close">×</button>
-                {verified && <div style={{ color: 'green', marginTop: 8 }}>Verified!</div>}
+                {/* Slider row and gap below */}
+                <div style={{ marginBottom: 18 }}>
+                  <div id="captcha-slider-track" style={{ position: 'relative', width: sliderWidth, height: 32, background: '#e0e7ef', borderRadius: 16, display: 'flex', alignItems: 'center', boxShadow: '0 1px 4px #e0e7ef', userSelect: 'none', margin: '0 auto' }}>
+                    {/* Draggable slider handle (circle) */}
+                    <div
+                        style={{ position: 'absolute', left: dragX, width: pieceWidth, height: 32, background: dragging ? '#b3c6e6' : '#fff', borderRadius: 16, border: '1px solid #2a5298', transition: 'left 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: dragging ? 'grabbing' : 'grab', zIndex: 3 }}
+                        tabIndex={0}
+                        onMouseDown={handleDragStart}
+                        onTouchStart={handleDragStart}
+                        onMouseMove={dragging ? handleDrag : undefined}
+                        onTouchMove={dragging ? handleDrag : undefined}
+                        onMouseUp={handleDragEnd}
+                        onTouchEnd={handleDragEnd}
+                        onKeyDown={handleKeyDown}
+                        aria-label="Slider handle"
+                    >
+                        {/* Circle visual */}
+                        <svg width={pieceWidth} height={32}>
+                            <ellipse cx={pieceWidth / 2} cy={16} rx={pieceWidth / 2 - 2} ry={14} fill="#fff" stroke="#2a5298" strokeWidth={2} />
+                        </svg>
+                    </div>
+                    <span style={{ marginLeft: 12, color: '#888' }}>Slide to fit the missing part</span>
+                  </div>
+                </div>
+                {error && <div style={{ color: '#e74c3c', fontWeight: 600, marginTop: 10 }}>{error}</div>}
             </div>
         </div>
     );
