@@ -143,7 +143,7 @@ const Market: React.FC = () => {
           left: 0,
           width: '100vw',
           height: '100vh',
-          background: 'rgba(231,76,60,0.13)',
+          background: 'rgba(231,76,60,0.10)',
           zIndex: 3000,
           display: 'flex',
           alignItems: 'center',
@@ -151,17 +151,15 @@ const Market: React.FC = () => {
         }}>
           <div style={{
             background: '#fff',
-            border: '2px solid #e74c3c',
-            color: '#e74c3c',
-            fontWeight: 700,
-            fontSize: 22,
-            borderRadius: 10,
-            padding: '32px 48px',
-            boxShadow: '0 8px 32px 0 rgba(231,76,60,0.18)',
-            textAlign: 'center',
+            borderRadius: 0,
+            boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+            border: '1px solid #e3e6ef',
             minWidth: 260,
             maxWidth: 380,
+            width: '90vw',
+            padding: '32px 16px 24px 16px',
             position: 'relative',
+            textAlign: 'center',
           }}>
             <button onClick={() => setShowInsufficientOverlay(false)} style={{
               position: 'absolute',
@@ -170,14 +168,16 @@ const Market: React.FC = () => {
               background: 'none',
               border: 'none',
               fontSize: 22,
-              color: '#e74c3c',
+              color: '#888',
               cursor: 'pointer',
-            }}>&times;</button>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>Insufficient Balance</div>
-            <div style={{ fontSize: 18, color: '#25324B', marginBottom: 8 }}>
+              fontWeight: 700,
+              transition: 'color 0.2s',
+            }} onMouseOver={e => (e.currentTarget.style.color = '#e74c3c')} onMouseOut={e => (e.currentTarget.style.color = '#888')}>&times;</button>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#e74c3c', marginBottom: 8, letterSpacing: 1 }}>Insufficient Balance</div>
+            <div style={{ fontSize: 16, color: '#25324B', marginBottom: 6, fontWeight: 600 }}>
               You do not have enough SPOT to purchase this plan.
             </div>
-            <div style={{ fontSize: 15, color: '#888' }}>
+            <div style={{ fontSize: 15, color: '#888', marginBottom: 0 }}>
               Please deposit or convert funds to SPOT and try again.
             </div>
           </div>
@@ -190,7 +190,7 @@ const Market: React.FC = () => {
           left: 0,
           width: '100vw',
           height: '100vh',
-          background: 'rgba(16,201,143,0.13)',
+          background: 'rgba(16,201,143,0.10)',
           zIndex: 3000,
           display: 'flex',
           alignItems: 'center',
@@ -198,17 +198,15 @@ const Market: React.FC = () => {
         }}>
           <div style={{
             background: '#fff',
-            border: '2px solid #10c98f',
-            color: '#10c98f',
-            fontWeight: 700,
-            fontSize: 22,
-            borderRadius: 10,
-            padding: '32px 48px',
-            boxShadow: '0 8px 32px 0 rgba(16,201,143,0.18)',
-            textAlign: 'center',
+            borderRadius: 0,
+            boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+            border: '1px solid #e3e6ef',
             minWidth: 260,
             maxWidth: 380,
+            width: '90vw',
+            padding: '32px 16px 24px 16px',
             position: 'relative',
+            textAlign: 'center',
           }}>
             <button onClick={() => setShowSuccessOverlay(false)} style={{
               position: 'absolute',
@@ -217,11 +215,13 @@ const Market: React.FC = () => {
               background: 'none',
               border: 'none',
               fontSize: 22,
-              color: '#10c98f',
+              color: '#888',
               cursor: 'pointer',
-            }}>&times;</button>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>Purchase Successful</div>
-            <div style={{ fontSize: 18, color: '#25324B', marginBottom: 8 }}>
+              fontWeight: 700,
+              transition: 'color 0.2s',
+            }} onMouseOver={e => (e.currentTarget.style.color = '#10c98f')} onMouseOut={e => (e.currentTarget.style.color = '#888')}>&times;</button>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#10c98f', marginBottom: 8, letterSpacing: 1 }}>Purchase Successful</div>
+            <div style={{ fontSize: 16, color: '#25324B', marginBottom: 0, fontWeight: 600 }}>
               {success}
             </div>
           </div>
@@ -267,7 +267,7 @@ const Market: React.FC = () => {
           left: 0,
           width: '100vw',
           height: '100vh',
-          background: 'rgba(30,60,114,0.18)',
+          background: 'rgba(30,60,114,0.13)',
           zIndex: 4000,
           display: 'flex',
           alignItems: 'center',
@@ -275,17 +275,15 @@ const Market: React.FC = () => {
         }}>
           <div style={{
             background: '#fff',
-            border: '2px solid #1e3c72',
-            color: '#1e3c72',
-            fontWeight: 700,
-            fontSize: 20,
-            borderRadius: 10,
-            padding: '32px 36px',
-            boxShadow: '0 8px 32px 0 rgba(30,60,114,0.18)',
-            textAlign: 'center',
+            borderRadius: 0,
+            boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+            border: '1px solid #e3e6ef',
             minWidth: 260,
             maxWidth: 380,
+            width: '90vw',
+            padding: '32px 16px 24px 16px',
             position: 'relative',
+            textAlign: 'center',
           }}>
             <button onClick={() => setConfirmPurchase(null)} style={{
               position: 'absolute',
@@ -294,18 +292,20 @@ const Market: React.FC = () => {
               background: 'none',
               border: 'none',
               fontSize: 22,
-              color: '#1e3c72',
+              color: '#888',
               cursor: 'pointer',
-            }}>&times;</button>
-            <div style={{ fontSize: 24, marginBottom: 12 }}>Confirm Purchase</div>
-            <div style={{ fontSize: 17, color: '#25324B', marginBottom: 8 }}>
+              fontWeight: 700,
+              transition: 'color 0.2s',
+            }} onMouseOver={e => (e.currentTarget.style.color = '#1e3c72')} onMouseOut={e => (e.currentTarget.style.color = '#888')}>&times;</button>
+            <div style={{ fontSize: 20, fontWeight: 700, color: '#1e3c72', marginBottom: 8, letterSpacing: 1 }}>Confirm Purchase</div>
+            <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8, fontWeight: 600 }}>
               Are you sure you want to purchase <b>{confirmPurchase.product.name}</b> for <b>{confirmPurchase.product.purchaseAmount.toFixed(2)} SPOT</b>?
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', gap: 18, marginTop: 18 }}>
-              <button onClick={confirmAndPurchase} style={{ background: '#10c98f', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 24px', fontWeight: 700, fontSize: 16, cursor: 'pointer', boxShadow: '0 1px 4px #eaf1fb' }} disabled={loading}>
+              <button onClick={confirmAndPurchase} style={{ background: '#888', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 28px', fontWeight: 600, fontSize: '1rem', cursor: 'pointer', boxShadow: '0 1px 4px rgba(30,60,114,0.10)', transition: 'background 0.2s' }} disabled={loading}>
                 {loading ? 'Processing...' : 'Yes, Purchase'}
               </button>
-              <button onClick={() => setConfirmPurchase(null)} style={{ background: '#ffeaea', color: '#d32f2f', border: 'none', borderRadius: 6, padding: '8px 24px', fontWeight: 700, fontSize: 16, cursor: 'pointer', boxShadow: '0 1px 4px #eaf1fb' }}>
+              <button onClick={() => setConfirmPurchase(null)} style={{ background: '#ffeaea', color: '#d32f2f', border: 'none', borderRadius: 6, padding: '6px 28px', fontWeight: 600, fontSize: '1rem', cursor: 'pointer', boxShadow: '0 1px 4px #eaf1fb', transition: 'background 0.2s' }}>
                 Cancel
               </button>
             </div>

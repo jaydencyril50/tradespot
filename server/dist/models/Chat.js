@@ -10,5 +10,7 @@ const chatSchema = new mongoose_1.default.Schema({
     imageUrl: { type: String },
     createdAt: { type: Date, default: Date.now }
 });
-const Chat = mongoose_1.default.models.Chat || mongoose_1.default.model('Chat', chatSchema);
+// Use global to avoid OverwriteModelError in dev/hot-reload and production
+const Chat = global.Chat || mongoose_1.default.models.Chat || mongoose_1.default.model('Chat', chatSchema);
+global.Chat = Chat;
 exports.default = Chat;

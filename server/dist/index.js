@@ -53,6 +53,7 @@ const DepositSession_1 = __importDefault(require("./models/DepositSession"));
 const trash_1 = __importDefault(require("./routes/trash"));
 const Chat_1 = __importDefault(require("./models/Chat"));
 const chat_1 = __importDefault(require("./routes/chat"));
+const User_1 = __importDefault(require("./models/User"));
 dotenv.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
@@ -72,43 +73,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 mongoose_1.default.connect(MONGO_URI)
     .then(() => console.log('MongoDB connected'))
     .catch((err) => console.error('MongoDB connection error:', err));
-const userSchema = new mongoose_1.default.Schema({
-    fullName: String,
-    email: { type: String, unique: true },
-    password: String,
-    wallet: String,
-    usdtBalance: { type: Number, default: 0 },
-    spotBalance: { type: Number, default: 0 },
-    recentTransactions: {
-        type: [
-            {
-                type: { type: String },
-                amount: Number,
-                currency: String,
-                date: Date
-            }
-        ],
-        default: []
-    },
-    profilePicture: String,
-    referralCode: { type: String, unique: true, required: true },
-    referredBy: String,
-    teamMembers: [
-        {
-            userId: mongoose_1.default.Schema.Types.ObjectId,
-            joinedAt: Date
-        }
-    ],
-    spotid: { type: String, unique: true, required: true },
-    fundsLocked: { type: Boolean, default: false } // Add this field
-});
-userSchema.add({
-    twoFA: {
-        enabled: { type: Boolean, default: false },
-        secret: { type: String, default: '' },
-    }
-});
-const User = mongoose_1.default.model('User', userSchema);
 // Stock schema (available stocks in the market)
 const stockSchema = new mongoose_1.default.Schema({
     name: String,
@@ -130,7 +94,8 @@ const stockPurchaseSchema = new mongoose_1.default.Schema({
     expiresAt: Date,
     completed: { type: Boolean, default: false },
     lastCredited: Date,
-    totalCredited: { type: Number, default: 0 }
+    totalCredited: { type: Number, default: 0 },
+    durationDays: { type: Number, default: 365 } // Add durationDays field
 });
 const StockPurchase = mongoose_1.default.model('StockPurchase', stockPurchaseSchema);
 // Notification schema (user notifications)
@@ -181,18 +146,18 @@ app.post('/auth/register', (req, res) => __awaiter(void 0, void 0, void 0, funct
         return;
     }
     // Check that referredBy exists in the database
-    const referrer = yield User.findOne({ referralCode: referredBy });
+    const referrer = yield User_1.default.findOne({ referralCode: referredBy });
     if (!referrer) {
         res.status(400).json({ error: 'Referral link is invalid or does not exist' });
         return;
     }
-    const existing = yield User.findOne({ email });
+    const existing = yield User_1.default.findOne({ email });
     if (existing) {
         res.status(400).json({ error: 'Email already exists' });
         return;
     }
     // Check for duplicate wallet address
-    const walletExists = yield User.findOne({ wallet });
+    const walletExists = yield User_1.default.findOne({ wallet });
     if (walletExists) {
         res.status(400).json({ error: 'Wallet address already exists' });
         return;
@@ -202,14 +167,14 @@ app.post('/auth/register', (req, res) => __awaiter(void 0, void 0, void 0, funct
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     do {
         referralCode = Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-    } while (yield User.findOne({ referralCode }));
+    } while (yield User_1.default.findOne({ referralCode }));
     // Generate a unique 7-digit spotid
     let spotid;
     do {
         spotid = Math.floor(1000000 + Math.random() * 9000000).toString(); // 7 digits
-    } while (yield User.findOne({ spotid }));
+    } while (yield User_1.default.findOne({ spotid }));
     const hash = yield bcryptjs_1.default.hash(password, 10);
-    const user = new User({ fullName, email, password: hash, wallet, usdtBalance: 0, spotBalance: 0, referralCode, referredBy, spotid });
+    const user = new User_1.default({ fullName, email, password: hash, wallet, usdtBalance: 0, spotBalance: 0, referralCode, referredBy, spotid });
     yield user.save();
     // Add this user to the referrer's teamMembers
     referrer.teamMembers.push({ userId: user._id, joinedAt: new Date() });
@@ -220,7 +185,7 @@ app.post('/auth/register', (req, res) => __awaiter(void 0, void 0, void 0, funct
 }));
 app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password, twoFAToken } = req.body;
-    const user = yield User.findOne({ email });
+    const user = yield User_1.default.findOne({ email });
     if (!user || !user.password) {
         res.status(400).json({ error: 'Invalid credentials' });
         return;
@@ -303,7 +268,7 @@ function authenticateAdmin(req, res, next) {
 // Example protected route
 app.get('/api/portfolio', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user) {
         res.status(404).json({ error: 'User not found' });
         return;
@@ -324,7 +289,7 @@ app.put('/api/portfolio', authenticateToken, (req, res) => __awaiter(void 0, voi
     const userId = req.user.userId;
     const { profilePicture } = req.body;
     try {
-        const user = yield User.findById(userId);
+        const user = yield User_1.default.findById(userId);
         if (!user) {
             res.status(404).json({ error: 'User not found' });
             return;
@@ -351,7 +316,7 @@ app.post('/api/convert', authenticateToken, (req, res) => __awaiter(void 0, void
         return;
     }
     try {
-        const user = yield User.findById(userId);
+        const user = yield User_1.default.findById(userId);
         if (!user) {
             res.status(404).json({ error: 'User not found' });
             return;
@@ -389,7 +354,7 @@ app.post('/api/convert', authenticateToken, (req, res) => __awaiter(void 0, void
 // Team info endpoint
 app.get('/api/team', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user) {
         res.status(404).json({ error: 'User not found' });
         return;
@@ -398,7 +363,7 @@ app.get('/api/team', authenticateToken, (req, res) => __awaiter(void 0, void 0, 
     const referralLink = `https://tradespot.online/register?ref=${user.referralCode}`;
     // Get team members' info
     const members = yield Promise.all((user.teamMembers || []).map((tm) => __awaiter(void 0, void 0, void 0, function* () {
-        const member = yield User.findById(tm.userId);
+        const member = yield User_1.default.findById(tm.userId);
         if (!member)
             return null;
         // Check if member has any active stock purchase
@@ -417,7 +382,7 @@ app.get('/api/team', authenticateToken, (req, res) => __awaiter(void 0, void 0, 
 app.get('/api/validate-referral/:code', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const code = req.params.code;
     // Case-insensitive match for referral code
-    const user = yield User.findOne({ referralCode: { $regex: `^${code}$`, $options: 'i' } });
+    const user = yield User_1.default.findOne({ referralCode: { $regex: `^${code}$`, $options: 'i' } });
     if (user) {
         res.json({ valid: true });
     }
@@ -430,11 +395,10 @@ app.get('/api/stock', (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const stocks = yield Stock.find();
     res.json(stocks);
 }));
-// Endpoint: Purchase stock
 app.post('/api/stock/purchase', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
     const { stockId } = req.body;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     const stock = yield Stock.findById(stockId);
     if (!user || !stock) {
         res.status(404).json({ error: 'User or stock not found' });
@@ -448,6 +412,8 @@ app.post('/api/stock/purchase', authenticateToken, (req, res) => __awaiter(void 
         res.status(400).json({ error: 'Insufficient SPOT balance' });
         return;
     }
+    // Force durationDays to 365 before using it for expiry
+    stock.durationDays = 365;
     // Deduct spot balance
     user.spotBalance -= stock.purchaseAmount;
     user.recentTransactions.push({ type: 'Stock Purchase', amount: stock.purchaseAmount, currency: 'SPOT', date: new Date() });
@@ -463,12 +429,13 @@ app.post('/api/stock/purchase', authenticateToken, (req, res) => __awaiter(void 
         startDate: new Date(),
         expiresAt,
         lastCredited: new Date(),
-        completed: false
+        completed: false,
+        durationDays: 365 // Ensure durationDays is set on purchase
     });
     yield purchase.save();
     // Referral reward: credit 5% of purchase amount to referrer if exists
     if (user.referredBy) {
-        const referrer = yield User.findOne({ referralCode: user.referredBy });
+        const referrer = yield User_1.default.findOne({ referralCode: user.referredBy });
         if (referrer) {
             const reward = +(stock.purchaseAmount * 0.05);
             referrer.spotBalance += reward;
@@ -532,7 +499,7 @@ node_cron_1.default.schedule('0 0 * * *', () => __awaiter(void 0, void 0, void 0
         if (typeof p.purchaseAmount !== 'number' || typeof p.profit !== 'number')
             continue;
         const dailyProfit = Number(p.purchaseAmount) * Number(p.profit);
-        yield User.findByIdAndUpdate(p.userId, {
+        yield User_1.default.findByIdAndUpdate(p.userId, {
             $inc: { spotBalance: dailyProfit },
             $push: { recentTransactions: { type: 'Stock Profit', amount: dailyProfit, currency: 'SPOT', date: now } }
         });
@@ -581,7 +548,7 @@ node_cron_1.default.schedule('0 * * * *', () => __awaiter(void 0, void 0, void 0
                 price: purchaseAmount,
                 profit,
                 purchaseAmount,
-                durationDays: 60,
+                durationDays: 365,
                 createdAt: now
             });
         }
@@ -598,7 +565,7 @@ app.post('/api/transfer', authenticateToken, (req, res) => {
                 res.status(400).json({ error: 'Recipient email, valid amount, and 2FA code are required' });
                 return;
             }
-            const sender = yield User.findById(senderId);
+            const sender = yield User_1.default.findById(senderId);
             if (!sender) {
                 res.status(404).json({ error: 'Sender not found' });
                 return;
@@ -626,7 +593,7 @@ app.post('/api/transfer', authenticateToken, (req, res) => {
                 res.status(400).json({ error: 'Invalid 2FA code' });
                 return;
             }
-            const recipient = yield User.findOne({ email: recipientEmail });
+            const recipient = yield User_1.default.findOne({ email: recipientEmail });
             if (!recipient) {
                 res.status(404).json({ error: 'Recipient not found' });
                 return;
@@ -688,7 +655,7 @@ function verifyCode(globalKey, email, inputCode) {
 // --- NAME CHANGE ---
 app.post('/api/send-name-verification', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user || typeof user.email !== 'string') {
         res.status(404).json({ error: 'User not found' });
         return;
@@ -719,7 +686,7 @@ app.post('/api/send-name-verification', authenticateToken, (req, res) => __await
 app.post('/api/change-name', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
     const { newName, code } = req.body;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user || typeof user.email !== 'string') {
         res.status(404).json({ error: 'User not found' });
         return;
@@ -738,7 +705,7 @@ app.post('/api/change-name', authenticateToken, (req, res) => __awaiter(void 0, 
 // --- EMAIL CHANGE ---
 app.post('/api/send-email-verification', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user || typeof user.email !== 'string') {
         res.status(404).json({ error: 'User not found' });
         return;
@@ -769,7 +736,7 @@ app.post('/api/send-email-verification', authenticateToken, (req, res) => __awai
 app.post('/api/change-email', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
     const { newEmail, spotid } = req.body;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user || typeof user.email !== 'string') {
         res.status(404).json({ error: 'User not found' });
         return;
@@ -780,7 +747,7 @@ app.post('/api/change-email', authenticateToken, (req, res) => __awaiter(void 0,
         return;
     }
     // Check if new email already exists
-    const existing = yield User.findOne({ email: newEmail });
+    const existing = yield User_1.default.findOne({ email: newEmail });
     if (existing) {
         res.status(400).json({ error: 'Email already exists' });
         return;
@@ -794,7 +761,7 @@ app.post('/api/change-email', authenticateToken, (req, res) => __awaiter(void 0,
 // --- WALLET CHANGE ---
 app.post('/api/send-wallet-verification', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user || typeof user.email !== 'string') {
         res.status(404).json({ error: 'User not found' });
         return;
@@ -825,7 +792,7 @@ app.post('/api/send-wallet-verification', authenticateToken, (req, res) => __awa
 app.post('/api/change-wallet', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
     const { newWallet, code, spotid, twoFAToken } = req.body;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user || typeof user.email !== 'string') {
         res.status(404).json({ error: 'User not found' });
         return;
@@ -864,7 +831,7 @@ app.post('/api/change-wallet', authenticateToken, (req, res) => __awaiter(void 0
         return;
     }
     // Check if new wallet already exists
-    const existing = yield User.findOne({ wallet: newWallet });
+    const existing = yield User_1.default.findOne({ wallet: newWallet });
     if (existing) {
         res.status(400).json({ error: 'Wallet address already exists' });
         return;
@@ -879,7 +846,7 @@ app.post('/api/change-wallet', authenticateToken, (req, res) => __awaiter(void 0
 // --- PASSWORD CHANGE ---
 app.post('/api/send-password-verification', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user || typeof user.email !== 'string') {
         res.status(404).json({ error: 'User not found' });
         return;
@@ -910,7 +877,7 @@ app.post('/api/send-password-verification', authenticateToken, (req, res) => __a
 app.post('/api/change-password', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
     const { newPassword, code, spotid } = req.body; // REMOVE twoFAToken
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user || typeof user.email !== 'string') {
         res.status(404).json({ error: 'User not found' });
         return;
@@ -937,7 +904,7 @@ app.post('/api/change-password', authenticateToken, (req, res) => __awaiter(void
 // --- WITHDRAWAL ---
 app.post('/api/send-withdrawal-verification', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user || typeof user.email !== 'string') {
         res.status(404).json({ error: 'User not found' });
         return;
@@ -969,7 +936,7 @@ app.post('/api/withdraw', authenticateToken, (req, res) => __awaiter(void 0, voi
     const userId = req.user.userId;
     const { amount, verificationCode, twoFACode } = req.body;
     // --- TEAM STOCK CHECK ---
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user || typeof user.email !== 'string') {
         res.status(404).json({ error: 'User not found' });
         return;
@@ -1108,7 +1075,7 @@ app.post('/api/deposit/manual', authenticateToken, (req, res) => __awaiter(void 
 // Admin: Get all users
 app.get('/api/admin/users', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const users = yield User.find({}, 'fullName email spotid wallet usdtBalance spotBalance');
+        const users = yield User_1.default.find({}, 'fullName email spotid wallet usdtBalance spotBalance');
         res.json({ users });
     }
     catch (err) {
@@ -1120,14 +1087,14 @@ app.put('/api/admin/users/:id', authenticateAdmin, (req, res) => __awaiter(void 
     const { id } = req.params;
     const { fullName, email, spotid, wallet, usdtBalance, spotBalance } = req.body;
     try {
-        const user = yield User.findById(id);
+        const user = yield User_1.default.findById(id);
         if (!user) {
             res.status(404).json({ error: 'User not found' });
             return;
         }
         // Check for unique email, wallet, spotid (if changed)
         if (email && email !== user.email) {
-            const exists = yield User.findOne({ email });
+            const exists = yield User_1.default.findOne({ email });
             if (exists) {
                 res.status(400).json({ error: 'Email already exists' });
                 return;
@@ -1135,7 +1102,7 @@ app.put('/api/admin/users/:id', authenticateAdmin, (req, res) => __awaiter(void 
             user.email = email;
         }
         if (wallet && wallet !== user.wallet) {
-            const exists = yield User.findOne({ wallet });
+            const exists = yield User_1.default.findOne({ wallet });
             if (exists) {
                 res.status(400).json({ error: 'Wallet address already exists' });
                 return;
@@ -1143,7 +1110,7 @@ app.put('/api/admin/users/:id', authenticateAdmin, (req, res) => __awaiter(void 
             user.wallet = wallet;
         }
         if (spotid && spotid !== user.spotid) {
-            const exists = yield User.findOne({ spotid });
+            const exists = yield User_1.default.findOne({ spotid });
             if (exists) {
                 res.status(400).json({ error: 'Spot ID already exists' });
                 return;
@@ -1241,6 +1208,7 @@ app.get('/api/admin/all-stock-plans', authenticateAdmin, (req, res) => __awaiter
     }
 }));
 // --- ADMIN: UPDATE STOCK PLAN (purchaseAmount, dailyProfits, completed) ---
+// --- in the admin update endpoint for stock plan ---
 app.put('/api/admin/stock-plan/:id', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { purchaseAmount, dailyProfits, completed } = req.body;
@@ -1255,6 +1223,7 @@ app.put('/api/admin/stock-plan/:id', authenticateAdmin, (req, res) => __awaiter(
             return;
         }
         purchase.purchaseAmount = purchaseAmount;
+        purchase.durationDays = 365; // Always set to 365
         if (typeof dailyProfits === 'number') {
             // Update profit rate to match new dailyProfits
             purchase.profit = purchase.purchaseAmount > 0 ? dailyProfits / purchase.purchaseAmount : 0;
@@ -1334,7 +1303,7 @@ app.post('/admin/withdrawals/:id/reject', asyncHandler((req, res) => __awaiter(v
     withdrawal.updatedAt = new Date();
     yield withdrawal.save();
     // Refund amount to user
-    const user = yield User.findById(withdrawal.userId);
+    const user = yield User_1.default.findById(withdrawal.userId);
     if (user) {
         user.usdtBalance += (_a = withdrawal.amount) !== null && _a !== void 0 ? _a : 0;
         user.recentTransactions = user.recentTransactions || [];
@@ -1381,7 +1350,7 @@ app.post('/api/announcement', (req, res) => __awaiter(void 0, void 0, void 0, fu
             yield announcement.save();
         }
         // Notify all users of the new announcement
-        const users = yield User.find({}, '_id');
+        const users = yield User_1.default.find({}, '_id');
         const notifications = users.map((u) => ({
             userId: u._id,
             message: `Announcement: ${notice}`,
@@ -1399,7 +1368,7 @@ app.post('/api/announcement', (req, res) => __awaiter(void 0, void 0, void 0, fu
 // --- 2FA SETUP ENDPOINT ---
 app.post('/api/2fa/setup', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user) {
         res.status(404).json({ error: 'User not found' });
         return;
@@ -1428,7 +1397,7 @@ app.post('/api/2fa/setup', authenticateToken, (req, res) => __awaiter(void 0, vo
 app.post('/api/2fa/verify', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
     const { token } = req.body;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user || !user.twoFA || !user.twoFA.secret) {
         res.status(400).json({ error: '2FA setup not started' });
         return;
@@ -1450,7 +1419,7 @@ app.post('/api/2fa/verify', authenticateToken, (req, res) => __awaiter(void 0, v
 // --- 2FA STATUS ENDPOINT ---
 app.get('/api/2fa/status', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user) {
         res.status(404).json({ error: 'User not found' });
         return;
@@ -1565,7 +1534,7 @@ app.get('/api/deposit/status', authenticateToken, (req, res) => __awaiter(void 0
 app.get('/api/transactions', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.user.userId || req.user._id;
-        const user = yield User.findById(userId);
+        const user = yield User_1.default.findById(userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -1602,7 +1571,7 @@ app.patch('/api/notifications/mark-read', authenticateToken, (req, res) => __awa
 // --- FUNDS PRIVACY VERIFICATION CODE ---
 app.post('/api/send-funds-privacy-code', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user || typeof user.email !== 'string') {
         res.status(404).json({ error: 'User not found' });
         return;
@@ -1689,7 +1658,7 @@ app.post('/api/admin/deposits/:id/reject', authenticateAdmin, (req, res) => __aw
 }));
 // ADMIN: Get all users who have team members and the number of members they have
 app.get('/api/admin/team-users', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const users = yield User.find({ 'teamMembers.0': { $exists: true } });
+    const users = yield User_1.default.find({ 'teamMembers.0': { $exists: true } });
     const result = users.map((u) => ({
         id: u._id,
         fullName: u.fullName,
@@ -1700,16 +1669,16 @@ app.get('/api/admin/team-users', authenticateAdmin, (req, res) => __awaiter(void
 }));
 app.get('/api/admin/team-members/:userId', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId } = req.params;
-    const user = yield User.findById(userId);
+    const user = yield User_1.default.findById(userId);
     if (!user) {
         return res.status(404).json({ error: 'User not found' });
     }
     // Get all team member userIds
-    const teamUserIds = (user.teamMembers || []).map(tm => tm.userId);
+    const teamUserIds = (user.teamMembers || []).map((tm) => tm.userId);
     if (!teamUserIds.length) {
         return res.json({ members: [] });
     }
     // Fetch spotid and email for each team member
-    const members = yield User.find({ _id: { $in: teamUserIds } }, 'spotid email');
-    res.json({ members: members.map(m => ({ spotid: m.spotid, email: m.email })) });
+    const members = yield User_1.default.find({ _id: { $in: teamUserIds } }, 'spotid email');
+    res.json({ members: members.map((m) => ({ spotid: m.spotid, email: m.email })) });
 }));

@@ -17,7 +17,7 @@ const Chat_1 = __importDefault(require("../models/Chat"));
 const User_1 = __importDefault(require("../models/User"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const router = express_1.default.Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+const JWT_SECRET = process.env.JWT_SECRET || '08142391074@Kjl';
 // GET /api/chat - Fetch all chat messages
 router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
