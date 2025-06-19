@@ -66,7 +66,8 @@ const stockPurchaseSchema = new mongoose.Schema({
     expiresAt: Date,
     completed: { type: Boolean, default: false },
     lastCredited: Date, // last date profit was credited
-    totalCredited: { type: Number, default: 0 }
+    totalCredited: { type: Number, default: 0 },
+    durationDays: { type: Number, default: 365 } // Add durationDays field
 });
 const StockPurchase = mongoose.model('StockPurchase', stockPurchaseSchema);
 
@@ -386,7 +387,6 @@ app.get('/api/stock', async (req: Request, res: Response) => {
     res.json(stocks);
 });
 
-// Endpoint: Purchase stock
 app.post('/api/stock/purchase', authenticateToken, async (req: Request, res: Response) => {
     const userId = (req as any).user.userId;
     const { stockId } = req.body;
@@ -404,6 +404,8 @@ app.post('/api/stock/purchase', authenticateToken, async (req: Request, res: Res
         res.status(400).json({ error: 'Insufficient SPOT balance' });
         return;
     }
+    // Force durationDays to 365 before using it for expiry
+    stock.durationDays = 365;
     // Deduct spot balance
     user.spotBalance -= stock.purchaseAmount;
     user.recentTransactions.push({ type: 'Stock Purchase', amount: stock.purchaseAmount, currency: 'SPOT', date: new Date() });
@@ -419,7 +421,8 @@ app.post('/api/stock/purchase', authenticateToken, async (req: Request, res: Res
         startDate: new Date(),
         expiresAt,
         lastCredited: new Date(),
-        completed: false
+        completed: false,
+        durationDays: 365 // Ensure durationDays is set on purchase
     });
     await purchase.save();
 
@@ -536,7 +539,7 @@ cron.schedule('0 * * * *', async () => {
                 price: purchaseAmount,
                 profit,
                 purchaseAmount,
-                durationDays: 60,
+                durationDays: 365, // Always 365 days
                 createdAt: now
             });
         }
@@ -1206,6 +1209,7 @@ app.get('/api/admin/all-stock-plans', authenticateAdmin, async (req: Request, re
 });
 
 // --- ADMIN: UPDATE STOCK PLAN (purchaseAmount, dailyProfits, completed) ---
+// --- in the admin update endpoint for stock plan ---
 app.put('/api/admin/stock-plan/:id', authenticateAdmin, async (req: Request, res: Response) => {
   const { id } = req.params;
   const { purchaseAmount, dailyProfits, completed } = req.body;
@@ -1220,6 +1224,7 @@ app.put('/api/admin/stock-plan/:id', authenticateAdmin, async (req: Request, res
       return;
     }
     purchase.purchaseAmount = purchaseAmount;
+    purchase.durationDays = 365; // Always set to 365
     if (typeof dailyProfits === 'number') {
       // Update profit rate to match new dailyProfits
       purchase.profit = purchase.purchaseAmount > 0 ? dailyProfits / purchase.purchaseAmount : 0;
