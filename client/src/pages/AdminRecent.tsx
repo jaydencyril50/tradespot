@@ -26,7 +26,11 @@ const AdminRecent: React.FC = () => {
         const res = await axios.get(`${API}/api/admin/recent-activities`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setActivities(res.data.activities || []);
+        // Only keep activities from the last 7 days
+        const now = Date.now();
+        const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+        const filtered = (res.data.activities || []).filter((a: Activity) => now - new Date(a.createdAt).getTime() <= sevenDaysMs);
+        setActivities(filtered);
       } catch (e: any) {
         setError(e?.response?.data?.error || e.message || 'Failed to fetch activities');
       } finally {

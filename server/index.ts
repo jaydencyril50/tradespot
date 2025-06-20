@@ -1273,7 +1273,7 @@ app.post('/admin/withdrawals/:id/approve', asyncHandler(async (req: Request, res
     // Optionally notify user of approval
     await Notification.create({
         userId: withdrawal.userId,
-        message: `Your withdrawal of ${withdrawal.amount} USDT has been approved.`
+        message: `withdrawal of ${withdrawal.amount} USDT Successful✅.`
     });
     res.json({ message: 'Withdrawal approved' });
 }));
@@ -1319,7 +1319,7 @@ app.post('/admin/withdrawals/:id/reject', asyncHandler(async (req: Request, res:
     // Notify user of rejection
     await Notification.create({
         userId: withdrawal.userId,
-        message: `Your withdrawal of ${withdrawal.amount} USDT was rejected by admin. Amount has been refunded to your balance.`
+        message: `Withdrawal of ${withdrawal.amount} USDT rejected❌.`
     });
     res.json({ message: 'Withdrawal rejected, user notified, and amount refunded' });
 }));
@@ -1647,7 +1647,7 @@ app.post('/api/admin/deposits/:id/approve', authenticateAdmin, async (req: Reque
       // Send notification to user about deposit approval
       await Notification.create({
         userId: user._id,
-        message: `Your deposit of ${deposit.amount} USDT has been approved and credited to your account.`,
+        message: `Deposit of ${deposit.amount} USDT Successful✅.`,
         read: false
       });
     } else {
@@ -1664,6 +1664,13 @@ app.post('/api/admin/deposits/:id/reject', authenticateAdmin, async (req: Reques
   if (!deposit || deposit.status === 'approved' || deposit.status === 'rejected') return res.status(404).json({ error: 'Deposit not found or already processed' });
   deposit.status = 'rejected';
   await deposit.save();
+  if (deposit.userId) {
+    await Notification.create({
+      userId: deposit.userId,
+      message: `Deposit of ${deposit.amount} USDT rejected❌.`,
+      read: false
+    });
+  }
   res.json({ message: 'Deposit rejected' });
 });
 

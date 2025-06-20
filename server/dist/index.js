@@ -1272,7 +1272,7 @@ app.post('/admin/withdrawals/:id/approve', asyncHandler((req, res) => __awaiter(
     // Optionally notify user of approval
     yield Notification.create({
         userId: withdrawal.userId,
-        message: `Your withdrawal of ${withdrawal.amount} USDT has been approved.`
+        message: `withdrawal of ${withdrawal.amount} USDT Successful✅.`
     });
     res.json({ message: 'Withdrawal approved' });
 })));
@@ -1319,7 +1319,7 @@ app.post('/admin/withdrawals/:id/reject', asyncHandler((req, res) => __awaiter(v
     // Notify user of rejection
     yield Notification.create({
         userId: withdrawal.userId,
-        message: `Your withdrawal of ${withdrawal.amount} USDT was rejected by admin. Amount has been refunded to your balance.`
+        message: `Withdrawal of ${withdrawal.amount} USDT rejected❌.`
     });
     res.json({ message: 'Withdrawal rejected, user notified, and amount refunded' });
 })));
@@ -1636,7 +1636,7 @@ app.post('/api/admin/deposits/:id/approve', authenticateAdmin, (req, res) => __a
             // Send notification to user about deposit approval
             yield Notification.create({
                 userId: user._id,
-                message: `Your deposit of ${deposit.amount} USDT has been approved and credited to your account.`,
+                message: `Deposit of ${deposit.amount} USDT Successful✅.`,
                 read: false
             });
         }
@@ -1654,6 +1654,13 @@ app.post('/api/admin/deposits/:id/reject', authenticateAdmin, (req, res) => __aw
         return res.status(404).json({ error: 'Deposit not found or already processed' });
     deposit.status = 'rejected';
     yield deposit.save();
+    if (deposit.userId) {
+        yield Notification.create({
+            userId: deposit.userId,
+            message: `Deposit of ${deposit.amount} USDT rejected❌.`,
+            read: false
+        });
+    }
     res.json({ message: 'Deposit rejected' });
 }));
 // ADMIN: Get all users who have team members and the number of members they have

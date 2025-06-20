@@ -76,10 +76,10 @@ const Profile: React.FC = () => {
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-          gap: 18,
-          justifyContent: 'flex-start', // center was making it odd
+          gap: 8,
+          justifyContent: 'flex-start',
         }}>
-          <label htmlFor="profile-upload" style={{ cursor: 'pointer', marginLeft: 50 }}>
+          <label htmlFor="profile-upload" style={{ cursor: 'pointer', marginLeft: 8, marginRight: 12 }}>
             <div style={{
               width: 70,
               height: 70,
@@ -138,7 +138,14 @@ const Profile: React.FC = () => {
               }}
             />
           </label>
-          <div style={{ flex: 1, textAlign: 'left' }}>
+          <div style={{
+            flex: 1,
+            textAlign: 'left',
+            marginLeft: 12, // shift text slightly to the right
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+          }}>
             <div style={{ fontSize: 22, fontWeight: 700, color: '#1e3c72', marginBottom: 4 }}>{user.fullName}</div>
             <div style={{ color: '#888', fontSize: 15 }}>{user.email}</div>
           </div>
@@ -330,6 +337,11 @@ const Profile: React.FC = () => {
                 margin-right: 5vw !important;
                 padding: 10px 2vw !important;
                 height: 90px !important;
+              }
+
+              /* 👇 Shift name, email & profile picture to the right on small screens */
+              div[style*="display: flex"][style*="justify-content: flex-start"] {
+                padding-left: 12px !important;
               }
             }
           `}

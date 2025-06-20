@@ -50,8 +50,11 @@ const TransactionHistory: React.FC = () => {
         )}
         {!loading && !error && transactions.length > 0 && (
           transactions.map((tx, idx) => {
-            const isDeposit = tx.type.toLowerCase().includes('deposit');
-            const isWithdraw = tx.type.toLowerCase().includes('withdraw');
+            const increaseTypes = ['deposit', 'withdrawal refund', 'transfer in', 'stock profit', 'referral reward'];
+            const decreaseTypes = ['withdraw', 'transfer out', 'stock purchase'];
+            const typeLower = tx.type.toLowerCase();
+            const isIncrease = increaseTypes.some(t => typeLower.includes(t));
+            const isDecrease = decreaseTypes.some(t => typeLower.includes(t));
             return (
               <div
                 key={idx}
@@ -75,12 +78,12 @@ const TransactionHistory: React.FC = () => {
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginBottom: 6 }}>
-                  {isDeposit && <span style={{ color: '#27ae60', fontSize: 20 }} title="Deposit">⬆️</span>}
-                  {isWithdraw && <span style={{ color: '#e74c3c', fontSize: 20 }} title="Withdraw">⬇️</span>}
+                  {isIncrease && <span style={{ color: '#27ae60', fontSize: 20 }} title="Increase">⬆️</span>}
+                  {isDecrease && <span style={{ color: '#e74c3c', fontSize: 20 }} title="Decrease">⬇️</span>}
                   <span style={{ fontWeight: 700, color: '#25324B', fontSize: '1.1rem', letterSpacing: 1 }}>{tx.type}</span>
                 </div>
-                <div style={{ fontSize: '1.05rem', color: isDeposit ? '#27ae60' : isWithdraw ? '#e74c3c' : '#25324B', fontWeight: 600, marginBottom: 2 }}>
-                  {isDeposit ? '+' : isWithdraw ? '-' : ''}{tx.amount} {tx.currency}
+                <div style={{ fontSize: '1.05rem', color: isIncrease ? '#27ae60' : isDecrease ? '#e74c3c' : '#25324B', fontWeight: 600, marginBottom: 2 }}>
+                  {isIncrease ? '+' : isDecrease ? '-' : ''}{tx.amount} {tx.currency}
                 </div>
                 <div style={{ fontSize: '0.95rem', color: '#555', marginBottom: 2 }}>
                   {new Date(tx.date).toLocaleString()}
