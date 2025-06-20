@@ -102,4 +102,30 @@ router.get('/admin/chat-messages/:email', authenticateAdmin, async (req: Request
   }
 });
 
+// GET /api/admin/chat-messages - Fetch latest chat message per user (for admin message management)
+router.get('/admin/chat-messages', authenticateAdmin, async (req: Request, res: Response) => {
+  try {
+    // Get all chat messages, group by userEmail, keep only the latest per user
+    const messages = await Chat.aggregate([
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: "$userEmail",
+          email: { $first: "$userEmail" },
+          message: { $first: "$message" },
+          imageUrl: { $first: "$imageUrl" },
+          createdAt: { $first: "$createdAt" }
+        }
+      },
+      { $sort: { createdAt: -1 } }
+    ]);
+    // Optionally, join with User collection to get spotid
+    const users = await User.find({}, 'email spotid');
+    const userMap = new Map(users.map((u: { email: string; spotid: string }) => [u.email, u.spotid]));
+    const result = messages.map(msg => ({    res.json({ messages: result });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch chat messages' });
+  }
+});
+
 export default router;
