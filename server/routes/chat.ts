@@ -65,4 +65,41 @@ router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
   }
 });
 
+// Middleware to authenticate admin users
+function authenticateAdmin(req: AuthRequest, res: Response, next: NextFunction): void {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) {
+    res.status(401).json({ error: 'No token provided' });
+    return;
+  }
+  jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
+    if (err) {
+      res.status(403).json({ error: 'Invalid token' });
+      return;
+    }
+    // Check if user has admin privileges (adjust this logic as needed)
+    if (!user || !user.isAdmin) {
+      res.status(403).json({ error: 'Admin access required' });
+      return;
+    }
+    req.user = user;
+    next();
+  });
+}
+
+// GET /api/admin/chat-messages/:email - Fetch chat messages by user email
+router.get('/admin/chat-messages/:email', authenticateAdmin, async (req: Request, res: Response) => {
+  try {
+    const { email } = req.params;
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+    const messages = await Chat.find({ userEmail: email }).sort({ createdAt: 1 });
+    res.json({ messages });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch chat messages' });
+  }
+});
+
 export default router;
