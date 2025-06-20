@@ -72,4 +72,40 @@ router.post('/', authenticateToken, (req, res) => __awaiter(void 0, void 0, void
         res.status(500).json({ error: 'Failed to save chat message' });
     }
 }));
+// Middleware to authenticate admin users
+function authenticateAdmin(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) {
+        res.status(401).json({ error: 'No token provided' });
+        return;
+    }
+    jsonwebtoken_1.default.verify(token, JWT_SECRET, (err, user) => {
+        if (err) {
+            res.status(403).json({ error: 'Invalid token' });
+            return;
+        }
+        // Check if user has admin privileges (adjust this logic as needed)
+        if (!user || !user.isAdmin) {
+            res.status(403).json({ error: 'Admin access required' });
+            return;
+        }
+        req.user = user;
+        next();
+    });
+}
+// GET /api/admin/chat-messages/:email - Fetch chat messages by user email
+router.get('/admin/chat-messages/:email', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email } = req.params;
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
+        }
+        const messages = yield Chat_1.default.find({ userEmail: email }).sort({ createdAt: 1 });
+        res.json({ messages });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to fetch chat messages' });
+    }
+}));
 exports.default = router;

@@ -51,7 +51,6 @@ const Announcement_1 = __importDefault(require("./models/Announcement"));
 const Activity_1 = __importDefault(require("./models/Activity"));
 const DepositSession_1 = __importDefault(require("./models/DepositSession"));
 const trash_1 = __importDefault(require("./routes/trash"));
-const Chat_1 = __importDefault(require("./models/Chat"));
 const chat_1 = __importDefault(require("./routes/chat"));
 const User_1 = __importDefault(require("./models/User"));
 dotenv.config();
@@ -1450,22 +1449,6 @@ node_cron_1.default.schedule('0 * * * *', () => __awaiter(void 0, void 0, void 0
     }
 }));
 app.use('/api/admin/trash', trash_1.default);
-// --- CHAT ENDPOINTS ---
-app.post('/api/chat', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { userEmail, spotid, message, imageUrl } = req.body;
-        if (!userEmail || !spotid || !message) {
-            return res.status(400).json({ error: 'userEmail, spotid, and message are required' });
-        }
-        const chat = new Chat_1.default({ userEmail, spotid, message, imageUrl });
-        yield chat.save();
-        res.json({ chat });
-    }
-    catch (err) {
-        res.status(500).json({ error: 'Failed to save chat message' });
-    }
-}));
-server.listen(5000, () => console.log('Server running on port 5000'));
 // --- EMAIL STYLING UTILITY (PRO CENTERED EDITION - COMPACT HEADER) ---
 function getStyledEmailHtml(subject, body) {
     return `

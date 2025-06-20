@@ -92,9 +92,6 @@ const withdrawalSchema = new mongoose.Schema({
 });
 const Withdrawal = mongoose.model('Withdrawal', withdrawalSchema);
 
-// --- CHAT MESSAGE MODEL ---
-// Removed ChatMessage and chatMessageSchema, ChatMessageModel, and all chat/message related code
-
 // Utility to wrap async route handlers
 function asyncHandler(fn: any) {
   return function (req: any, res: any, next: any) {
@@ -1683,4 +1680,9 @@ app.get('/api/admin/team-members/:userId', authenticateAdmin, async (req, res) =
   // Fetch spotid and email for each team member
   const members = await User.find({ _id: { $in: teamUserIds } }, 'spotid email');
   res.json({ members: members.map((m: any) => ({ spotid: m.spotid, email: m.email })) });
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
