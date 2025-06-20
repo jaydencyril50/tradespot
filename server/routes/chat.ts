@@ -122,7 +122,14 @@ router.get('/admin/chat-messages', authenticateAdmin, async (req: Request, res: 
     // Optionally, join with User collection to get spotid
     const users = await User.find({}, 'email spotid');
     const userMap = new Map(users.map((u: { email: string; spotid: string }) => [u.email, u.spotid]));
-    const result = messages.map(msg => ({    res.json({ messages: result });
+    const result = messages.map((msg: any) => ({
+      email: msg.email,
+      message: msg.message,
+      imageUrl: msg.imageUrl,
+      createdAt: msg.createdAt,
+      spotid: userMap.get(msg.email) || null
+    }));
+    res.json({ messages: result });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch chat messages' });
   }
