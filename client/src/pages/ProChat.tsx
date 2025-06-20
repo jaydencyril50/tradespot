@@ -13,7 +13,10 @@ const ProChat: React.FC = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await fetch(`${API}/chat`);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API}/api/chat`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch messages');
         }
@@ -24,18 +27,24 @@ const ProChat: React.FC = () => {
       }
     };
     fetchMessages();
-  }, []);
+  }, [API]);
 
   const handleSend = async () => {
     setError(null);
     if (input.trim()) {
       try {
-        // Replace with actual user email if available in your app context
-        const userEmail = localStorage.getItem('userEmail') || 'anonymous@user.com';
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('Not authenticated');
+          return;
+        }
         const response = await fetch(`${API}/api/chat`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userEmail, message: input })
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ message: input })
         });
         if (!response.ok) {
           const data = await response.json();
@@ -43,7 +52,9 @@ const ProChat: React.FC = () => {
           return;
         }
         // Fetch updated messages after sending
-        const fetchResponse = await fetch('/api/chat');
+        const fetchResponse = await fetch(`${API}/api/chat`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (fetchResponse.ok) {
           const data = await fetchResponse.json();
           setMessages(data.chats || []);

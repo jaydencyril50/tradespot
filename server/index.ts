@@ -1453,23 +1453,6 @@ cron.schedule('0 * * * *', async () => {
 
 app.use('/api/admin/trash', trashRoutes);
 
-// --- CHAT ENDPOINTS ---
-app.post('/api/chat', async (req: Request, res: Response) => {
-  try {
-    const { userEmail, spotid, message, imageUrl } = req.body;
-    if (!userEmail || !spotid || !message) {
-      return res.status(400).json({ error: 'userEmail, spotid, and message are required' });
-    }
-    const chat = new Chat({ userEmail, spotid, message, imageUrl });
-    await chat.save();
-    res.json({ chat });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to save chat message' });
-  }
-});
-
-server.listen(5000, () => console.log('Server running on port 5000'));
-
 // --- EMAIL STYLING UTILITY (PRO CENTERED EDITION - COMPACT HEADER) ---
 function getStyledEmailHtml(subject: string, body: string) {
   return `
