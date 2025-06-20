@@ -11,7 +11,7 @@ interface Message {
 const API = process.env.REACT_APP_API_BASE_URL;
 
 const AdminChat: React.FC = () => {
-  const { spotid } = useParams<{ spotid: string }>();
+  const { userEmail } = useParams<{ userEmail: string }>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [image, setImage] = useState<string | undefined>(undefined);
@@ -21,11 +21,11 @@ const AdminChat: React.FC = () => {
 
   // Fetch chat history from backend
   const fetchMessages = async () => {
-    if (!spotid) return;
+    if (!userEmail) return;
     setLoading(true);
     try {
       const token = localStorage.getItem('adminToken');
-      const res = await fetch(`${API}/api/admin/chat-messages/${spotid}`, {
+      const res = await fetch(`${API}/api/chat/admin/chat-messages/${userEmail}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -40,7 +40,7 @@ const AdminChat: React.FC = () => {
   useEffect(() => {
     fetchMessages();
     // eslint-disable-next-line
-  }, [spotid]);
+  }, [userEmail]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -51,7 +51,7 @@ const AdminChat: React.FC = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('adminToken');
-      await fetch(`${API}/api/admin/chat-messages/${spotid}`, {
+      await fetch(`${API}/api/chat/admin/chat-messages/${userEmail}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ const AdminChat: React.FC = () => {
   return (
     <div style={{ maxWidth: 600, margin: '0 auto', background: '#fff', minHeight: '100vh', display: 'flex', flexDirection: 'column', boxShadow: '0 2px 16px rgba(30,60,114,0.10)' }}>
       <div style={{ padding: 18, borderBottom: '1px solid #e3e6ef', fontWeight: 700, fontSize: 22, color: '#25324B', letterSpacing: 1, fontFamily: 'serif', textAlign: 'center' }}>
-        Admin Chat - Spot ID: {spotid}
+        Admin Chat - User Email: {userEmail}
       </div>
       <div style={{ flex: 1, overflowY: 'auto', padding: 18, background: '#f7faff' }}>
         {loading && <div>Loading...</div>}
