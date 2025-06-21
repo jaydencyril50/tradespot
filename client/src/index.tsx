@@ -25,8 +25,6 @@ import AdminUsers from './pages/AdminUsers';
 import AdminActiveStocks from './pages/AdminActiveStocks';
 import AdminWithdrawals from './pages/AdminWithdrawals';
 import AdminNotice from './pages/AdminNotice';
-import AdminMessage from './pages/adminmessage';
-import AdminChat from './pages/AdminChat';
 import AdminRecent from './pages/AdminRecent';
 import AdminDeposit from './pages/AdminDeposit';
 import AdminTeam from './pages/AdminTeam';
@@ -120,9 +118,6 @@ root.render(
             <Route path="/admin/stocks" element={<AdminActiveStocks />} />
             <Route path="/admin/withdrawals" element={<AdminWithdrawals />} />
             <Route path="/admin/notice" element={<AdminNotice />} />
-            <Route path="/admin/messages" element={<AdminMessage />} />
-            <Route path="/admin/chat" element={<AdminMessage />} />
-            <Route path="/admin/chat/:userEmail" element={<AdminChat />} />
             <Route path="/admin/recents" element={<AdminRecent />} />
             <Route path="/admin/deposit" element={<AdminDeposit />} />
             <Route path="/admin/team" element={<AdminTeam />} />
