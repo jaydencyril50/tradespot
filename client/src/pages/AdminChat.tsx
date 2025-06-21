@@ -25,7 +25,7 @@ const AdminChat: React.FC = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('adminToken');
-      const res = await fetch(`${API}/api/chat/admin/chat-messages/${userEmail}`, {
+      const res = await fetch(`${API}/api/admin/chat-messages/${userEmail}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -51,7 +51,7 @@ const AdminChat: React.FC = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('adminToken');
-      await fetch(`${API}/api/chat/admin/chat-messages/${userEmail}`, {
+      await fetch(`${API}/api/admin/chat-messages/${userEmail}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
