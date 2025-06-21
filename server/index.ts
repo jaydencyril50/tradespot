@@ -25,6 +25,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Health check route for Render or uptime monitoring
+app.get('/', (req: Request, res: Response) => {
+  res.status(200).send('TradeSpot server is alive ✅');
+});
+
 // Mount chat routes for ProChat functionality
 app.use('/api/chat', chatRoutes);
 
