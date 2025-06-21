@@ -136,4 +136,21 @@ router.get('/admin/chat-messages', authenticateAdmin_1.default, rateLimiters_1.a
         res.status(500).json({ error: 'Failed to fetch chat messages' });
     }
 }));
+// POST /api/admin/chat-messages/:email - Admin sends a message to a user
+router.post('/admin/chat-messages/:email', authenticateAdmin_1.default, rateLimiters_1.adminRateLimiter, auditLogger_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email } = req.params;
+        const { text, image } = req.body;
+        if (!email || (!text && !image)) {
+            return res.status(400).json({ error: 'Email and message content required' });
+        }
+        // Save message as from admin
+        const chat = new Chat_1.default({ userEmail: email, message: text || '', imageUrl: image, from: 'admin' });
+        yield chat.save();
+        res.status(201).json({ success: true, chat });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to send admin message' });
+    }
+}));
 exports.default = router;

@@ -128,4 +128,21 @@ router.get('/admin/chat-messages', authenticateAdmin, adminRateLimiter, auditLog
   }
 });
 
+// POST /api/admin/chat-messages/:email - Admin sends a message to a user
+router.post('/admin/chat-messages/:email', authenticateAdmin, adminRateLimiter, auditLogger, async (req: Request, res: Response) => {
+  try {
+    const { email } = req.params;
+    const { text, image } = req.body;
+    if (!email || (!text && !image)) {
+      return res.status(400).json({ error: 'Email and message content required' });
+    }
+    // Save message as from admin
+    const chat = new Chat({ userEmail: email, message: text || '', imageUrl: image, from: 'admin' });
+    await chat.save();
+    res.status(201).json({ success: true, chat });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to send admin message' });
+  }
+});
+
 export default router;
