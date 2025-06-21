@@ -17,10 +17,20 @@ interface AuthRequest extends Request {
   user?: any;
 }
 
-// GET /api/chat - Fetch all chat messages
-router.get('/', async (req: Request, res: Response) => {
+// GET /api/chat - Fetch only the authenticated user's chat messages
+router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const chats = await Chat.find().sort({ createdAt: 1 });
+    const userId = req.user?.userId || req.user?.id || req.user?._id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+    const chats = await Chat.find({ userEmail: user.email }).sort({ createdAt: 1 });
     res.json({ chats });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch chat messages' });

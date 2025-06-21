@@ -24,10 +24,21 @@ const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
     throw new Error('JWT_SECRET environment variable must be set');
 }
-// GET /api/chat - Fetch all chat messages
-router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+// GET /api/chat - Fetch only the authenticated user's chat messages
+router.get('/', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
     try {
-        const chats = yield Chat_1.default.find().sort({ createdAt: 1 });
+        const userId = ((_a = req.user) === null || _a === void 0 ? void 0 : _a.userId) || ((_b = req.user) === null || _b === void 0 ? void 0 : _b.id) || ((_c = req.user) === null || _c === void 0 ? void 0 : _c._id);
+        if (!userId) {
+            res.status(401).json({ error: 'Unauthorized' });
+            return;
+        }
+        const user = yield User_1.default.findById(userId);
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+        const chats = yield Chat_1.default.find({ userEmail: user.email }).sort({ createdAt: 1 });
         res.json({ chats });
     }
     catch (err) {
@@ -53,9 +64,9 @@ function authenticateToken(req, res, next) {
 }
 // POST /api/chat - Save a new chat message (only)
 router.post('/', authenticateToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+    var _d, _e, _f;
     try {
-        const userId = ((_a = req.user) === null || _a === void 0 ? void 0 : _a.userId) || ((_b = req.user) === null || _b === void 0 ? void 0 : _b.id) || ((_c = req.user) === null || _c === void 0 ? void 0 : _c._id);
+        const userId = ((_d = req.user) === null || _d === void 0 ? void 0 : _d.userId) || ((_e = req.user) === null || _e === void 0 ? void 0 : _e.id) || ((_f = req.user) === null || _f === void 0 ? void 0 : _f._id);
         if (!userId) {
             res.status(401).json({ error: 'Unauthorized' });
             return;
