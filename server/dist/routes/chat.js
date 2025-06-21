@@ -16,8 +16,14 @@ const express_1 = __importDefault(require("express"));
 const Chat_1 = __importDefault(require("../models/Chat"));
 const User_1 = __importDefault(require("../models/User"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const authenticateAdmin_1 = __importDefault(require("../middleware/authenticateAdmin"));
+const rateLimiters_1 = require("../middleware/rateLimiters");
+const auditLogger_1 = __importDefault(require("../middleware/auditLogger"));
 const router = express_1.default.Router();
-const JWT_SECRET = process.env.JWT_SECRET || '08142391074@Kjl';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable must be set');
+}
 // GET /api/chat - Fetch all chat messages
 router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -72,30 +78,8 @@ router.post('/', authenticateToken, (req, res) => __awaiter(void 0, void 0, void
         res.status(500).json({ error: 'Failed to save chat message' });
     }
 }));
-// Middleware to authenticate admin users
-function authenticateAdmin(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) {
-        res.status(401).json({ error: 'No token provided' });
-        return;
-    }
-    jsonwebtoken_1.default.verify(token, JWT_SECRET, (err, user) => {
-        if (err) {
-            res.status(403).json({ error: 'Invalid token' });
-            return;
-        }
-        // Check if user has admin privileges (adjust this logic as needed)
-        if (!user || !user.isAdmin) {
-            res.status(403).json({ error: 'Admin access required' });
-            return;
-        }
-        req.user = user;
-        next();
-    });
-}
 // GET /api/admin/chat-messages/:email - Fetch chat messages by user email
-router.get('/admin/chat-messages/:email', authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/admin/chat-messages/:email', authenticateAdmin_1.default, rateLimiters_1.adminRateLimiter, auditLogger_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email } = req.params;
         if (!email) {
@@ -103,6 +87,39 @@ router.get('/admin/chat-messages/:email', authenticateAdmin, (req, res) => __awa
         }
         const messages = yield Chat_1.default.find({ userEmail: email }).sort({ createdAt: 1 });
         res.json({ messages });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Failed to fetch chat messages' });
+    }
+}));
+// GET /api/admin/chat-messages - Fetch latest chat message per user (for admin message management)
+router.get('/admin/chat-messages', authenticateAdmin_1.default, rateLimiters_1.adminRateLimiter, auditLogger_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Get all chat messages, group by userEmail, keep only the latest per user
+        const messages = yield Chat_1.default.aggregate([
+            { $sort: { createdAt: -1 } },
+            {
+                $group: {
+                    _id: "$userEmail",
+                    email: { $first: "$userEmail" },
+                    message: { $first: "$message" },
+                    imageUrl: { $first: "$imageUrl" },
+                    createdAt: { $first: "$createdAt" }
+                }
+            },
+            { $sort: { createdAt: -1 } }
+        ]);
+        // Optionally, join with User collection to get spotid
+        const users = yield User_1.default.find({}, 'email spotid');
+        const userMap = new Map(users.map((u) => [u.email, u.spotid]));
+        const result = messages.map((msg) => ({
+            email: msg.email,
+            message: msg.message,
+            imageUrl: msg.imageUrl,
+            createdAt: msg.createdAt,
+            spotid: userMap.get(msg.email) || null
+        }));
+        res.json({ messages: result });
     }
     catch (err) {
         res.status(500).json({ error: 'Failed to fetch chat messages' });

@@ -76,7 +76,7 @@ const AdminMessage: React.FC = () => {
                   <td style={{ padding: 10, textAlign: 'center' }}>
                     <button
                       style={{ background: '#1e3c72', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 14px', fontWeight: 600, cursor: 'pointer' }}
-                      onClick={() => navigate(`/admin/chat/${msg.spotid}`)}
+                      onClick={() => navigate(`/admin/chat/${msg.email}`)}
                     >
                       Open
                     </button>

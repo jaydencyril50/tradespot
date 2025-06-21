@@ -285,3 +285,23 @@ export async function fetchProChatMessages() {
   });
   return res.data.chats;
 }
+
+// ADMIN: Fetch all latest user chats
+export const fetchAllUserChats = async () => {
+    const adminToken = localStorage.getItem('adminToken');
+    if (!adminToken) throw new Error('Not authenticated as admin');
+    const res = await axios.get(`${API}/api/chat/admin/chat-messages`, {
+        headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    return res.data;
+};
+
+// ADMIN: Fetch chat messages by user email
+export const fetchChatByUser = async (email: string) => {
+    const adminToken = localStorage.getItem('adminToken');
+    if (!adminToken) throw new Error('Not authenticated as admin');
+    const res = await axios.get(`${API}/api/chat/admin/chat-messages/${email}`, {
+        headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    return res.data;
+};

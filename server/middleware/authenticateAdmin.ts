@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable must be set');
+}
 
 export default function authenticateAdmin(req: Request, res: Response, next: NextFunction): void {
     const authHeader = req.headers['authorization'];
@@ -10,7 +13,7 @@ export default function authenticateAdmin(req: Request, res: Response, next: Nex
         res.status(401).json({ error: 'No token provided' });
         return;
     }
-    jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
+    jwt.verify(token, JWT_SECRET as string, (err: any, user: any) => {
         if (err || !user || !user.admin) {
             res.status(403).json({ error: 'Admin access required' });
             return;
