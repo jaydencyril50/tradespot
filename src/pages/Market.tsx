@@ -38,6 +38,7 @@ const SimulatedMarketChart = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [userSpotBalance, setUserSpotBalance] = useState<number | null>(null);
+  const [userUSDTBalance, setUserUSDTBalance] = useState<number | null>(null);
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -234,20 +235,22 @@ const SimulatedMarketChart = () => {
   };
 
   useEffect(() => {
-    // Fetch user spot balance when modal opens
+    // Fetch user spot and USDT balance when modal opens
     if (profileModalOpen) {
-      const fetchSpotBalance = async () => {
+      const fetchBalances = async () => {
         try {
           const token = localStorage.getItem('token');
-          const res = await axios.get('/api/user/spotbalance', {
+          const res = await axios.get('/api/user/balances', {
             headers: { Authorization: `Bearer ${token}` },
           });
           setUserSpotBalance(res.data.spotBalance);
+          setUserUSDTBalance(res.data.usdtBalance);
         } catch (e) {
           setUserSpotBalance(null);
+          setUserUSDTBalance(null);
         }
       };
-      fetchSpotBalance();
+      fetchBalances();
     }
   }, [profileModalOpen]);
 
@@ -391,7 +394,8 @@ const SimulatedMarketChart = () => {
             onClick={e => e.stopPropagation()}
           >
             <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Account Overview</div>
-            <div><b>Spot Balance:</b> {userSpotBalance !== null ? userSpotBalance + ' USDT' : '...'}</div>
+            <div><b>USDT Balance:</b> {userUSDTBalance !== null ? userUSDTBalance + ' USDT' : '...'}</div>
+            <div><b>SPOT Balance:</b> {userSpotBalance !== null ? userSpotBalance + ' USDT' : '...'}</div>
             <div><b>Total Trades:</b> {userData.totalTrades}</div>
             <div><b>Open Trades:</b> {userData.openTrades}</div>
             <div><b>Closed Trades:</b> {userData.closedTrades}</div>
