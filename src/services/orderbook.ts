@@ -8,7 +8,8 @@ export const placeOrder = async (
   type: 'market' | 'limit',
   token: string
 ) => {
-  const res = await axios.post(`${API}/orderbook/order`, { side, price, amount, type }, { headers: { Authorization: `Bearer ${token}` } });
+  // FIX: Use correct backend endpoint for order placement
+  const res = await axios.post(`${API}/api/trade/order`, { side, price, amount, type }, { headers: { Authorization: `Bearer ${token}` } });
   return res.data;
 };
 
