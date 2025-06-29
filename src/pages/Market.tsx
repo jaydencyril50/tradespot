@@ -451,20 +451,23 @@ const Market: React.FC = () => {
         const required = ['time', 'open', 'high', 'low', 'close', 'volume'] as const;
         return required.every(k => typeof c[k] === 'number' && !isNaN(c[k]) && c[k] !== null && c[k] !== undefined);
       });
-      if (safeCandles.length > 0) {
-        candleSeries.setData(safeCandles);
-        // Set volume data
-        volumeSeries.setData(safeCandles.map(d => ({
-          time: d.time,
-          value: d.volume,
-          color: d.close >= d.open ? 'rgba(38,166,154,0.5)' : 'rgba(239,83,80,0.5)',
-        })));
-        smaSeries.setData(showSMA ? calculateSMA(safeCandles, 10) : []);
-        emaSeries.setData(showEMA ? calculateEMA(safeCandles, 10) : []);
-        vwapSeries.setData(showVWAP ? calculateVWAP(safeCandles) : []);
-        rsiSeries.setData(showRSI ? calculateRSI(safeCandles, 14) : []);
-        macdSeries.setData(showMACD ? calculateMACD(safeCandles) : []);
+      console.log('[Market] Candles to chart:', safeCandles);
+      if (safeCandles.length === 0) {
+        console.error('[Market] No valid candles to display. Skipping chart render.');
+        return;
       }
+      candleSeries.setData(safeCandles);
+      // Set volume data
+      volumeSeries.setData(safeCandles.map(d => ({
+        time: d.time,
+        value: d.volume,
+        color: d.close >= d.open ? 'rgba(38,166,154,0.5)' : 'rgba(239,83,80,0.5)',
+      })));
+      smaSeries.setData(showSMA ? calculateSMA(safeCandles, 10) : []);
+      emaSeries.setData(showEMA ? calculateEMA(safeCandles, 10) : []);
+      vwapSeries.setData(showVWAP ? calculateVWAP(safeCandles) : []);
+      rsiSeries.setData(showRSI ? calculateRSI(safeCandles, 14) : []);
+      macdSeries.setData(showMACD ? calculateMACD(safeCandles) : []);
     }
 
     return () => {
