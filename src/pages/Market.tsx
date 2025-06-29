@@ -40,6 +40,7 @@ const SimulatedMarketChart = () => {
   const [successMsg, setSuccessMsg] = useState('');
   const [userSpotBalance, setUserSpotBalance] = useState<number | null>(null);
   const [userUSDTBalance, setUserUSDTBalance] = useState<number | null>(null);
+  const [portfolio, setPortfolio] = useState<any>(null);
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -249,19 +250,21 @@ const SimulatedMarketChart = () => {
   };
 
   useEffect(() => {
-    // Fetch user spot and USDT balance when modal opens
+    // Fetch user spot and USDT balance and trade stats when modal opens
     if (profileModalOpen) {
-      const fetchBalances = async () => {
+      const fetchPortfolio = async () => {
         try {
-          const portfolio = await getPortfolio();
-          setUserSpotBalance(portfolio.spotBalance ?? 0);
-          setUserUSDTBalance(portfolio.usdtBalance ?? 0);
+          const data = await getPortfolio();
+          setPortfolio(data);
+          setUserSpotBalance(data.spotBalance ?? 0);
+          setUserUSDTBalance(data.usdtBalance ?? 0);
         } catch (e) {
+          setPortfolio(null);
           setUserSpotBalance(null);
           setUserUSDTBalance(null);
         }
       };
-      fetchBalances();
+      fetchPortfolio();
     }
   }, [profileModalOpen]);
 
@@ -406,10 +409,10 @@ const SimulatedMarketChart = () => {
           >
             <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Account Overview</div>
             <div><b>USDT Balance:</b> {userUSDTBalance !== null ? userUSDTBalance + ' USDT' : '...'}</div>
-            <div><b>SPOT Balance:</b> {userSpotBalance !== null ? userSpotBalance + ' USDT' : '...'}</div>
-            <div><b>Total Trades:</b> {userData.totalTrades}</div>
-            <div><b>Open Trades:</b> {userData.openTrades}</div>
-            <div><b>Closed Trades:</b> {userData.closedTrades}</div>
+            <div><b>SPOT Balance:</b> {userSpotBalance !== null ? userSpotBalance + ' SPOT' : '...'}</div>
+            <div><b>Total Trades:</b> {portfolio?.totalTrades ?? '...'}</div>
+            <div><b>Open Trades:</b> {portfolio?.openTrades ?? '...'}</div>
+            <div><b>Closed Trades:</b> {portfolio?.closedTrades ?? '...'}</div>
             <button onClick={() => setProfileModalOpen(false)} style={{ marginTop: 10, background: '#232b36', color: '#fff', border: 'none', padding: '7px 0', fontWeight: 600, fontSize: 15, cursor: 'pointer' }}>Close</button>
           </div>
         </div>
