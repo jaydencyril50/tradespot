@@ -494,14 +494,26 @@ const Market: React.FC = () => {
       logSeries('vwapData', vwapData, ['time', 'value']);
       logSeries('rsiData', rsiData, ['time', 'value']);
       logSeries('macdData', macdData, ['time', 'value']);
-      // Set data
+      // Log lengths of all series
+      console.log('[Market] volumeData length:', volumeData.length);
+      console.log('[Market] smaData length:', smaData.length);
+      console.log('[Market] emaData length:', emaData.length);
+      console.log('[Market] vwapData length:', vwapData.length);
+      console.log('[Market] rsiData length:', rsiData.length);
+      console.log('[Market] macdData length:', macdData.length);
+      // Set data only if array is non-empty
       candleSeries.setData(safeCandles);
-      volumeSeries.setData(volumeData);
-      smaSeries.setData(smaData);
-      emaSeries.setData(emaData);
-      vwapSeries.setData(vwapData);
-      rsiSeries.setData(rsiData);
-      macdSeries.setData(macdData);
+      if (volumeData.length > 0) volumeSeries.setData(volumeData);
+      if (showSMA && smaData.length > 0) smaSeries.setData(smaData);
+      else smaSeries.setData([]);
+      if (showEMA && emaData.length > 0) emaSeries.setData(emaData);
+      else emaSeries.setData([]);
+      if (showVWAP && vwapData.length > 0) vwapSeries.setData(vwapData);
+      else vwapSeries.setData([]);
+      if (showRSI && rsiData.length > 0) rsiSeries.setData(rsiData);
+      else rsiSeries.setData([]);
+      if (showMACD && macdData.length > 0) macdSeries.setData(macdData);
+      else macdSeries.setData([]);
     }
 
     return () => {
