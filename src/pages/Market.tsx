@@ -215,18 +215,20 @@ const Market: React.FC = () => {
           close: c.close,
           volume: c.volume,
         }));
-        // Filter out invalid candles (must have all fields and all must be numbers)
+        // Filter out invalid candles (must have all fields and all must be numbers and not null/undefined/NaN)
         const validCandles = formatted.filter((c: CandlestickData, idx: number) => {
           const required = ['time', 'open', 'high', 'low', 'close', 'volume'] as const;
           const valid = required.every(k => typeof c[k] === 'number' && !isNaN(c[k]) && c[k] !== null && c[k] !== undefined);
           if (!valid) {
-            console.warn(`[Market] Skipping invalid candle at index ${idx}:`, c);
+            console.error(`[Market] Skipping invalid candle at index ${idx}:`, c);
           }
           return valid;
         });
-        console.log('[Market] Formatted candle data:', validCandles);
-        if (isMounted) setCandleData(validCandles);
-        if (isMounted && validCandles.length > 0) setCurrentPrice(validCandles[validCandles.length - 1].close);
+        // Only update state if we have valid candles
+        if (isMounted && validCandles.length > 0) {
+          setCandleData(validCandles);
+          setCurrentPrice(validCandles[validCandles.length - 1].close);
+        }
       } catch (err) {
         console.error('[Market] Error fetching candles:', err);
       }
@@ -444,18 +446,25 @@ const Market: React.FC = () => {
 
     // Only set data from backend
     if (candleData.length > 0) {
-      candleSeries.setData(candleData);
-      // Set volume data
-      volumeSeries.setData(candleData.map(d => ({
-        time: d.time,
-        value: d.volume,
-        color: d.close >= d.open ? 'rgba(38,166,154,0.5)' : 'rgba(239,83,80,0.5)',
-      })));
-      smaSeries.setData(showSMA ? calculateSMA(candleData, 10) : []);
-      emaSeries.setData(showEMA ? calculateEMA(candleData, 10) : []);
-      vwapSeries.setData(showVWAP ? calculateVWAP(candleData) : []);
-      rsiSeries.setData(showRSI ? calculateRSI(candleData, 14) : []);
-      macdSeries.setData(showMACD ? calculateMACD(candleData) : []);
+      // Defensive: filter again before setting data
+      const safeCandles = candleData.filter(c => {
+        const required = ['time', 'open', 'high', 'low', 'close', 'volume'] as const;
+        return required.every(k => typeof c[k] === 'number' && !isNaN(c[k]) && c[k] !== null && c[k] !== undefined);
+      });
+      if (safeCandles.length > 0) {
+        candleSeries.setData(safeCandles);
+        // Set volume data
+        volumeSeries.setData(safeCandles.map(d => ({
+          time: d.time,
+          value: d.volume,
+          color: d.close >= d.open ? 'rgba(38,166,154,0.5)' : 'rgba(239,83,80,0.5)',
+        })));
+        smaSeries.setData(showSMA ? calculateSMA(safeCandles, 10) : []);
+        emaSeries.setData(showEMA ? calculateEMA(safeCandles, 10) : []);
+        vwapSeries.setData(showVWAP ? calculateVWAP(safeCandles) : []);
+        rsiSeries.setData(showRSI ? calculateRSI(safeCandles, 14) : []);
+        macdSeries.setData(showMACD ? calculateMACD(safeCandles) : []);
+      }
     }
 
     return () => {
