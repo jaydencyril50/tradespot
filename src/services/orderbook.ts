@@ -31,3 +31,8 @@ export const fetchMyOrders = async (token: string) => {
   const res = await axios.get(`${API}/trade/myorders`, { headers: { Authorization: `Bearer ${token}` } });
   return res.data;
 };
+
+export const fetchMyTrades = async (token: string) => {
+  const res = await axios.get(`${API}/trade/mytrades`, { headers: { Authorization: `Bearer ${token}` } });
+  return res.data;
+};

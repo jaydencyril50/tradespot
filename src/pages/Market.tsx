@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createChart, CrosshairMode } from 'lightweight-charts';
 import { getPortfolio } from '../services/api';
-import { placeOrder } from '../services/orderbook';
+import { placeOrder, fetchMyTrades } from '../services/orderbook';
 
 // Candle type definition
 interface Candle {
@@ -41,6 +41,7 @@ const SimulatedMarketChart = () => {
   const [userSpotBalance, setUserSpotBalance] = useState<number | null>(null);
   const [userUSDTBalance, setUserUSDTBalance] = useState<number | null>(null);
   const [portfolio, setPortfolio] = useState<any>(null);
+  const [tradeStats, setTradeStats] = useState({ total: 0, open: 0, closed: 0 });
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -252,20 +253,29 @@ const SimulatedMarketChart = () => {
   useEffect(() => {
     // Fetch user spot and USDT balance and trade stats when modal opens
     if (profileModalOpen) {
-      const fetchPortfolio = async () => {
+      const fetchPortfolioAndTrades = async () => {
         try {
           const data = await getPortfolio();
           setPortfolio(data);
           setUserSpotBalance(data.spotBalance ?? 0);
           setUserUSDTBalance(data.usdtBalance ?? 0);
-          console.log('Portfolio response:', data); // Debug: see what fields are present
+          const token = localStorage.getItem('token');
+          if (token) {
+            const tradesRes = await fetchMyTrades(token);
+            const trades = tradesRes.trades || [];
+            const total = trades.length;
+            const open = trades.filter((t: any) => !t.completed).length;
+            const closed = trades.filter((t: any) => t.completed).length;
+            setTradeStats({ total, open, closed });
+          }
         } catch (e) {
           setPortfolio(null);
           setUserSpotBalance(null);
           setUserUSDTBalance(null);
+          setTradeStats({ total: 0, open: 0, closed: 0 });
         }
       };
-      fetchPortfolio();
+      fetchPortfolioAndTrades();
     }
   }, [profileModalOpen]);
 
@@ -411,9 +421,9 @@ const SimulatedMarketChart = () => {
             <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Account Overview</div>
             <div><b>USDT Balance:</b> {userUSDTBalance !== null ? userUSDTBalance + ' USDT' : '...'}</div>
             <div><b>SPOT Balance:</b> {userSpotBalance !== null ? userSpotBalance + ' SPOT' : '...'}</div>
-            <div><b>Total Trades:</b> {portfolio?.totalTrades ?? '...'}</div>
-            <div><b>Open Trades:</b> {portfolio?.openTrades ?? '...'}</div>
-            <div><b>Closed Trades:</b> {portfolio?.closedTrades ?? '...'}</div>
+            <div><b>Total Trades:</b> {tradeStats.total !== undefined ? tradeStats.total : '...'}</div>
+            <div><b>Open Trades:</b> {tradeStats.open !== undefined ? tradeStats.open : '...'}</div>
+            <div><b>Closed Trades:</b> {tradeStats.closed !== undefined ? tradeStats.closed : '...'}</div>
             <button onClick={() => setProfileModalOpen(false)} style={{ marginTop: 10, background: '#232b36', color: '#fff', border: 'none', padding: '7px 0', fontWeight: 600, fontSize: 15, cursor: 'pointer' }}>Close</button>
           </div>
         </div>
