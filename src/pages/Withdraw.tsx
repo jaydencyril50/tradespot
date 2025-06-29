@@ -38,6 +38,17 @@ const Withdraw: React.FC = () => {
         fetchPortfolio();
     }, []);
 
+    // Real-time balance check on amount input
+    const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setAmount(value);
+        setError('');
+        setSuccess('');
+        if (value && !isNaN(Number(value)) && Number(value) > usdtBalance) {
+            setError('Insufficient funds.');
+        }
+    };
+
     // Send withdrawal verification code to email
     const handleSendCode = async () => {
         setSendingCode(true);
@@ -130,9 +141,12 @@ const Withdraw: React.FC = () => {
                             min="0"
                             step="any"
                             value={amount}
-                            onChange={e => setAmount(e.target.value)}
+                            onChange={handleAmountChange}
                             style={{ width: '95%', padding: '8px', border: '1px solid #ccc', fontSize: 16 }}
                         />
+                        {amount && Number(amount) > usdtBalance && (
+                            <div style={{ color: '#e74c3c', fontWeight: 600, marginTop: 4, fontSize: 14 }}>Insufficient funds.</div>
+                        )}
                     </div>
                     <div style={{ marginBottom: 18, display: 'flex', alignItems: 'center' }}>
                         <div style={{ flex: 1 }}>

@@ -660,7 +660,14 @@ const Dashboard: React.FC = () => {
           min="0"
           step="any"
           value={transferAmount}
-          onChange={e => setTransferAmount(e.target.value)}
+          onChange={e => {
+            setTransferAmount(e.target.value);
+            setTransferError('');
+            setTransferSuccess('');
+            if (e.target.value && !isNaN(Number(e.target.value)) && Number(e.target.value) > spotBalance) {
+              setTransferError('Insufficient funds.');
+            }
+          }}
           style={{
             padding: '6px 12px',
             borderRadius: 6,
@@ -669,6 +676,9 @@ const Dashboard: React.FC = () => {
             width: 120
           }}
         />
+        {transferAmount && Number(transferAmount) > spotBalance && (
+          <div style={{ color: '#e74c3c', fontWeight: 600, marginTop: 4, fontSize: 14 }}>Insufficient funds.</div>
+        )}
       </div>
       <div style={{ marginBottom: 12 }}>
         <label style={{ fontWeight: 500, color: '#25324B', marginRight: 10 }}>2FA Code:</label>
