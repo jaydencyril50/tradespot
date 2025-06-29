@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createChart, CrosshairMode } from 'lightweight-charts';
 import { getPortfolio } from '../services/api';
 import { placeOrder, fetchMyTrades, fetchMyOrders } from '../services/orderbook';
+import { useNavigate } from 'react-router-dom';
 
 // Candle type definition
 interface Candle {
@@ -22,6 +23,7 @@ const SimulatedMarketChart = () => {
   const [showMACD, setShowMACD] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const navigate = useNavigate();
 
   // Dummy user data for modal (replace with real API calls as needed)
   const userData = {
@@ -542,6 +544,41 @@ const SimulatedMarketChart = () => {
           </table>
         </div>
       )}
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 32, marginBottom: 48 }}>
+        <div style={{
+          background: '#fff',
+          border: '1.5px solid #e3e6ef',
+          borderRadius: 0,
+          boxShadow: '0 4px 24px 0 rgba(30,60,114,0.10)',
+          padding: '24px 0',
+          width: '100%',
+          maxWidth: 380,
+          display: 'flex',
+          justifyContent: 'center',
+        }}>
+          <button
+            style={{
+              background: '#f2f3f5', // light ash/grey
+              color: 'rgba(14, 112, 55, 0.8)',
+              border: 'none',
+              borderRadius: 0,
+              padding: '12px 0',
+              width: '90%',
+              maxWidth: 300,
+              minWidth: 40,
+              fontSize: 18,
+              fontWeight: 700,
+              cursor: 'pointer',
+              height: 38,
+              letterSpacing: 1,
+              boxShadow: '0 2px 8px rgba(42, 90, 62, 0.8)'
+            }}
+            onClick={() => navigate('/stake')}
+          >
+            Stake
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
