@@ -6,6 +6,152 @@ import ProtectedRoute from '../components/ProtectedRoute';
 import './Market.css';
 import axios from 'axios';
 
+// --- TradePanel Component ---
+const TradePanel: React.FC<{ price: number }> = ({ price }) => {
+  const [side, setSide] = useState<'buy' | 'sell'>('buy');
+  const [inputPrice, setInputPrice] = useState(price);
+  const [amount, setAmount] = useState(0);
+  const [percent, setPercent] = useState(0);
+  const [placing, setPlacing] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [spotBalance, setSpotBalance] = useState<number | null>(null);
+
+  // Fetch spot balance on mount
+  useEffect(() => {
+    async function fetchBalance() {
+      try {
+        const token = localStorage.getItem('token');
+        const API = process.env.REACT_APP_API_BASE_URL;
+        const res = await axios.get(`${API}/api/trade/balance`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setSpotBalance(res.data.spotBalance);
+      } catch (err) {
+        setSpotBalance(null);
+      }
+    }
+    fetchBalance();
+  }, []);
+
+  useEffect(() => {
+    setInputPrice(price);
+  }, [price]);
+
+  // Quick % buttons for amount
+  const handlePercent = (p: number) => {
+    setPercent(p);
+    // Always set percent, even if spotBalance is null
+    if (spotBalance !== null && !isNaN(spotBalance)) {
+      setAmount(Number(((spotBalance * p) / 100).toFixed(4)));
+    } else {
+      setAmount(0); // keep amount at 0 if no balance
+    }
+  };
+
+  const total = Number((inputPrice * amount).toFixed(2));
+
+  const handlePlaceOrder = async () => {
+    setPlacing(true);
+    setMessage(null);
+    try {
+      const token = localStorage.getItem('token');
+      const API = process.env.REACT_APP_API_BASE_URL;
+      const res = await axios.post(
+        `${API}/api/trade/open`,
+        { amount, direction: side, openPrice: inputPrice },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setMessage('Trade placed successfully!');
+      setSpotBalance(res.data.spotBalance);
+      setAmount(0);
+      setPercent(0);
+    } catch (err: any) {
+      setMessage(err.response?.data?.error || 'Trade failed');
+    } finally {
+      setPlacing(false);
+    }
+  };
+
+  return (
+    <div className="market-trade-panel">
+      <div className="market-trade-tabs">
+        <button
+          type="button"
+          className={side === 'buy' ? 'active' : ''}
+          onClick={() => {
+            setSide('buy');
+            setPercent(0);
+            setAmount(0);
+          }}
+        >Buy</button>
+        <button
+          type="button"
+          className={side === 'sell' ? 'active' : ''}
+          onClick={() => {
+            setSide('sell');
+            setPercent(0);
+            setAmount(0);
+          }}
+        >Sell</button>
+      </div>
+      <div className="market-trade-form">
+        <label htmlFor="market-price-input">
+          Price (USDT)
+          <input
+            id="market-price-input"
+            name="price"
+            type="number"
+            min="0"
+            step="0.01"
+            value={inputPrice}
+            onChange={e => setInputPrice(Number(e.target.value))}
+          />
+        </label>
+        <label htmlFor="market-amount-input">
+          Amount (SPOT)
+          <input
+            id="market-amount-input"
+            name="amount"
+            type="number"
+            min="0"
+            step="0.0001"
+            value={amount}
+            onChange={e => setAmount(Number(e.target.value))}
+          />
+        </label>
+        <div className="market-trade-percent-row">
+          {[25, 50, 75, 100].map(p => (
+            <button
+              key={p}
+              className={percent === p ? 'active' : ''}
+              onClick={() => handlePercent(p)}
+              type="button"
+            >{p}%</button>
+          ))}
+        </div>
+        <div className="market-trade-balance">
+          <span>Available: </span>
+          <span style={{ color: '#1976d2', fontWeight: 600 }}>
+            {spotBalance !== null ? `${spotBalance.toLocaleString(undefined, {maximumFractionDigits:4})} SPOT` : '--'}
+          </span>
+        </div>
+        <div className="market-trade-total">
+          <span>Total: </span>
+          <span style={{ fontWeight: 700 }}>{isNaN(total) ? '--' : `${total.toLocaleString(undefined, {maximumFractionDigits:2})} USDT`}</span>
+        </div>
+        <button
+          className={`market-trade-place-btn ${side}`}
+          onClick={handlePlaceOrder}
+          disabled={placing || amount <= 0 || inputPrice <= 0}
+        >
+          {placing ? 'Placing...' : side === 'buy' ? 'Buy SPOT' : 'Sell SPOT'}
+        </button>
+        {message && <div className="market-trade-message">{message}</div>}
+      </div>
+    </div>
+  );
+};
+
 type ChartApi = ReturnType<typeof createChart>;
 type CandlestickData = {
   time: number;
@@ -401,152 +547,6 @@ const Market: React.FC = () => {
           {/* Center price line */}
           <line x1={px(center)} y1={0} x2={px(center)} y2={height} stroke="#232b36" strokeDasharray="4 2" strokeWidth={1} />
         </svg>
-      </div>
-    );
-  };
-
-  // --- TradePanel Component ---
-  const TradePanel: React.FC<{ price: number }> = ({ price }) => {
-    const [side, setSide] = useState<'buy' | 'sell'>('buy');
-    const [inputPrice, setInputPrice] = useState(price);
-    const [amount, setAmount] = useState(0);
-    const [percent, setPercent] = useState(0);
-    const [placing, setPlacing] = useState(false);
-    const [message, setMessage] = useState<string | null>(null);
-    const [spotBalance, setSpotBalance] = useState<number | null>(null);
-
-    // Fetch spot balance on mount
-    useEffect(() => {
-      async function fetchBalance() {
-        try {
-          const token = localStorage.getItem('token');
-          const API = process.env.REACT_APP_API_BASE_URL;
-          const res = await axios.get(`${API}/api/trade/balance`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setSpotBalance(res.data.spotBalance);
-        } catch (err) {
-          setSpotBalance(null);
-        }
-      }
-      fetchBalance();
-    }, []);
-
-    useEffect(() => {
-      setInputPrice(price);
-    }, [price]);
-
-    // Quick % buttons for amount
-    const handlePercent = (p: number) => {
-      setPercent(p);
-      // Always set percent, even if spotBalance is null
-      if (spotBalance !== null && !isNaN(spotBalance)) {
-        setAmount(Number(((spotBalance * p) / 100).toFixed(4)));
-      } else {
-        setAmount(0); // keep amount at 0 if no balance
-      }
-    };
-
-    const total = Number((inputPrice * amount).toFixed(2));
-
-    const handlePlaceOrder = async () => {
-      setPlacing(true);
-      setMessage(null);
-      try {
-        const token = localStorage.getItem('token');
-        const API = process.env.REACT_APP_API_BASE_URL;
-        const res = await axios.post(
-          `${API}/api/trade/open`,
-          { amount, direction: side, openPrice: inputPrice },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setMessage('Trade placed successfully!');
-        setSpotBalance(res.data.spotBalance);
-        setAmount(0);
-        setPercent(0);
-      } catch (err: any) {
-        setMessage(err.response?.data?.error || 'Trade failed');
-      } finally {
-        setPlacing(false);
-      }
-    };
-
-    return (
-      <div className="market-trade-panel">
-        <div className="market-trade-tabs">
-          <button
-            type="button"
-            className={side === 'buy' ? 'active' : ''}
-            onClick={() => {
-              setSide('buy');
-              setPercent(0);
-              setAmount(0);
-            }}
-          >Buy</button>
-          <button
-            type="button"
-            className={side === 'sell' ? 'active' : ''}
-            onClick={() => {
-              setSide('sell');
-              setPercent(0);
-              setAmount(0);
-            }}
-          >Sell</button>
-        </div>
-        <div className="market-trade-form">
-          <label htmlFor="market-price-input">
-            Price (USDT)
-            <input
-              id="market-price-input"
-              name="price"
-              type="number"
-              min="0"
-              step="0.01"
-              value={inputPrice}
-              onChange={e => setInputPrice(Number(e.target.value))}
-            />
-          </label>
-          <label htmlFor="market-amount-input">
-            Amount (SPOT)
-            <input
-              id="market-amount-input"
-              name="amount"
-              type="number"
-              min="0"
-              step="0.0001"
-              value={amount}
-              onChange={e => setAmount(Number(e.target.value))}
-            />
-          </label>
-          <div className="market-trade-percent-row">
-            {[25, 50, 75, 100].map(p => (
-              <button
-                key={p}
-                className={percent === p ? 'active' : ''}
-                onClick={() => handlePercent(p)}
-                type="button"
-              >{p}%</button>
-            ))}
-          </div>
-          <div className="market-trade-balance">
-            <span>Available: </span>
-            <span style={{ color: '#1976d2', fontWeight: 600 }}>
-              {spotBalance !== null ? `${spotBalance.toLocaleString(undefined, {maximumFractionDigits:4})} SPOT` : '--'}
-            </span>
-          </div>
-          <div className="market-trade-total">
-            <span>Total: </span>
-            <span style={{ fontWeight: 700 }}>{isNaN(total) ? '--' : `${total.toLocaleString(undefined, {maximumFractionDigits:2})} USDT`}</span>
-          </div>
-          <button
-            className={`market-trade-place-btn ${side}`}
-            onClick={handlePlaceOrder}
-            disabled={placing || amount <= 0 || inputPrice <= 0}
-          >
-            {placing ? 'Placing...' : side === 'buy' ? 'Buy SPOT' : 'Sell SPOT'}
-          </button>
-          {message && <div className="market-trade-message">{message}</div>}
-        </div>
       </div>
     );
   };
