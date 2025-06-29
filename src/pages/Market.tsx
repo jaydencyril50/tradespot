@@ -258,6 +258,7 @@ const SimulatedMarketChart = () => {
           setPortfolio(data);
           setUserSpotBalance(data.spotBalance ?? 0);
           setUserUSDTBalance(data.usdtBalance ?? 0);
+          console.log('Portfolio response:', data); // Debug: see what fields are present
         } catch (e) {
           setPortfolio(null);
           setUserSpotBalance(null);
