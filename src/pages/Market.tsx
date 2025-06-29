@@ -21,6 +21,7 @@ const SimulatedMarketChart = () => {
   const [showRSI, setShowRSI] = useState(false);
   const [showMACD, setShowMACD] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Dummy user data for modal (replace with real API calls as needed)
   const userData = {
@@ -279,6 +280,17 @@ const SimulatedMarketChart = () => {
     }
   }, [profileModalOpen]);
 
+  useEffect(() => {
+    if (isFullscreen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isFullscreen]);
+
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
@@ -293,24 +305,70 @@ const SimulatedMarketChart = () => {
         />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 20 }}>
-        <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
           <label><input type="checkbox" checked={showSMA} onChange={() => setShowSMA(!showSMA)} /> SMA</label>
           <label><input type="checkbox" checked={showEMA} onChange={() => setShowEMA(!showEMA)} /> EMA</label>
           <label><input type="checkbox" checked={showRSI} onChange={() => setShowRSI(!showRSI)} /> RSI</label>
           <label><input type="checkbox" checked={showMACD} onChange={() => setShowMACD(!showMACD)} /> MACD</label>
+          <span
+            onClick={() => setIsFullscreen(f => !f)}
+            style={{ cursor: 'pointer', marginLeft: 8, fontSize: 22, display: 'flex', alignItems: 'center' }}
+            title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+          >
+            {/* SVG Zoom/Fullscreen Icon */}
+            {isFullscreen ? (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#232b36" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18H5a2 2 0 0 1-2-2v-4"/><polyline points="7 16 3 16 3 12"/><path d="M15 6h4a2 2 0 0 1 2 2v4"/><polyline points="17 8 21 8 21 12"/></svg>
+            ) : (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#232b36" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            )}
+          </span>
         </div>
         <div
           ref={chartContainerRef}
           style={{
-            width: '100%',
-            maxWidth: '1000px',
-            height: '500px',
-            borderRadius: 8,
-            boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+            width: isFullscreen ? '100vw' : '100%',
+            maxWidth: isFullscreen ? '100vw' : '1000px',
+            height: isFullscreen ? '100vh' : '500px',
+            position: isFullscreen ? 'fixed' : 'relative',
+            top: isFullscreen ? 0 : undefined,
+            left: isFullscreen ? 0 : undefined,
+            right: isFullscreen ? 0 : undefined,
+            bottom: isFullscreen ? 0 : undefined,
+            zIndex: isFullscreen ? 9999 : undefined,
             backgroundColor: '#131722',
-            position: 'relative'
+            borderRadius: isFullscreen ? 0 : 8,
+            boxShadow: isFullscreen ? '0 0 0 9999px rgba(0,0,0,0.85)' : '0 0 10px rgba(0,0,0,0.5)',
+            margin: isFullscreen ? 0 : undefined,
+            padding: 0,
+            transition: 'all 0.3s',
+            overflow: 'hidden',
           }}
         >
+          {isFullscreen && (
+            <button
+              onClick={() => setIsFullscreen(false)}
+              style={{
+                position: 'absolute',
+                top: 16,
+                right: 24,
+                zIndex: 10001,
+                background: 'rgba(30,30,30,0.7)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '50%',
+                width: 36,
+                height: 36,
+                fontSize: 22,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              aria-label="Exit Fullscreen"
+            >
+              &#10005;
+            </button>
+          )}
           <div
             ref={tooltipRef}
             style={{
