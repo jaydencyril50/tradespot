@@ -467,18 +467,41 @@ const Market: React.FC = () => {
         console.error('[Market] No valid candles to display. Skipping chart render. Raw candleData:', candleData);
         return;
       }
-      candleSeries.setData(safeCandles);
-      // Set volume data
-      volumeSeries.setData(safeCandles.map(d => ({
+      // --- PATCH: Add detailed logging for all indicator and volume series ---
+      const volumeData = safeCandles.map(d => ({
         time: d.time,
         value: d.volume,
         color: d.close >= d.open ? 'rgba(38,166,154,0.5)' : 'rgba(239,83,80,0.5)',
-      })));
-      smaSeries.setData(showSMA ? calculateSMA(safeCandles, 10) : []);
-      emaSeries.setData(showEMA ? calculateEMA(safeCandles, 10) : []);
-      vwapSeries.setData(showVWAP ? calculateVWAP(safeCandles) : []);
-      rsiSeries.setData(showRSI ? calculateRSI(safeCandles, 14) : []);
-      macdSeries.setData(showMACD ? calculateMACD(safeCandles) : []);
+      }));
+      const smaData = showSMA ? calculateSMA(safeCandles, 10) : [];
+      const emaData = showEMA ? calculateEMA(safeCandles, 10) : [];
+      const vwapData = showVWAP ? calculateVWAP(safeCandles) : [];
+      const rsiData = showRSI ? calculateRSI(safeCandles, 14) : [];
+      const macdData = showMACD ? calculateMACD(safeCandles) : [];
+      // Log and check for null/undefined/NaN in each series
+      function logSeries<T extends Record<string, any>>(seriesName: string, arr: T[], keys: (keyof T)[]): void {
+        arr.forEach((item: T, idx: number) => {
+          keys.forEach((k: keyof T) => {
+            if (item[k] === null || item[k] === undefined || (typeof item[k] === 'number' && isNaN(item[k]))) {
+              console.error(`[Market] Invalid value in ${seriesName} at idx ${idx}, key '${String(k)}':`, item[k], item);
+            }
+          });
+        });
+      }
+      logSeries('volumeData', volumeData, ['time', 'value']);
+      logSeries('smaData', smaData, ['time', 'value']);
+      logSeries('emaData', emaData, ['time', 'value']);
+      logSeries('vwapData', vwapData, ['time', 'value']);
+      logSeries('rsiData', rsiData, ['time', 'value']);
+      logSeries('macdData', macdData, ['time', 'value']);
+      // Set data
+      candleSeries.setData(safeCandles);
+      volumeSeries.setData(volumeData);
+      smaSeries.setData(smaData);
+      emaSeries.setData(emaData);
+      vwapSeries.setData(vwapData);
+      rsiSeries.setData(rsiData);
+      macdSeries.setData(macdData);
     }
 
     return () => {
