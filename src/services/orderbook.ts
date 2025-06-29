@@ -8,31 +8,31 @@ export const placeOrder = async (
   type: 'market' | 'limit',
   token: string
 ) => {
-  const res = await axios.post(`${API}/trade/order`, { side, price, amount, type }, { headers: { Authorization: `Bearer ${token}` } });
+  const res = await axios.post(`${API}/orderbook/order`, { side, price, amount, type }, { headers: { Authorization: `Bearer ${token}` } });
   return res.data;
 };
 
 export const cancelOrder = async (orderId: string, token: string) => {
-  const res = await axios.post(`${API}/trade/cancel`, { orderId }, { headers: { Authorization: `Bearer ${token}` } });
+  const res = await axios.post(`${API}/orderbook/cancel`, { orderId }, { headers: { Authorization: `Bearer ${token}` } });
   return res.data;
 };
 
 export const fetchOrderBook = async () => {
-  const res = await axios.get(`${API}/trade/orderbook`);
+  const res = await axios.get(`${API}/orderbook/orderbook`);
   return res.data;
 };
 
 export const fetchRecentTrades = async () => {
-  const res = await axios.get(`${API}/trade/recent`);
+  const res = await axios.get(`${API}/orderbook/recent`);
   return res.data;
 };
 
 export const fetchMyOrders = async (token: string) => {
-  const res = await axios.get(`${API}/trade/myorders`, { headers: { Authorization: `Bearer ${token}` } });
+  const res = await axios.get(`${API}/orderbook/myorders`, { headers: { Authorization: `Bearer ${token}` } });
   return res.data;
 };
 
 export const fetchMyTrades = async (token: string) => {
-  const res = await axios.get(`${API}/trade/mytrades`, { headers: { Authorization: `Bearer ${token}` } });
+  const res = await axios.get(`${API}/orderbook/mytrades`, { headers: { Authorization: `Bearer ${token}` } });
   return res.data;
 };
