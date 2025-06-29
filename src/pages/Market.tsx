@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createChart, CrosshairMode } from 'lightweight-charts';
+import axios from 'axios';
 
 // Candle type definition
 interface Candle {
@@ -15,9 +16,28 @@ const SimulatedMarketChart = () => {
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [showSMA, setShowSMA] = useState(true);
-  const [showEMA, setShowEMA] = useState(true);
-  const [showRSI, setShowRSI] = useState(true);
-  const [showMACD, setShowMACD] = useState(true);
+  const [showEMA, setShowEMA] = useState(false);
+  const [showRSI, setShowRSI] = useState(false);
+  const [showMACD, setShowMACD] = useState(false);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+
+  // Dummy user data for modal (replace with real API calls as needed)
+  const userData = {
+    spotBalance: 1234.56,
+    totalTrades: 42,
+    openTrades: 3,
+    closedTrades: 39,
+  };
+
+  // Trading state
+  const [tradeType, setTradeType] = useState<'buy' | 'sell'>('buy');
+  const [orderType, setOrderType] = useState<'market' | 'limit'>('market');
+  const [amount, setAmount] = useState('');
+  const [price, setPrice] = useState('');
+  const [orderSummary, setOrderSummary] = useState<any>(null);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+  const [userSpotBalance, setUserSpotBalance] = useState<number | null>(null);
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -178,12 +198,71 @@ const SimulatedMarketChart = () => {
     };
   }, [showSMA, showEMA, showRSI, showMACD]);
 
+  // Calculate total based on amount and price
+  const total = (() => {
+    const amt = parseFloat(amount);
+    if (!amt || amt <= 0) return '';
+    if (orderType === 'market') {
+      // For demo, assume market price is 1.00
+      return (amt * 1).toFixed(2);
+    }
+    const prc = parseFloat(price);
+    if (!prc || prc <= 0) return '';
+    return (amt * prc).toFixed(2);
+  })();
+
+  // Handle order placement
+  const handlePlaceOrder = () => {
+    setErrorMsg('');
+    setSuccessMsg('');
+    if (!amount || parseFloat(amount) <= 0) {
+      setErrorMsg('Enter a valid amount.');
+      return;
+    }
+    if (orderType === 'limit' && (!price || parseFloat(price) <= 0)) {
+      setErrorMsg('Enter a valid limit price.');
+      return;
+    }
+    setOrderSummary({
+      tradeType,
+      orderType,
+      amount,
+      price: orderType === 'market' ? 'Market' : price,
+      total: total || '0.00',
+    });
+    setSuccessMsg('Order placed (simulated).');
+  };
+
+  useEffect(() => {
+    // Fetch user spot balance when modal opens
+    if (profileModalOpen) {
+      const fetchSpotBalance = async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const res = await axios.get('/api/user/spotbalance', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setUserSpotBalance(res.data.spotBalance);
+        } catch (e) {
+          setUserSpotBalance(null);
+        }
+      };
+      fetchSpotBalance();
+    }
+  }, [profileModalOpen]);
+
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
         <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
           SPOT/USDT MARKET
         </span>
+        <img
+          src={require('../assets/profile.png')}
+          alt="profile"
+          style={{ width: 40, height: 40, borderRadius: '50%', background: '#111', objectFit: 'cover', marginLeft: 16, opacity: 0.6, cursor: 'pointer' }}
+          onClick={() => setProfileModalOpen(true)}
+        />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 20 }}>
         <div>
@@ -220,6 +299,106 @@ const SimulatedMarketChart = () => {
           />
         </div>
       </div>
+      {/* Trading Section */}
+      <div style={{
+        maxWidth: 480,
+        margin: '32px auto 0',
+        background: '#f6f9fe',
+        border: '1.5px solid #232b36',
+        borderTop: 0,
+        borderLeft: 0,
+        borderRight: 0,
+        borderRadius: 0,
+        boxShadow: '0 12px 40px 0 rgba(30,60,114,0.18), 0 4px 16px 0 rgba(30,60,114,0.10)',
+        padding: '24px 24px 18px 18px',
+        fontFamily: 'inherit',
+        color: '#232b36',
+      }}>
+        <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif', marginBottom: 18, display: 'block' }}>
+          TRADE SPOT/USDT
+        </span>
+        <div style={{ display: 'flex', gap: 12, marginBottom: 18 }}>
+          <button type="button" onClick={() => setTradeType('buy')} style={{ flex: 1, padding: 8, borderRadius: 6, border: tradeType === 'buy' ? '2px solid #27ae60' : '1px solid #ccc', background: tradeType === 'buy' ? '#eafaf1' : '#fff', color: '#27ae60', fontWeight: 600 }}>Buy</button>
+          <button type="button" onClick={() => setTradeType('sell')} style={{ flex: 1, padding: 8, borderRadius: 6, border: tradeType === 'sell' ? '2px solid #e74c3c' : '1px solid #ccc', background: tradeType === 'sell' ? '#fbeaea' : '#fff', color: '#e74c3c', fontWeight: 600 }}>Sell</button>
+        </div>
+        <div style={{ marginBottom: 14 }}>
+          <label style={{ fontWeight: 500, fontSize: 14 }}>Order Type</label>
+          <select value={orderType} onChange={e => setOrderType(e.target.value as 'market' | 'limit')} style={{ width: '100%', padding: 7, borderRadius: 5, border: '1px solid #bbb', marginTop: 4 }}>
+            <option value="market">Market</option>
+            <option value="limit">Limit</option>
+          </select>
+        </div>
+        <div style={{ marginBottom: 14 }}>
+          <label style={{ fontWeight: 500, fontSize: 14 }}>Amount (SPOT)</label>
+          <input type="number" min="0" step="any" value={amount} onChange={e => setAmount(e.target.value)} style={{ width: '95%', padding: 7, borderRadius: 5, border: '1px solid #bbb', marginTop: 4 }} />
+        </div>
+        {orderType === 'limit' && (
+          <div style={{ marginBottom: 14 }}>
+            <label style={{ fontWeight: 500, fontSize: 14 }}>Limit Price (USDT)</label>
+            <input type="number" min="0" step="any" value={price} onChange={e => setPrice(e.target.value)} style={{ width: '100%', padding: 7, borderRadius: 5, border: '1px solid #bbb', marginTop: 4 }} />
+          </div>
+        )}
+        <div style={{ marginBottom: 18, fontWeight: 500, fontSize: 15 }}>
+          Total: <span style={{ color: '#25324B', fontWeight: 700 }}>{total || '0.00'} USDT</span>
+        </div>
+        <button type="button" onClick={handlePlaceOrder} style={{ width: '100%', padding: 10, borderRadius: 6, background: tradeType === 'buy' ? '#27ae60' : '#e74c3c', color: '#fff', fontWeight: 700, fontSize: 16, border: 'none', marginBottom: 10 }}>
+          Place {tradeType === 'buy' ? 'Buy' : 'Sell'} Order
+        </button>
+        {orderSummary && (
+          <div style={{ background: '#fff', border: '1px solid #e3e6ef', borderRadius: 6, padding: 12, marginTop: 10, fontSize: 14 }}>
+            <div style={{ fontWeight: 600, marginBottom: 4 }}>Order Summary</div>
+            <div>Type: <b style={{ color: tradeType === 'buy' ? '#27ae60' : '#e74c3c' }}>{tradeType.toUpperCase()}</b></div>
+            <div>Order: <b>{orderType.toUpperCase()}</b></div>
+            <div>Amount: <b>{amount}</b> SPOT</div>
+            <div>Price: <b>{orderType === 'market' ? 'Market' : price + ' USDT'}</b></div>
+            <div>Total: <b>{total} USDT</b></div>
+          </div>
+        )}
+        {errorMsg && <div style={{ color: '#e74c3c', marginTop: 8, fontWeight: 500 }}>{errorMsg}</div>}
+        {successMsg && <div style={{ color: '#27ae60', marginTop: 8, fontWeight: 500 }}>{successMsg}</div>}
+      </div>
+      {/* Profile Modal Overlay */}
+      {profileModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0,0,0,0.18)',
+          zIndex: 2000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+          onClick={() => setProfileModalOpen(false)}
+        >
+          <div
+            style={{
+              background: '#fff',
+              padding: '32px 36px',
+              minWidth: 260,
+              boxShadow: '0 8px 32px 0 rgba(30,60,114,0.18)',
+              borderRadius: 0,
+              fontFamily: 'inherit',
+              color: '#232b36',
+              position: 'relative',
+              zIndex: 2100,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 16,
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Account Overview</div>
+            <div><b>Spot Balance:</b> {userSpotBalance !== null ? userSpotBalance + ' USDT' : '...'}</div>
+            <div><b>Total Trades:</b> {userData.totalTrades}</div>
+            <div><b>Open Trades:</b> {userData.openTrades}</div>
+            <div><b>Closed Trades:</b> {userData.closedTrades}</div>
+            <button onClick={() => setProfileModalOpen(false)} style={{ marginTop: 10, background: '#232b36', color: '#fff', border: 'none', padding: '7px 0', fontWeight: 600, fontSize: 15, cursor: 'pointer' }}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
