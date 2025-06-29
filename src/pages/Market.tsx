@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createChart, CrosshairMode } from 'lightweight-charts';
-import axios from 'axios';
+import { getPortfolio } from '../services/api';
 import { placeOrder } from '../services/orderbook';
 
 // Candle type definition
@@ -253,12 +253,9 @@ const SimulatedMarketChart = () => {
     if (profileModalOpen) {
       const fetchBalances = async () => {
         try {
-          const token = localStorage.getItem('token');
-          const res = await axios.get('/api/user/balances', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setUserSpotBalance(res.data.spotBalance);
-          setUserUSDTBalance(res.data.usdtBalance);
+          const portfolio = await getPortfolio();
+          setUserSpotBalance(portfolio.spotBalance ?? 0);
+          setUserUSDTBalance(portfolio.usdtBalance ?? 0);
         } catch (e) {
           setUserSpotBalance(null);
           setUserUSDTBalance(null);
