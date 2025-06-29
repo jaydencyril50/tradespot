@@ -451,9 +451,20 @@ const Market: React.FC = () => {
         const required = ['time', 'open', 'high', 'low', 'close', 'volume'] as const;
         return required.every(k => typeof c[k] === 'number' && !isNaN(c[k]) && c[k] !== null && c[k] !== undefined);
       });
-      console.log('[Market] Candles to chart:', safeCandles);
+      // --- PATCH: Add detailed logging for debugging null value error ---
+      if (safeCandles.length !== candleData.length) {
+        candleData.forEach((c, idx) => {
+          const required = ['time', 'open', 'high', 'low', 'close', 'volume'] as const;
+          required.forEach(k => {
+            if (typeof c[k] !== 'number' || isNaN(c[k]) || c[k] === null || c[k] === undefined) {
+              console.error(`[Market] Invalid candle at index ${idx}, key '${k}':`, c[k], c);
+            }
+          });
+        });
+      }
+      console.log('[Market] Candles to chart (safeCandles):', safeCandles);
       if (safeCandles.length === 0) {
-        console.error('[Market] No valid candles to display. Skipping chart render.');
+        console.error('[Market] No valid candles to display. Skipping chart render. Raw candleData:', candleData);
         return;
       }
       candleSeries.setData(safeCandles);
