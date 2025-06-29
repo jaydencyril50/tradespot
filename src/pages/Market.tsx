@@ -232,7 +232,7 @@ const Market: React.FC = () => {
       }
     }
     fetchCandles();
-    const interval = setInterval(fetchCandles, 60000); // Poll every 60s
+    const interval = setInterval(fetchCandles, 20000); // Poll every 20s
     return () => { isMounted = false; clearInterval(interval); };
   }, []);
 
