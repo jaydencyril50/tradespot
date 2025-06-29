@@ -422,6 +422,10 @@ const SimulatedMarketChart = () => {
             <option value="market">Market</option>
             <option value="limit">Limit</option>
           </select>
+          <div style={{ fontSize: 12, color: '#555', marginTop: 4, background: '#eef2fa', padding: '6px 10px', borderRadius: 4 }}>
+            <b>Market:</b> Buy or sell instantly at the current price.<br />
+            <b>Limit:</b> Set your own price. Order fills only if the market reaches your price.
+          </div>
         </div>
         <div style={{ marginBottom: 14 }}>
           <label style={{ fontWeight: 500, fontSize: 14 }}>Amount (SPOT)</label>
