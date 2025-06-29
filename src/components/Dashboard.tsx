@@ -737,6 +737,7 @@ const Dashboard: React.FC = () => {
               try {
                 const token = localStorage.getItem('token');
                 if (!token) throw new Error('Not authenticated');
+                console.log('[WebAuthn] Fetching authentication options...');
                 const resp = await fetch(`${API}/webauthn/generate-authentication-options`, {
                   method: 'POST',
                   headers: {
@@ -744,10 +745,17 @@ const Dashboard: React.FC = () => {
                     'Authorization': `Bearer ${token}`
                   }
                 });
-                if (!resp.ok) throw new Error('Failed to get authentication options');
+                console.log('[WebAuthn] Response status:', resp.status);
+                if (!resp.ok) {
+                  const text = await resp.text();
+                  console.error('[WebAuthn] Error response:', text);
+                  throw new Error('Failed to get authentication options: ' + text);
+                }
                 const options = await resp.json();
+                console.log('[WebAuthn] Authentication options:', options);
                 const authOptions = options.challenge ? options : options.options || options;
                 const assertion = await startAuthentication(authOptions);
+                console.log('[WebAuthn] Assertion:', assertion);
                 // Send assertion to backend for verification
                 const verifyResp = await fetch(`${API}/webauthn/verify-authentication`, {
                   method: 'POST',
@@ -757,12 +765,19 @@ const Dashboard: React.FC = () => {
                   },
                   body: JSON.stringify({ credential: assertion })
                 });
-                if (!verifyResp.ok) throw new Error('WebAuthn authentication failed');
+                console.log('[WebAuthn] Verify response status:', verifyResp.status);
+                if (!verifyResp.ok) {
+                  const text = await verifyResp.text();
+                  console.error('[WebAuthn] Verify error response:', text);
+                  throw new Error('WebAuthn authentication failed: ' + text);
+                }
                 const verifyData = await verifyResp.json();
+                console.log('[WebAuthn] Verify data:', verifyData);
                 if (!verifyData.verified || !verifyData.token) throw new Error('WebAuthn authentication failed');
                 setWebauthnToken(verifyData.token);
                 setTransferSuccess('WebAuthn authentication successful!');
               } catch (e: any) {
+                console.error('[WebAuthn] Exception:', e);
                 setTransferError(e.message || 'WebAuthn authentication failed');
               }
             }}
