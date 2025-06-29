@@ -179,40 +179,46 @@ const SimulatedMarketChart = () => {
   }, [showSMA, showEMA, showRSI, showMACD]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 20 }}>
-      <h2 style={{ color: '#fff', marginBottom: '1rem' }}>Simulated SPOT/USDT Market</h2>
-      <div>
-        <label><input type="checkbox" checked={showSMA} onChange={() => setShowSMA(!showSMA)} /> SMA</label>
-        <label><input type="checkbox" checked={showEMA} onChange={() => setShowEMA(!showEMA)} /> EMA</label>
-        <label><input type="checkbox" checked={showRSI} onChange={() => setShowRSI(!showRSI)} /> RSI</label>
-        <label><input type="checkbox" checked={showMACD} onChange={() => setShowMACD(!showMACD)} /> MACD</label>
+    <div style={{ minHeight: '100vh', background: '#fff' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+          SPOT/USDT MARKET
+        </span>
       </div>
-      <div
-        ref={chartContainerRef}
-        style={{
-          width: '100%',
-          maxWidth: '1000px',
-          height: '500px',
-          borderRadius: 8,
-          boxShadow: '0 0 10px rgba(0,0,0,0.5)',
-          backgroundColor: '#131722',
-          position: 'relative'
-        }}
-      >
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 20 }}>
+        <div>
+          <label><input type="checkbox" checked={showSMA} onChange={() => setShowSMA(!showSMA)} /> SMA</label>
+          <label><input type="checkbox" checked={showEMA} onChange={() => setShowEMA(!showEMA)} /> EMA</label>
+          <label><input type="checkbox" checked={showRSI} onChange={() => setShowRSI(!showRSI)} /> RSI</label>
+          <label><input type="checkbox" checked={showMACD} onChange={() => setShowMACD(!showMACD)} /> MACD</label>
+        </div>
         <div
-          ref={tooltipRef}
+          ref={chartContainerRef}
           style={{
-            position: 'absolute',
-            color: 'white',
-            background: 'rgba(0,0,0,0.7)',
-            padding: '4px 8px',
-            borderRadius: 4,
-            pointerEvents: 'none',
-            display: 'none',
-            fontSize: '12px',
-            zIndex: 1000,
+            width: '100%',
+            maxWidth: '1000px',
+            height: '500px',
+            borderRadius: 8,
+            boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+            backgroundColor: '#131722',
+            position: 'relative'
           }}
-        />
+        >
+          <div
+            ref={tooltipRef}
+            style={{
+              position: 'absolute',
+              color: 'white',
+              background: 'rgba(0,0,0,0.7)',
+              padding: '4px 8px',
+              borderRadius: 4,
+              pointerEvents: 'none',
+              display: 'none',
+              fontSize: '12px',
+              zIndex: 1000,
+            }}
+          />
+        </div>
       </div>
     </div>
   );
