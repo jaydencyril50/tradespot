@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createChart, CrosshairMode } from 'lightweight-charts';
 import axios from 'axios';
+import { placeOrder } from '../services/orderbook';
 
 // Candle type definition
 interface Candle {
@@ -213,7 +214,7 @@ const SimulatedMarketChart = () => {
   })();
 
   // Handle order placement
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     setErrorMsg('');
     setSuccessMsg('');
     if (!amount || parseFloat(amount) <= 0) {
@@ -224,14 +225,27 @@ const SimulatedMarketChart = () => {
       setErrorMsg('Enter a valid limit price.');
       return;
     }
-    setOrderSummary({
-      tradeType,
-      orderType,
-      amount,
-      price: orderType === 'market' ? 'Market' : price,
-      total: total || '0.00',
-    });
-    setSuccessMsg('Order placed (simulated).');
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Not authenticated');
+      const res = await placeOrder(
+        tradeType,
+        orderType === 'market' ? 0 : parseFloat(price),
+        parseFloat(amount),
+        orderType,
+        token
+      );
+      setOrderSummary({
+        tradeType,
+        orderType,
+        amount,
+        price: orderType === 'market' ? 'Market' : price,
+        total: total || '0.00',
+      });
+      setSuccessMsg(res.message || 'Order placed!');
+    } catch (e: any) {
+      setErrorMsg(e?.response?.data?.error || e.message || 'Order failed');
+    }
   };
 
   useEffect(() => {

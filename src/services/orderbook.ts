@@ -1,0 +1,33 @@
+import axios from 'axios';
+const API = process.env.REACT_APP_API_BASE_URL;
+
+export const placeOrder = async (
+  side: 'buy' | 'sell',
+  price: number,
+  amount: number,
+  type: 'market' | 'limit',
+  token: string
+) => {
+  const res = await axios.post(`${API}/trade/order`, { side, price, amount, type }, { headers: { Authorization: `Bearer ${token}` } });
+  return res.data;
+};
+
+export const cancelOrder = async (orderId: string, token: string) => {
+  const res = await axios.post(`${API}/trade/cancel`, { orderId }, { headers: { Authorization: `Bearer ${token}` } });
+  return res.data;
+};
+
+export const fetchOrderBook = async () => {
+  const res = await axios.get(`${API}/trade/orderbook`);
+  return res.data;
+};
+
+export const fetchRecentTrades = async () => {
+  const res = await axios.get(`${API}/trade/recent`);
+  return res.data;
+};
+
+export const fetchMyOrders = async (token: string) => {
+  const res = await axios.get(`${API}/trade/myorders`, { headers: { Authorization: `Bearer ${token}` } });
+  return res.data;
+};
