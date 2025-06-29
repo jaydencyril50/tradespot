@@ -259,8 +259,8 @@ const Market: React.FC = () => {
         timeVisible: true,
         secondsVisible: true,
         rightOffset: 2,
-        barSpacing: 8,
-        minBarSpacing: 2,
+        barSpacing: 3, // Reduced spacing for compact candles
+        minBarSpacing: 1, // Allow candles to be closer
         fixLeftEdge: false,
         lockVisibleTimeRangeOnResize: false,
         allowShiftVisibleRangeOnResize: true,
