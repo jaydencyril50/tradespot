@@ -11,11 +11,12 @@ import dogeIcon from '../assets/coins/dodge.png'; // Corrected filename for Doge
 import dotIcon from '../assets/coins/dot.png';
 import ltcIcon from '../assets/coins/ltc.png';
 import LiveClock from './LiveClock';
-import { transferSpot, getPortfolio } from '../services/api';
+import { transferSpot, getPortfolio, isBiometricEnabled } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { FaTelegramPlane, FaWhatsapp, FaBell } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 import NoticeModal from './NoticeModal';
+import { startAuthentication } from '@simplewebauthn/browser';
 
 // This is the chat/message icon SVG as a React component
 const ChatIcon: React.FC<{ size?: number; color?: string }> = ({ size = 28, color = '#25324B' }) => {
@@ -238,6 +239,8 @@ const Dashboard: React.FC = () => {
 	const [fundsLocked, setFundsLocked] = useState<boolean>(false);
 	const [notifications, setNotifications] = useState<any[]>([]);
 	const [unreadCount, setUnreadCount] = useState(0);
+	const [biometricEnabled, setBiometricEnabled] = useState(false);
+	const [webauthnToken, setWebauthnToken] = useState<string | null>(null);
 	const CONVERT_RATE = 500; // 1 SPOT = 500 USDT
 
 	// --- Google OAuth: Store token from URL if present ---
@@ -456,20 +459,34 @@ const Dashboard: React.FC = () => {
 		}
 	};
 
+	// Check if biometric is enabled on modal open
+	useEffect(() => {
+		if (showTransferModal) {
+			isBiometricEnabled().then(setBiometricEnabled).catch(() => setBiometricEnabled(false));
+			setWebauthnToken(null);
+		}
+	}, [showTransferModal]);
+
 	// Handle transfer
 	const handleTransfer = async () => {
 		setTransferError('');
 		setTransferSuccess('');
-		if (!transferEmail || !transferAmount || isNaN(Number(transferAmount)) || Number(transferAmount) <= 0 || !transferTwoFA) {
-			setTransferError('Enter a valid email, amount, and 2FA code.');
+		if (!transferEmail || !transferAmount || isNaN(Number(transferAmount)) || Number(transferAmount) <= 0 || (!transferTwoFA && !webauthnToken)) {
+			setTransferError('Enter a valid email, amount, and authentication.');
 			return;
 		}
 		try {
-			const res = await transferSpot(transferEmail, Number(transferAmount), transferTwoFA);
+			let res;
+			if (webauthnToken) {
+				res = await transferSpot(transferEmail, Number(transferAmount), webauthnToken);
+			} else {
+				res = await transferSpot(transferEmail, Number(transferAmount), transferTwoFA);
+			}
 			setTransferSuccess(res.message || 'Transfer successful!');
 			setTransferEmail('');
 			setTransferAmount('');
 			setTransferTwoFA('');
+			setWebauthnToken(null);
 			// Optionally refresh balances
 			const data = await import('../services/api').then(m => m.getPortfolio());
 			setSpotBalance(data.spotBalance || 0);
@@ -680,24 +697,80 @@ const Dashboard: React.FC = () => {
           <div style={{ color: '#e74c3c', fontWeight: 600, marginTop: 4, fontSize: 14 }}>Insufficient funds.</div>
         )}
       </div>
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ fontWeight: 500, color: '#25324B', marginRight: 10 }}>2FA Code:</label>
-        <input
-          type="text"
-          value={transferTwoFA}
-          onChange={e => setTransferTwoFA(e.target.value)}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid #ccc',
-            fontSize: 16,
-            width: 120
-          }}
-          maxLength={6}
-          pattern="[0-9]{6}"
-          inputMode="numeric"
-        />
-      </div>
+      {!biometricEnabled && (
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ fontWeight: 500, color: '#25324B', marginRight: 10 }}>2FA Code:</label>
+          <input
+            type="text"
+            value={transferTwoFA}
+            onChange={e => setTransferTwoFA(e.target.value)}
+            style={{
+              padding: '6px 12px',
+              borderRadius: 6,
+              border: '1px solid #ccc',
+              fontSize: 16,
+              width: 120
+            }}
+            maxLength={6}
+            pattern="[0-9]{6}"
+            inputMode="numeric"
+          />
+        </div>
+      )}
+      {biometricEnabled && !webauthnToken && (
+        <div style={{ marginBottom: 12 }}>
+          <button
+            style={{
+              border: 'none',
+              borderRadius: 6,
+              padding: '8px 18px',
+              fontWeight: 600,
+              fontSize: '1rem',
+              cursor: 'pointer',
+              background: '#25324B',
+              color: '#fff',
+              marginTop: 4
+            }}
+            onClick={async () => {
+              setTransferError('');
+              setTransferSuccess('');
+              try {
+                const token = localStorage.getItem('token');
+                if (!token) throw new Error('Not authenticated');
+                const resp = await fetch(`${API}/webauthn/generate-authentication-options`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  }
+                });
+                if (!resp.ok) throw new Error('Failed to get authentication options');
+                const options = await resp.json();
+                const authOptions = options.challenge ? options : options.options || options;
+                const assertion = await startAuthentication(authOptions);
+                // Send assertion to backend for verification
+                const verifyResp = await fetch(`${API}/webauthn/verify-authentication`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  },
+                  body: JSON.stringify({ credential: assertion })
+                });
+                if (!verifyResp.ok) throw new Error('WebAuthn authentication failed');
+                const verifyData = await verifyResp.json();
+                if (!verifyData.verified || !verifyData.token) throw new Error('WebAuthn authentication failed');
+                setWebauthnToken(verifyData.token);
+                setTransferSuccess('WebAuthn authentication successful!');
+              } catch (e: any) {
+                setTransferError(e.message || 'WebAuthn authentication failed');
+              }
+            }}
+          >
+            Use WebAuthn (Biometric)
+          </button>
+        </div>
+      )}
       {transferError && <div style={{ color: '#e74c3c', marginBottom: 10 }}>{transferError}</div>}
       {transferSuccess && <div style={{ color: '#10c98f', marginBottom: 10 }}>{transferSuccess}</div>}
       <button
