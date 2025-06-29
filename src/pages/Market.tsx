@@ -67,35 +67,6 @@ const SimulatedMarketChart = () => {
     const rsiSeries = chart.addLineSeries({ color: '#9b59b6' });
     const macdSeries = chart.addLineSeries({ color: '#3498db' });
 
-    const generateCandles = (): Candle[] => {
-      const candles: Candle[] = [];
-      let time = Math.floor(Date.now() / 1000) - 60 * 60 * 24;
-      let price = 500;
-
-      for (let i = 0; i < 100; i++) {
-        const open = price;
-        const close = open + (Math.random() - 0.5) * 4;
-        const high = Math.max(open, close) + Math.random() * 2;
-        const low = Math.min(open, close) - Math.random() * 2;
-
-        price = close;
-        price = Math.min(550, Math.max(450, price));
-
-        candles.push({
-          time,
-          open: +open.toFixed(2),
-          high: +high.toFixed(2),
-          low: +low.toFixed(2),
-          close: +close.toFixed(2),
-          volume: Math.floor(Math.random() * 1000) + 500,
-        });
-
-        time += 60 * 5;
-      }
-
-      return candles;
-    };
-
     const getSMA = (data: Candle[], window: number) =>
       data.map((d, i) => {
         if (i < window) return { time: d.time, value: null };
@@ -159,8 +130,9 @@ const SimulatedMarketChart = () => {
       return signalLine;
     };
 
-    const updateChart = () => {
-      const candles = generateCandles();
+    const updateChart = async () => {
+      const response = await fetch('https://market-egl7.onrender.com/api/market/candles');
+      const candles: Candle[] = await response.json();
       candleSeries.setData(candles);
       volumeSeries.setData(candles.map(c => ({ time: c.time, value: c.volume, color: c.close > c.open ? 'rgba(38, 166, 154, 0.3)' : 'rgba(239, 83, 80, 0.3)' })));
 
