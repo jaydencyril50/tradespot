@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createChart, CrosshairMode } from 'lightweight-charts';
 import { getPortfolio } from '../services/api';
-import { placeOrder, fetchMyTrades } from '../services/orderbook';
+import { placeOrder, fetchMyTrades, fetchMyOrders } from '../services/orderbook';
 
 // Candle type definition
 interface Candle {
@@ -43,6 +43,7 @@ const SimulatedMarketChart = () => {
   const [userUSDTBalance, setUserUSDTBalance] = useState<number | null>(null);
   const [portfolio, setPortfolio] = useState<any>(null);
   const [tradeStats, setTradeStats] = useState({ total: 0, open: 0, closed: 0 });
+  const [openOrders, setOpenOrders] = useState<any[]>([]);
 
   // Store latest close price from chart data
   const [latestClose, setLatestClose] = useState<number | null>(null);
@@ -289,6 +290,22 @@ const SimulatedMarketChart = () => {
     }
   }, [profileModalOpen]);
 
+  // Fetch open orders when modal opens or after placing/cancelling an order
+  useEffect(() => {
+    const fetchOrders = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const res = await fetchMyOrders(token);
+          setOpenOrders(res.openOrders || []);
+        } catch (e) {
+          setOpenOrders([]);
+        }
+      }
+    };
+    fetchOrders();
+  }, [profileModalOpen, successMsg]);
+
   useEffect(() => {
     if (isFullscreen) {
       document.body.style.overflow = 'hidden';
@@ -497,6 +514,32 @@ const SimulatedMarketChart = () => {
             <div><b>Closed Trades:</b> {tradeStats.closed !== undefined ? tradeStats.closed : '...'}</div>
             <button onClick={() => setProfileModalOpen(false)} style={{ marginTop: 10, background: '#232b36', color: '#fff', border: 'none', padding: '7px 0', fontWeight: 600, fontSize: 15, cursor: 'pointer' }}>Close</button>
           </div>
+        </div>
+      )}
+      {/* Open Orders Section */}
+      {openOrders.length > 0 && (
+        <div style={{ maxWidth: 480, margin: '24px auto 0', background: '#fff', border: '1px solid #e3e6ef', borderRadius: 6, padding: 16, fontSize: 14 }}>
+          <div style={{ fontWeight: 700, marginBottom: 8 }}>Open Orders</div>
+          <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: '#f6f9fe' }}>
+                <th style={{ textAlign: 'left', padding: 6 }}>Type</th>
+                <th style={{ textAlign: 'left', padding: 6 }}>Side</th>
+                <th style={{ textAlign: 'left', padding: 6 }}>Price</th>
+                <th style={{ textAlign: 'left', padding: 6 }}>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {openOrders.map((order, idx) => (
+                <tr key={order.orderId || idx}>
+                  <td style={{ padding: 6 }}>{order.type?.toUpperCase()}</td>
+                  <td style={{ padding: 6, color: order.side === 'buy' ? '#27ae60' : '#e74c3c', fontWeight: 600 }}>{order.side?.toUpperCase()}</td>
+                  <td style={{ padding: 6 }}>{order.price}</td>
+                  <td style={{ padding: 6 }}>{order.amount}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
