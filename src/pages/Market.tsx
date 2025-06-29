@@ -445,13 +445,13 @@ const SimulatedMarketChart = () => {
           </div>
         </div>
         <div style={{ marginBottom: 14 }}>
-          <label style={{ fontWeight: 500, fontSize: 14 }}>Amount (SPOT)</label>
-          <input type="number" min="0" step="any" value={amount} onChange={e => setAmount(e.target.value)} style={{ width: '95%', padding: 7, borderRadius: 5, border: '1px solid #bbb', marginTop: 4 }} />
+          <label htmlFor="amount-input" style={{ fontWeight: 500, fontSize: 14 }}>Amount (SPOT)</label>
+          <input id="amount-input" name="amount" type="number" min="0" step="any" value={amount} onChange={e => setAmount(e.target.value)} style={{ width: '95%', padding: 7, borderRadius: 5, border: '1px solid #bbb', marginTop: 4 }} />
         </div>
         {orderType === 'limit' && (
           <div style={{ marginBottom: 14 }}>
-            <label style={{ fontWeight: 500, fontSize: 14 }}>Limit Price (USDT)</label>
-            <input type="number" min="0" step="any" value={price} onChange={e => setPrice(e.target.value)} style={{ width: '100%', padding: 7, borderRadius: 5, border: '1px solid #bbb', marginTop: 4 }} />
+            <label htmlFor="price-input" style={{ fontWeight: 500, fontSize: 14 }}>Limit Price (USDT)</label>
+            <input id="price-input" name="price" type="number" min="0" step="any" value={price} onChange={e => setPrice(e.target.value)} style={{ width: '100%', padding: 7, borderRadius: 5, border: '1px solid #bbb', marginTop: 4 }} />
           </div>
         )}
         <div style={{ marginBottom: 18, fontWeight: 500, fontSize: 15 }}>
