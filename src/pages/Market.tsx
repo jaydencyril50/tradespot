@@ -44,6 +44,9 @@ const SimulatedMarketChart = () => {
   const [portfolio, setPortfolio] = useState<any>(null);
   const [tradeStats, setTradeStats] = useState({ total: 0, open: 0, closed: 0 });
 
+  // Store latest close price from chart data
+  const [latestClose, setLatestClose] = useState<number | null>(null);
+
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
@@ -165,6 +168,11 @@ const SimulatedMarketChart = () => {
       emaSeries.setData(showEMA ? getEMA(candles, 14) : []);
       rsiSeries.setData(showRSI ? getRSI(candles) : []);
       macdSeries.setData(showMACD ? getMACD(candles) : []);
+
+      // Set latest close price for live total calculation
+      if (candles && candles.length > 0) {
+        setLatestClose(candles[candles.length - 1].close);
+      }
     };
 
     chart.subscribeCrosshairMove((param: {
@@ -208,8 +216,9 @@ const SimulatedMarketChart = () => {
     const amt = parseFloat(amount);
     if (!amt || amt <= 0) return '';
     if (orderType === 'market') {
-      // For demo, assume market price is 1.00
-      return (amt * 1).toFixed(2);
+      // Use latest market price from chart
+      if (!latestClose) return '';
+      return (amt * latestClose).toFixed(2);
     }
     const prc = parseFloat(price);
     if (!prc || prc <= 0) return '';
