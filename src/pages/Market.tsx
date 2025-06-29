@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { createChart } from 'lightweight-charts';
+import { createChart, CrosshairMode } from 'lightweight-charts';
 
 // Candle type definition
 interface Candle {
@@ -13,6 +13,7 @@ interface Candle {
 
 const SimulatedMarketChart = () => {
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [showSMA, setShowSMA] = useState(true);
   const [showEMA, setShowEMA] = useState(true);
   const [showRSI, setShowRSI] = useState(true);
@@ -32,6 +33,9 @@ const SimulatedMarketChart = () => {
         vertLines: { color: '#2B2B43' },
         horzLines: { color: '#2B2B43' },
       },
+      crosshair: {
+        mode: CrosshairMode.Magnet,
+      },
       priceScale: {
         borderColor: '#485c7b',
       },
@@ -49,18 +53,10 @@ const SimulatedMarketChart = () => {
       borderDownColor: '#ef5350',
       wickUpColor: '#26a69a',
       wickDownColor: '#ef5350',
-      autoscaleInfoProvider: (original: () => { priceRange: { minValue: number; maxValue: number }; } | undefined) => {
-        const res = original();
-        if (res) {
-          res.priceRange.minValue = Math.floor(res.priceRange.minValue);
-          res.priceRange.maxValue = Math.ceil(res.priceRange.maxValue);
-        }
-        return res;
-      }
     });
 
     const volumeSeries = chart.addHistogramSeries({
-      color: '#26a69a',
+      color: 'rgba(38, 166, 154, 0.3)',
       priceFormat: { type: 'volume' },
       priceScaleId: '',
       scaleMargins: { top: 0.8, bottom: 0 },
@@ -78,7 +74,7 @@ const SimulatedMarketChart = () => {
 
       for (let i = 0; i < 100; i++) {
         const open = price;
-        const close = open + (Math.random() - 0.5) * 4; // Smaller movement
+        const close = open + (Math.random() - 0.5) * 4;
         const high = Math.max(open, close) + Math.random() * 2;
         const low = Math.min(open, close) - Math.random() * 2;
 
@@ -101,17 +97,17 @@ const SimulatedMarketChart = () => {
     };
 
     const getSMA = (data: Candle[], window: number) =>
-      data.map((d: Candle, i: number) => {
+      data.map((d, i) => {
         if (i < window) return { time: d.time, value: null };
         const avg =
-          data.slice(i - window, i).reduce((sum: number, c: Candle) => sum + c.close, 0) / window;
+          data.slice(i - window, i).reduce((sum, c) => sum + c.close, 0) / window;
         return { time: d.time, value: +avg.toFixed(2) };
       });
 
     const getEMA = (data: Candle[], window: number) => {
       const k = 2 / (window + 1);
       let ema = data[0].close;
-      return data.map((d: Candle, i: number) => {
+      return data.map((d, i) => {
         if (i === 0) return { time: d.time, value: ema };
         ema = d.close * k + ema * (1 - k);
         return { time: d.time, value: +ema.toFixed(2) };
@@ -143,6 +139,11 @@ const SimulatedMarketChart = () => {
       return result;
     };
 
+    interface LinePoint {
+      time: number;
+      close: number;
+    }
+
     const getMACD = (data: Candle[], short = 12, long = 26, signal = 9) => {
       const emaShort = getEMA(data, short);
       const emaLong = getEMA(data, long);
@@ -150,7 +151,7 @@ const SimulatedMarketChart = () => {
         time: point.time,
         value: point.value - (emaLong[i]?.value || 0),
       }));
-      const macdLineForEMA = macdLine.map((m) => ({
+      const macdLineForEMA: LinePoint[] = macdLine.map((m) => ({
         time: m.time,
         close: m.value ?? 0,
       }));
@@ -161,13 +162,31 @@ const SimulatedMarketChart = () => {
     const updateChart = () => {
       const candles = generateCandles();
       candleSeries.setData(candles);
-      volumeSeries.setData(candles.map(c => ({ time: c.time, value: c.volume, color: c.close > c.open ? '#26a69a' : '#ef5350' })));
+      volumeSeries.setData(candles.map(c => ({ time: c.time, value: c.volume, color: c.close > c.open ? 'rgba(38, 166, 154, 0.3)' : 'rgba(239, 83, 80, 0.3)' })));
 
       smaSeries.setData(showSMA ? getSMA(candles, 14) : []);
       emaSeries.setData(showEMA ? getEMA(candles, 14) : []);
       rsiSeries.setData(showRSI ? getRSI(candles) : []);
       macdSeries.setData(showMACD ? getMACD(candles) : []);
     };
+
+    chart.subscribeCrosshairMove((param: {
+      time?: number;
+      point?: { x: number; y: number };
+      seriesPrices: Map<any, any>;
+    }) => {
+      if (!param || !param.time || !param.seriesPrices) return;
+      const tooltip = tooltipRef.current;
+      if (!tooltip) return;
+
+      const price = param.seriesPrices.get(candleSeries);
+      if (!price) return;
+
+      tooltip.style.display = 'block';
+      tooltip.style.left = `${param.point?.x ?? 0}px`;
+      tooltip.style.top = '10px';
+      tooltip.innerText = `O: ${price.open} H: ${price.high} L: ${price.low} C: ${price.close}`;
+    });
 
     updateChart();
     const interval = setInterval(updateChart, 5000);
@@ -190,10 +209,10 @@ const SimulatedMarketChart = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 20 }}>
       <h2 style={{ color: '#fff', marginBottom: '1rem' }}>Simulated SPOT/USDT Market</h2>
-      <div style={{ color: '#fff', marginBottom: '1rem' }}>
-        <label><input type="checkbox" checked={showSMA} onChange={() => setShowSMA(!showSMA)} /> SMA</label>{' '}
-        <label><input type="checkbox" checked={showEMA} onChange={() => setShowEMA(!showEMA)} /> EMA</label>{' '}
-        <label><input type="checkbox" checked={showRSI} onChange={() => setShowRSI(!showRSI)} /> RSI</label>{' '}
+      <div>
+        <label><input type="checkbox" checked={showSMA} onChange={() => setShowSMA(!showSMA)} /> SMA</label>
+        <label><input type="checkbox" checked={showEMA} onChange={() => setShowEMA(!showEMA)} /> EMA</label>
+        <label><input type="checkbox" checked={showRSI} onChange={() => setShowRSI(!showRSI)} /> RSI</label>
         <label><input type="checkbox" checked={showMACD} onChange={() => setShowMACD(!showMACD)} /> MACD</label>
       </div>
       <div
@@ -204,9 +223,25 @@ const SimulatedMarketChart = () => {
           height: '500px',
           borderRadius: 8,
           boxShadow: '0 0 10px rgba(0,0,0,0.5)',
-          backgroundColor: '#131722'
+          backgroundColor: '#131722',
+          position: 'relative'
         }}
-      />
+      >
+        <div
+          ref={tooltipRef}
+          style={{
+            position: 'absolute',
+            color: 'white',
+            background: 'rgba(0,0,0,0.7)',
+            padding: '4px 8px',
+            borderRadius: 4,
+            pointerEvents: 'none',
+            display: 'none',
+            fontSize: '12px',
+            zIndex: 1000,
+          }}
+        />
+      </div>
     </div>
   );
 };
