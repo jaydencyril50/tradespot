@@ -17,6 +17,14 @@ interface Buyer {
   reviews: string[];
 }
 
+// Helper to format numbers with K/M/B suffix
+const formatNumber = (n: number): string => {
+  if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(2).replace(/\.00$/, '') + 'B';
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(2).replace(/\.00$/, '') + 'M';
+  if (n >= 1_000) return (n / 1_000).toFixed(2).replace(/\.00$/, '') + 'K';
+  return n.toString();
+};
+
 const SellSpotPage: React.FC = () => {
   const [buyers, setBuyers] = useState<Buyer[]>([]);
   const [loading, setLoading] = useState(false);
@@ -175,7 +183,7 @@ const SellSpotPage: React.FC = () => {
                   VIP Level: {buyer.vipLevel} | SPOT Balance: {buyer.spotBalance}
                 </div>
                 <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
-                  Trade Limit: {buyer.minLimit} USDT – {buyer.maxLimit} USDT
+                  Trade Limit: {formatNumber(buyer.minLimit)} – {formatNumber(buyer.maxLimit)} USDT
                 </div>
                 <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
                   Rating: <span style={{ color: '#f1c40f', fontWeight: 700 }}>⭐ {buyer.rating}</span>
@@ -228,7 +236,7 @@ const SellSpotPage: React.FC = () => {
                 <strong>Your USDT Balance:</strong> {userUSDTBalance !== null ? userUSDTBalance : '...'}
               </div>
               <div style={{ marginBottom: 8 }}>
-                <strong>Trader's Trade Limit:</strong> {selectedBuyer.minLimit} – {selectedBuyer.maxLimit} USDT
+                <strong>Trader's Trade Limit:</strong> {formatNumber(selectedBuyer.minLimit)} – {formatNumber(selectedBuyer.maxLimit)} USDT
               </div>
               <div style={{ marginBottom: 8 }}>
                 <strong>Enter Spot Amount:</strong>

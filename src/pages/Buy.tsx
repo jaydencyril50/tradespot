@@ -83,6 +83,14 @@ const BuySpotPage: React.FC = () => {
     setInputError(error);
   }, [spotAmount, selectedBuyer, userUSDTBalance]);
 
+  // Helper to format numbers with K/M/B suffix
+  const formatNumber = (n: number): string => {
+    if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(2).replace(/\.00$/, '') + 'B';
+    if (n >= 1_000_000) return (n / 1_000_000).toFixed(2).replace(/\.00$/, '') + 'M';
+    if (n >= 1_000) return (n / 1_000).toFixed(2).replace(/\.00$/, '') + 'K';
+    return n.toString();
+  };
+
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
@@ -175,7 +183,7 @@ const BuySpotPage: React.FC = () => {
                   VIP Level: {buyer.vipLevel} | SPOT Balance: {buyer.spotBalance}
                 </div>
                 <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
-                  Trade Limit: {buyer.minLimit} USDT – {buyer.maxLimit} USDT
+                  Trade Limit: {formatNumber(buyer.minLimit)} – {formatNumber(buyer.maxLimit)} USDT
                 </div>
                 <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
                   Rating: <span style={{ color: '#f1c40f', fontWeight: 700 }}>⭐ {buyer.rating}</span>
@@ -228,7 +236,7 @@ const BuySpotPage: React.FC = () => {
                 <strong>Your USDT Balance:</strong> {userUSDTBalance !== null ? userUSDTBalance : '...'}
               </div>
               <div style={{ marginBottom: 8 }}>
-                <strong>Trader's Trade Limit:</strong> {selectedBuyer.minLimit} – {selectedBuyer.maxLimit} USDT
+                <strong>Trader's Trade Limit:</strong> {formatNumber(selectedBuyer.minLimit)} – {formatNumber(selectedBuyer.maxLimit)} USDT
               </div>
               <div style={{ marginBottom: 8 }}>
                 <strong>Enter Spot Amount:</strong>
