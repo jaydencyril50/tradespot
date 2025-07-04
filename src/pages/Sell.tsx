@@ -127,8 +127,8 @@ const SellSpotPage: React.FC = () => {
       const res = await axios.post(
         `${API}/api/p2p/sell-orders`,
         {
-          sellerId: selectedBuyer.userId,
-          sellerUsername: selectedBuyer.username,
+          buyerId: selectedBuyer.userId,
+          buyerUsername: selectedBuyer.username,
           price: selectedBuyer.price,
           spotAmount: parseFloat(spotAmount),
           usdtAmount: usdtAmount,
