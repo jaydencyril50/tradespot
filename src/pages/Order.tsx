@@ -12,6 +12,7 @@ const OrderPage: React.FC = () => {
   const [timer, setTimer] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [balances, setBalances] = useState<{ usdt: number; spot: number } | null>(null);
+  const [filter, setFilter] = useState<'pending' | 'completed' | 'cancelled' | 'all'>('all');
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Complete order (move above useEffect for scope)
@@ -31,13 +32,14 @@ const OrderPage: React.FC = () => {
   };
 
   // Cancel order (user-initiated)
-  const cancelOrder = async () => {
-    if (!selectedOrder) return;
+  const cancelOrder = async (order?: any) => {
+    if (!order) order = selectedOrder;
+    if (!order) return;
     setStatus('loading');
     try {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('Not authenticated');
-      const res = await axios.patch(`${API}/api/p2p/orders/${selectedOrder._id}/cancel`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.patch(`${API}/api/p2p/orders/${order._id}/cancel`, {}, { headers: { Authorization: `Bearer ${token}` } });
       setSelectedOrder(res.data.order);
       setStatus('cancelled');
     } catch {
@@ -138,6 +140,9 @@ const OrderPage: React.FC = () => {
     return `${m}m ${s < 10 ? '0' : ''}${s}s`;
   };
 
+  // Filtered orders based on filter state
+  const filteredOrders = filter === 'all' ? orders : orders.filter((o: any) => o.status === filter);
+
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
       <div style={{
@@ -157,147 +162,124 @@ const OrderPage: React.FC = () => {
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 7 }}>
         <div style={{ marginBottom: 10, width: '100%', maxWidth: 380, marginTop: 7 }}>
-          <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 50 }}>
+          <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 20 }}>
             <button
-              onClick={() => {
-                const pending = orders.find((o: any) => o.status === 'pending');
-                if (pending) setSelectedOrder(pending);
-              }}
+              onClick={() => setFilter('all')}
               style={{
                 padding: '6px 12px',
                 borderRadius: 6,
-                border: selectedOrder && selectedOrder.status === 'pending' ? '2px solid #1e3c72' : '1px solid #e3e6ef',
-                background: selectedOrder && selectedOrder.status === 'pending' ? '#f6f9fe' : '#fff',
+                border: filter === 'all' ? '2px solid #1e3c72' : '1px solid #e3e6ef',
+                background: filter === 'all' ? '#f6f9fe' : '#fff',
                 color: '#25324B',
-                fontWeight: selectedOrder && selectedOrder.status === 'pending' ? 700 : 500,
-                cursor: orders.some((o: any) => o.status === 'pending') ? 'pointer' : 'not-allowed',
+                fontWeight: filter === 'all' ? 700 : 500,
+                cursor: 'pointer',
                 fontSize: 15,
-                opacity: orders.some((o: any) => o.status === 'pending') ? 1 : 0.6,
               }}
-              disabled={!orders.some((o: any) => o.status === 'pending')}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setFilter('pending')}
+              style={{
+                padding: '6px 12px',
+                borderRadius: 6,
+                border: filter === 'pending' ? '2px solid #1e3c72' : '1px solid #e3e6ef',
+                background: filter === 'pending' ? '#f6f9fe' : '#fff',
+                color: '#25324B',
+                fontWeight: filter === 'pending' ? 700 : 500,
+                cursor: 'pointer',
+                fontSize: 15,
+              }}
             >
               Pending
             </button>
-            {orders.some((o: any) => o.status === 'cancelled') && (
-              <button
-                onClick={() => {
-                  const cancelled = orders.find((o: any) => o.status === 'cancelled');
-                  if (cancelled) setSelectedOrder(cancelled);
-                }}
-                style={{
-                  padding: '6px 12px',
-                  borderRadius: 6,
-                  border: selectedOrder && selectedOrder.status === 'cancelled' ? '2px solid #1e3c72' : '1px solid #e3e6ef',
-                  background: selectedOrder && selectedOrder.status === 'cancelled' ? '#f6f9fe' : '#fff',
-                  color: '#25324B',
-                  fontWeight: selectedOrder && selectedOrder.status === 'cancelled' ? 700 : 500,
-                  cursor: 'pointer',
-                  fontSize: 15,
-                }}
-              >
-                Cancelled
-              </button>
-            )}
-            {orders.some((o: any) => o.status === 'completed') && (
-              <button
-                onClick={() => {
-                  const completed = orders.find((o: any) => o.status === 'completed');
-                  if (completed) setSelectedOrder(completed);
-                }}
-                style={{
-                  padding: '6px 12px',
-                  borderRadius: 6,
-                  border: selectedOrder && selectedOrder.status === 'completed' ? '2px solid #1e3c72' : '1px solid #e3e6ef',
-                  background: selectedOrder && selectedOrder.status === 'completed' ? '#f6f9fe' : '#fff',
-                  color: '#25324B',
-                  fontWeight: selectedOrder && selectedOrder.status === 'completed' ? 700 : 500,
-                  cursor: 'pointer',
-                  fontSize: 15,
-                }}
-              >
-                Completed
-              </button>
-            )}
+            <button
+              onClick={() => setFilter('cancelled')}
+              style={{
+                padding: '6px 12px',
+                borderRadius: 6,
+                border: filter === 'cancelled' ? '2px solid #1e3c72' : '1px solid #e3e6ef',
+                background: filter === 'cancelled' ? '#f6f9fe' : '#fff',
+                color: '#25324B',
+                fontWeight: filter === 'cancelled' ? 700 : 500,
+                cursor: 'pointer',
+                fontSize: 15,
+              }}
+            >
+              Cancelled
+            </button>
+            <button
+              onClick={() => setFilter('completed')}
+              style={{
+                padding: '6px 12px',
+                borderRadius: 6,
+                border: filter === 'completed' ? '2px solid #1e3c72' : '1px solid #e3e6ef',
+                background: filter === 'completed' ? '#f6f9fe' : '#fff',
+                color: '#25324B',
+                fontWeight: filter === 'completed' ? 700 : 500,
+                cursor: 'pointer',
+                fontSize: 15,
+              }}
+            >
+              Completed
+            </button>
           </div>
         </div>
-        {/* List all orders of the selected status */}
-        <div style={{ width: '100%', maxWidth: 380, marginBottom: 18 }}>
-          {['pending', 'cancelled', 'completed'].map((statusType) => (
-            selectedOrder && selectedOrder.status === statusType && (
-              <div key={statusType}>
-                {orders.filter((o: any) => o.status === statusType).map((o: any) => (
-                  <div
-                    key={o._id}
-                    onClick={() => setSelectedOrder(o)}
-                    style={{
-                      marginBottom: 8,
-                      padding: '8px 12px',
-                      borderRadius: 6,
-                      border: o._id === selectedOrder._id ? '2px solid #1e3c72' : '1px solid #e3e6ef',
-                      background: o._id === selectedOrder._id ? '#f6f9fe' : '#fff',
-                      color: '#25324B',
-                      fontWeight: o._id === selectedOrder._id ? 700 : 500,
-                      cursor: 'pointer',
-                      fontSize: 15,
-                    }}
-                  >
-                    Order #{o._id.slice(-6)} | {o.spotAmount} SPOT @ {o.price} | {new Date(o.createdAt).toLocaleString()}
-                  </div>
-                ))}
-              </div>
-            )
-          ))}
-        </div>
-        <div style={{
-          background: '#fff',
-          borderRadius: 0,
-          boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-          border: '1px solid #e3e6ef',
-          padding: '12px 16px',
-          minWidth: 200,
-          maxWidth: 380,
-          width: '100%',
-          textAlign: 'center',
-          marginBottom: 14,
-          fontFamily: 'inherit',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-          {!selectedOrder && <div style={{ color: '#888', fontSize: 18 }}>No active order found.</div>}
-          {selectedOrder && selectedOrder.status === 'pending' && (
-            <>
-              <div style={{ fontSize: 20, fontWeight: 600, color: '#1e3c72', marginBottom: 10 }}>Buyer making payment…</div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{selectedOrder._id}</b></div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{selectedOrder.spotAmount} SPOT</b> @ <b>{selectedOrder.price} USDT/SPOT</b></div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You will pay: <b>{selectedOrder.usdtAmount} USDT</b></div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#f1c40f', fontWeight: 700 }}>Pending</span></div>
-              <button onClick={cancelOrder} style={{ marginTop: 1, padding: '6px 12px', background: '#e74c3c', color: '#fff', border: 'none', borderRadius: 5, fontWeight: 600, fontSize: 14, cursor: 'pointer', width: 140 }}>Cancel Order</button>
-            </>
-          )}
-          {selectedOrder && selectedOrder.status === 'cancelled' && (
-            <>
-              <div style={{ fontSize: 20, fontWeight: 600, color: '#e74c3c', marginBottom: 10 }}>Order Cancelled ❌</div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{selectedOrder._id}</b></div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{selectedOrder.spotAmount} SPOT</b> @ <b>{selectedOrder.price} USDT/SPOT</b></div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You would have paid: <b>{selectedOrder.usdtAmount} USDT</b></div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#e74c3c', fontWeight: 700 }}>Cancelled</span></div>
-            </>
-          )}
-          {selectedOrder && selectedOrder.status === 'completed' && (
-            <>
-              <div style={{ fontSize: 20, fontWeight: 600, color: '#27ae60', marginBottom: 10 }}>Order Complete ✅</div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{selectedOrder._id}</b></div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{selectedOrder.spotAmount} SPOT</b> @ <b>{selectedOrder.price} USDT/SPOT</b></div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You paid: <b>{selectedOrder.usdtAmount} USDT</b></div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#27ae60', fontWeight: 700 }}>Completed</span></div>
-            </>
-          )}
-          {selectedOrder && selectedOrder.status === 'loading' && (
-            <div style={{ color: '#1e3c72', fontWeight: 600, fontSize: 18 }}>Processing…</div>
-          )}
-        </div>
+        {/* Show all filtered orders as cards */}
+        {filteredOrders.length === 0 && (
+          <div style={{ color: '#888', fontSize: 18, marginTop: 30 }}>No orders found.</div>
+        )}
+        {filteredOrders.map((order: any) => (
+          <div key={order._id} style={{
+            background: '#fff',
+            borderRadius: 0,
+            boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+            border: '1px solid #e3e6ef',
+            padding: '12px 16px',
+            minWidth: 200,
+            maxWidth: 380,
+            width: '100%',
+            textAlign: 'center',
+            marginBottom: 14,
+            fontFamily: 'inherit',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+            {order.status === 'pending' && (
+              <>
+                <div style={{ fontSize: 20, fontWeight: 600, color: '#1e3c72', marginBottom: 10 }}>Buyer making payment…</div>
+                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
+                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{order.spotAmount} SPOT</b> @ <b>{order.price} USDT/SPOT</b></div>
+                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You will pay: <b>{order.usdtAmount} USDT</b></div>
+                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#f1c40f', fontWeight: 700 }}>Pending</span></div>
+                <button onClick={() => cancelOrder(order)} style={{ marginTop: 1, padding: '6px 12px', background: '#e74c3c', color: '#fff', border: 'none', borderRadius: 5, fontWeight: 600, fontSize: 14, cursor: 'pointer', width: 140 }}>Cancel Order</button>
+              </>
+            )}
+            {order.status === 'cancelled' && (
+              <>
+                <div style={{ fontSize: 20, fontWeight: 600, color: '#e74c3c', marginBottom: 10 }}>Order Cancelled ❌</div>
+                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
+                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{order.spotAmount} SPOT</b> @ <b>{order.price} USDT/SPOT</b></div>
+                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You would have paid: <b>{order.usdtAmount} USDT</b></div>
+                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#e74c3c', fontWeight: 700 }}>Cancelled</span></div>
+              </>
+            )}
+            {order.status === 'completed' && (
+              <>
+                <div style={{ fontSize: 20, fontWeight: 600, color: '#27ae60', marginBottom: 10 }}>Order Complete ✅</div>
+                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
+                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{order.spotAmount} SPOT</b> @ <b>{order.price} USDT/SPOT</b></div>
+                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You paid: <b>{order.usdtAmount} USDT</b></div>
+                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#27ae60', fontWeight: 700 }}>Completed</span></div>
+              </>
+            )}
+            {order.status === 'loading' && (
+              <div style={{ color: '#1e3c72', fontWeight: 600, fontSize: 18 }}>Processing…</div>
+            )}
+          </div>
+        ))}
       </div>
       <style>{`
         @media (max-width: 500px) {
