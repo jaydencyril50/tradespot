@@ -6,7 +6,8 @@ const API = process.env.REACT_APP_API_BASE_URL;
 
 const OrderPage: React.FC = () => {
   const location = useLocation();
-  const [order, setOrder] = useState<any>(null);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [status, setStatus] = useState<'pending' | 'completed' | 'loading'>('loading');
   const [timer, setTimer] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
@@ -15,13 +16,13 @@ const OrderPage: React.FC = () => {
 
   // Complete order (move above useEffect for scope)
   const completeOrder = async () => {
-    if (!order) return;
+    if (!selectedOrder) return;
     setStatus('loading');
     try {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('Not authenticated');
-      const res = await axios.patch(`${API}/api/p2p/orders/${order._id}/complete`, {}, { headers: { Authorization: `Bearer ${token}` } });
-      setOrder(res.data.order);
+      const res = await axios.patch(`${API}/api/p2p/orders/${selectedOrder._id}/complete`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      setSelectedOrder(res.data.order);
       setStatus('completed');
       setBalances({ usdt: res.data.usdtBalance, spot: res.data.spotBalance });
     } catch {
@@ -38,16 +39,31 @@ const OrderPage: React.FC = () => {
         // Fetch all orders and find by ID
         const res = await axios.get(`${API}/api/p2p/orders`, { headers: { Authorization: `Bearer ${token}` } });
         const found = res.data.orders.find((o: any) => o._id === orderId);
-        if (found) setOrder(found);
-        else setOrder(res.data.orders[0] || null);
+        if (found) setSelectedOrder(found);
+        else setSelectedOrder(res.data.orders[0] || null);
       } else {
         const res = await axios.get(`${API}/api/p2p/orders`, { headers: { Authorization: `Bearer ${token}` } });
-        setOrder(res.data.orders[0] || null);
+        setSelectedOrder(res.data.orders[0] || null);
       }
       setStatus('pending');
     } catch {
-      setOrder(null);
+      setSelectedOrder(null);
       setStatus('loading');
+    }
+  };
+
+  // Fetch all orders for the user
+  const fetchOrders = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Not authenticated');
+      const res = await axios.get(`${API}/api/p2p/orders`, { headers: { Authorization: `Bearer ${token}` } });
+      setOrders(res.data.orders || []);
+      // Default to most recent order
+      setSelectedOrder(res.data.orders[0] || null);
+    } catch {
+      setOrders([]);
+      setSelectedOrder(null);
     }
   };
 
@@ -61,23 +77,22 @@ const OrderPage: React.FC = () => {
     } catch {}
   };
 
-  // On mount, fetch order
+  // On mount, fetch all orders
   useEffect(() => {
-    const orderId = location.state?.orderId;
-    fetchOrder(orderId);
+    fetchOrders();
     fetchBalances();
     // eslint-disable-next-line
   }, []);
 
   // Start timer when order is loaded and pending
   useEffect(() => {
-    if (!order || order.status !== 'pending') return;
+    if (!selectedOrder || selectedOrder.status !== 'pending') return;
     // Random 2–15 min (in seconds)
     const min = 2 * 60, max = 15 * 60;
     const randomSec = Math.floor(Math.random() * (max - min + 1)) + min;
     setTimeLeft(randomSec);
     setTimer(randomSec);
-  }, [order]);
+  }, [selectedOrder]);
 
   // Countdown effect
   useEffect(() => {
@@ -126,50 +141,81 @@ const OrderPage: React.FC = () => {
         </span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 32 }}>
+        {orders.length > 1 && (
+          <div style={{ marginBottom: 18, width: '100%', maxWidth: 380 }}>
+            <div style={{ fontWeight: 600, color: '#25324B', marginBottom: 6, fontSize: 16 }}>Your Orders:</div>
+            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {orders.map((o: any) => (
+                <button
+                  key={o._id}
+                  onClick={() => setSelectedOrder(o)}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: 6,
+                    border: o._id === selectedOrder?._id ? '2px solid #1e3c72' : '1px solid #e3e6ef',
+                    background: o._id === selectedOrder?._id ? '#f6f9fe' : '#fff',
+                    color: '#25324B',
+                    fontWeight: o._id === selectedOrder?._id ? 700 : 500,
+                    cursor: 'pointer',
+                    fontSize: 15,
+                  }}
+                >
+                  {o.status === 'pending' ? 'Pending' : 'Completed'} | {o.spotAmount} SPOT
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <div style={{
           background: '#fff',
           borderRadius: 0,
           boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
           border: '1px solid #e3e6ef',
-          padding: '24px 32px',
+          padding: '12px 16px',
           minWidth: 200,
           maxWidth: 380,
           width: '100%',
           textAlign: 'center',
           marginBottom: 14,
           fontFamily: 'inherit',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
         }}>
-          {!order && <div style={{ color: '#888', fontSize: 18 }}>No active order found.</div>}
-          {order && status === 'pending' && (
+          {!selectedOrder && <div style={{ color: '#888', fontSize: 18 }}>No active order found.</div>}
+          {selectedOrder && selectedOrder.status === 'pending' && (
             <>
               <div style={{ fontSize: 20, fontWeight: 600, color: '#1e3c72', marginBottom: 10 }}>Buyer making payment…</div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{order.spotAmount} SPOT</b> @ <b>{order.price} USDT/SPOT</b></div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You will pay: <b>{order.usdtAmount} USDT</b></div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{selectedOrder._id}</b></div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{selectedOrder.spotAmount} SPOT</b> @ <b>{selectedOrder.price} USDT/SPOT</b></div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You will pay: <b>{selectedOrder.usdtAmount} USDT</b></div>
               <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#f1c40f', fontWeight: 700 }}>Pending</span></div>
-              <div style={{ fontSize: 15, color: '#888', marginTop: 12 }}>Estimated time: <b>{formatTime(timeLeft)}</b></div>
             </>
           )}
-          {order && status === 'completed' && (
+          {selectedOrder && selectedOrder.status === 'completed' && (
             <>
               <div style={{ fontSize: 20, fontWeight: 600, color: '#27ae60', marginBottom: 10 }}>Order Complete ✅</div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{order.spotAmount} SPOT</b> @ <b>{order.price} USDT/SPOT</b></div>
-              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You paid: <b>{order.usdtAmount} USDT</b></div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{selectedOrder._id}</b></div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{selectedOrder.spotAmount} SPOT</b> @ <b>{selectedOrder.price} USDT/SPOT</b></div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You paid: <b>{selectedOrder.usdtAmount} USDT</b></div>
               <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#27ae60', fontWeight: 700 }}>Completed</span></div>
-              {balances && (
-                <div style={{ marginTop: 18, fontSize: 15, color: '#25324B' }}>
-                  <div><b>New USDT Balance:</b> {balances.usdt}</div>
-                  <div><b>New SPOT Balance:</b> {balances.spot}</div>
-                </div>
-              )}
             </>
           )}
-          {order && status === 'loading' && (
+          {selectedOrder && selectedOrder.status === 'loading' && (
             <div style={{ color: '#1e3c72', fontWeight: 600, fontSize: 18 }}>Processing…</div>
           )}
         </div>
       </div>
+      <style>{`
+        @media (max-width: 500px) {
+          .order-card {
+            padding: 16px 2vw !important;
+            max-width: 98vw !important;
+            font-size: 15px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };
