@@ -220,6 +220,34 @@ const OrderPage: React.FC = () => {
             )}
           </div>
         </div>
+        {/* List all orders of the selected status */}
+        <div style={{ width: '100%', maxWidth: 380, marginBottom: 18 }}>
+          {['pending', 'cancelled', 'completed'].map((statusType) => (
+            selectedOrder && selectedOrder.status === statusType && (
+              <div key={statusType}>
+                {orders.filter((o: any) => o.status === statusType).map((o: any) => (
+                  <div
+                    key={o._id}
+                    onClick={() => setSelectedOrder(o)}
+                    style={{
+                      marginBottom: 8,
+                      padding: '8px 12px',
+                      borderRadius: 6,
+                      border: o._id === selectedOrder._id ? '2px solid #1e3c72' : '1px solid #e3e6ef',
+                      background: o._id === selectedOrder._id ? '#f6f9fe' : '#fff',
+                      color: '#25324B',
+                      fontWeight: o._id === selectedOrder._id ? 700 : 500,
+                      cursor: 'pointer',
+                      fontSize: 15,
+                    }}
+                  >
+                    Order #{o._id.slice(-6)} | {o.spotAmount} SPOT @ {o.price} | {new Date(o.createdAt).toLocaleString()}
+                  </div>
+                ))}
+              </div>
+            )
+          ))}
+        </div>
         <div style={{
           background: '#fff',
           borderRadius: 0,
