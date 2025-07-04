@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Modal from '../components/Modal';
 
 const API = process.env.REACT_APP_API_BASE_URL;
 
@@ -21,6 +22,12 @@ const BuySpotPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
+  const [selectedBuyer, setSelectedBuyer] = useState<Buyer | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [userUSDTBalance, setUserUSDTBalance] = useState<number | null>(null);
+  const [spotAmount, setSpotAmount] = useState('');
+  const [usdtAmount, setUsdtAmount] = useState(0);
+  const [inputError, setInputError] = useState('');
 
   const fetchBuyers = async () => {
     setLoading(true);
@@ -35,13 +42,46 @@ const BuySpotPage: React.FC = () => {
     }
   };
 
+  // Fetch logged-in user's USDT balance
+  const fetchUserBalance = async () => {
+    try {
+      const res = await axios.get(`${API}/api/user/balance`);
+      setUserUSDTBalance(res.data.balance);
+    } catch (err: any) {
+      setUserUSDTBalance(null);
+    }
+  };
+
   useEffect(() => {
     fetchBuyers();
+    fetchUserBalance();
   }, []);
 
   const filteredBuyers = buyers.filter((buyer) =>
     buyer.username.toLowerCase().includes(search.toLowerCase())
   );
+
+  // Live calculation and validation
+  useEffect(() => {
+    if (!selectedBuyer) return;
+    const spot = parseFloat(spotAmount);
+    if (isNaN(spot) || spot <= 0) {
+      setUsdtAmount(0);
+      setInputError('');
+      return;
+    }
+    const usdt = spot * 500;
+    setUsdtAmount(usdt);
+    let error = '';
+    if (usdt < selectedBuyer.minLimit) {
+      error = `Minimum trade is ${selectedBuyer.minLimit} USDT (${(selectedBuyer.minLimit/500).toFixed(2)} spot)`;
+    } else if (usdt > selectedBuyer.maxLimit) {
+      error = `Maximum trade is ${selectedBuyer.maxLimit} USDT (${(selectedBuyer.maxLimit/500).toFixed(2)} spot)`;
+    } else if (userUSDTBalance !== null && usdt > userUSDTBalance) {
+      error = `You do not have enough USDT. Your balance: ${userUSDTBalance} USDT`;
+    }
+    setInputError(error);
+  }, [spotAmount, selectedBuyer, userUSDTBalance]);
 
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
@@ -97,6 +137,16 @@ const BuySpotPage: React.FC = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
+              onClick={() => {
+                setSelectedBuyer(buyer);
+                setShowModal(true);
+                setSpotAmount('');
+                setInputError('');
+                setUsdtAmount(0);
+              }}
+              tabIndex={0}
+              role="button"
+              aria-label={`Buy from ${buyer.username}`}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginBottom: 6 }}>
                 <span style={{ fontWeight: 700, color: '#25324B', fontSize: '1.1rem', letterSpacing: 1 }}>{buyer.username}#{buyer.userId}</span>
@@ -158,6 +208,61 @@ const BuySpotPage: React.FC = () => {
               </div>
             </div>
           ))
+        )}
+        {/* Modal for buying spot */}
+        {showModal && selectedBuyer && (
+          <Modal onClose={() => setShowModal(false)}>
+            <div style={{ padding: 20, minWidth: 300, background: '#fff', borderRadius: 0 }}>
+              <h2 style={{ marginBottom: 10, fontSize: '1.15rem', fontWeight: 700, color: '#25324B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                Buy from {selectedBuyer.username}#{selectedBuyer.userId}
+              </h2>
+              <div style={{ marginBottom: 8 }}>
+                <strong>Your USDT Balance:</strong> {userUSDTBalance !== null ? userUSDTBalance : '...'}
+              </div>
+              <div style={{ marginBottom: 8 }}>
+                <strong>Trader's Trade Limit:</strong> {selectedBuyer.minLimit} – {selectedBuyer.maxLimit} USDT
+              </div>
+              <div style={{ marginBottom: 8 }}>
+                <strong>Enter Spot Amount:</strong>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={spotAmount}
+                  onChange={e => setSpotAmount(e.target.value)}
+                  style={{ marginLeft: 8, padding: 6, borderRadius: 4, border: '1px solid #ccc', width: 160 }}
+                  placeholder="Spot amount"
+                />
+              </div>
+              <div style={{ marginBottom: 8 }}>
+                <strong>USDT You Will Get:</strong> {usdtAmount}
+              </div>
+              {inputError && <div style={{ color: '#e74c3c', marginBottom: 8, textAlign: 'center', fontSize: 15 }}>{inputError}</div>}
+              <button
+                style={{
+                  background: '#1e3c72',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 4,
+                  padding: '10px 0',
+                  fontWeight: 600,
+                  cursor: inputError || !spotAmount ? 'not-allowed' : 'pointer',
+                  opacity: inputError || !spotAmount ? 0.6 : 1,
+                  marginTop: 12,
+                  width: 220,
+                  display: 'block',
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
+                  fontSize: 17,
+                  letterSpacing: 1
+                }}
+                disabled={!!inputError || !spotAmount}
+                onClick={() => {/* Place buy logic here */}}
+              >
+                Buy Spot
+              </button>
+            </div>
+          </Modal>
         )}
         <style>
           {`

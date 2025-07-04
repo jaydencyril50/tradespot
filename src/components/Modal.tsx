@@ -19,6 +19,7 @@ const Modal: React.FC<ModalProps> = ({ onClose, children }) => {
         display: 'grid',
         placeItems: 'center', // Ensures perfect centering
       }}
+      onClick={onClose} // Close modal when clicking overlay
     >
       <div
         style={{
@@ -27,6 +28,7 @@ const Modal: React.FC<ModalProps> = ({ onClose, children }) => {
           maxWidth: '98vw',
           margin: '0 auto',
         }}
+        onClick={e => e.stopPropagation()} // Prevent closing when clicking modal content
       >
         <div style={{ width: '100%', maxWidth: 420 }}>
           {children}
