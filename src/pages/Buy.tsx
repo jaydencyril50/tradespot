@@ -15,6 +15,7 @@ interface Buyer {
   status: string;
   rating: number;
   reviews: string[];
+  price: number; // Add price field
 }
 
 const BuySpotPage: React.FC = () => {
@@ -70,13 +71,13 @@ const BuySpotPage: React.FC = () => {
       setInputError('');
       return;
     }
-    const usdt = spot * 500;
+    const usdt = spot * (selectedBuyer.price || 500); // Use per-user price
     setUsdtAmount(usdt);
     let error = '';
     if (usdt < selectedBuyer.minLimit) {
-      error = `Minimum trade is ${selectedBuyer.minLimit} USDT (${(selectedBuyer.minLimit/500).toFixed(2)} spot)`;
+      error = `Minimum trade is ${selectedBuyer.minLimit} USDT (${(selectedBuyer.minLimit/(selectedBuyer.price || 500)).toFixed(2)} spot)`;
     } else if (usdt > selectedBuyer.maxLimit) {
-      error = `Maximum trade is ${selectedBuyer.maxLimit} USDT (${(selectedBuyer.maxLimit/500).toFixed(2)} spot)`;
+      error = `Maximum trade is ${selectedBuyer.maxLimit} USDT (${(selectedBuyer.maxLimit/(selectedBuyer.price || 500)).toFixed(2)} spot)`;
     } else if (userUSDTBalance !== null && usdt > userUSDTBalance) {
       error = `You do not have enough USDT. Your balance: ${userUSDTBalance} USDT`;
     }
@@ -188,6 +189,9 @@ const BuySpotPage: React.FC = () => {
                 <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
                   Rating: <span style={{ color: '#f1c40f', fontWeight: 700 }}>⭐ {buyer.rating}</span>
                 </div>
+                <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
+                  <strong>Price:</strong> <span style={{ color: '#1e3c72', fontWeight: 700 }}>{buyer.price} USDT/spot</span>
+                </div>
                 <div
                   style={{
                     display: 'flex',
@@ -232,6 +236,9 @@ const BuySpotPage: React.FC = () => {
               <h2 style={{ marginBottom: 10, fontSize: '1.15rem', fontWeight: 700, color: '#25324B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 Buy from {selectedBuyer.username}#{selectedBuyer.userId}
               </h2>
+              <div style={{ marginBottom: 8 }}>
+                <strong>Price per Spot:</strong> <span style={{ color: '#1e3c72', fontWeight: 700 }}>{selectedBuyer.price} USDT</span>
+              </div>
               <div style={{ marginBottom: 8 }}>
                 <strong>Your USDT Balance:</strong> {userUSDTBalance !== null ? userUSDTBalance : '...'}
               </div>
