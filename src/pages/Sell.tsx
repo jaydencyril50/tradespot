@@ -163,7 +163,7 @@ const SellSpotPage: React.FC = () => {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search buyer username..."
+          placeholder="Search seller username..."
           style={{
             width: '100%',
             maxWidth: 375,
