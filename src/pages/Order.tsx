@@ -247,12 +247,24 @@ const OrderPage: React.FC = () => {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
+            {/* Show correct info for buy/sell order */}
             {order.status === 'pending' && (
               <>
-                <div style={{ fontSize: 20, fontWeight: 600, color: '#1e3c72', marginBottom: 10 }}>Buyer making payment…</div>
+                <div style={{ fontSize: 20, fontWeight: 600, color: '#1e3c72', marginBottom: 10 }}>
+                  {order.type === 'buy' ? 'Buyer making payment…' : 'Waiting for buyer to pay SPOT…'}
+                </div>
                 <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
-                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{order.spotAmount} SPOT</b> @ <b>{order.price} USDT/SPOT</b></div>
-                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You will pay: <b>{order.usdtAmount} USDT</b></div>
+                {order.type === 'buy' ? (
+                  <>
+                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{order.spotAmount} SPOT</b> @ <b>{order.price} USDT/SPOT</b></div>
+                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You will pay: <b>{order.usdtAmount} USDT</b></div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You give: <b>{order.spotAmount} SPOT</b></div>
+                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You will receive: <b>{order.usdtAmount} USDT</b> @ <b>{order.price} USDT/SPOT</b></div>
+                  </>
+                )}
                 <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#f1c40f', fontWeight: 700 }}>Pending</span></div>
                 <button onClick={() => cancelOrder(order)} style={{ marginTop: 1, padding: '6px 12px', background: '#e74c3c', color: '#fff', border: 'none', borderRadius: 5, fontWeight: 600, fontSize: 14, cursor: 'pointer', width: 140 }}>Cancel Order</button>
               </>
@@ -261,8 +273,17 @@ const OrderPage: React.FC = () => {
               <>
                 <div style={{ fontSize: 20, fontWeight: 600, color: '#e74c3c', marginBottom: 10 }}>Order Cancelled ❌</div>
                 <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
-                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{order.spotAmount} SPOT</b> @ <b>{order.price} USDT/SPOT</b></div>
-                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You would have paid: <b>{order.usdtAmount} USDT</b></div>
+                {order.type === 'buy' ? (
+                  <>
+                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{order.spotAmount} SPOT</b> @ <b>{order.price} USDT/SPOT</b></div>
+                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You would have paid: <b>{order.usdtAmount} USDT</b></div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You would have given: <b>{order.spotAmount} SPOT</b></div>
+                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You would have received: <b>{order.usdtAmount} USDT</b> @ <b>{order.price} USDT/SPOT</b></div>
+                  </>
+                )}
                 <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#e74c3c', fontWeight: 700 }}>Cancelled</span></div>
               </>
             )}
@@ -270,8 +291,17 @@ const OrderPage: React.FC = () => {
               <>
                 <div style={{ fontSize: 20, fontWeight: 600, color: '#27ae60', marginBottom: 10 }}>Order Complete ✅</div>
                 <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
-                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{order.spotAmount} SPOT</b> @ <b>{order.price} USDT/SPOT</b></div>
-                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You paid: <b>{order.usdtAmount} USDT</b></div>
+                {order.type === 'buy' ? (
+                  <>
+                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{order.spotAmount} SPOT</b> @ <b>{order.price} USDT/SPOT</b></div>
+                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You paid: <b>{order.usdtAmount} USDT</b></div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You gave: <b>{order.spotAmount} SPOT</b></div>
+                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You received: <b>{order.usdtAmount} USDT</b> @ <b>{order.price} USDT/SPOT</b></div>
+                  </>
+                )}
                 <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#27ae60', fontWeight: 700 }}>Completed</span></div>
               </>
             )}
