@@ -125,36 +125,50 @@ const OrderPage: React.FC = () => {
           MY ORDER
         </span>
       </div>
-      <div style={{ maxWidth: 420, margin: '40px auto', background: '#f6f9fe', borderRadius: 8, boxShadow: '0 2px 12px #e3e6ef', padding: 24, textAlign: 'center' }}>
-        {!order && <div style={{ color: '#888', fontSize: 18 }}>No active order found.</div>}
-        {order && status === 'pending' && (
-          <>
-            <div style={{ fontSize: 20, fontWeight: 600, color: '#1e3c72', marginBottom: 10 }}>Buyer making payment…</div>
-            <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
-            <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{order.spotAmount} SPOT</b> @ <b>{order.price} USDT/SPOT</b></div>
-            <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You will pay: <b>{order.usdtAmount} USDT</b></div>
-            <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#f1c40f', fontWeight: 700 }}>Pending</span></div>
-            <div style={{ fontSize: 15, color: '#888', marginTop: 12 }}>Estimated time: <b>{formatTime(timeLeft)}</b></div>
-          </>
-        )}
-        {order && status === 'completed' && (
-          <>
-            <div style={{ fontSize: 20, fontWeight: 600, color: '#27ae60', marginBottom: 10 }}>Order Complete ✅</div>
-            <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
-            <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{order.spotAmount} SPOT</b> @ <b>{order.price} USDT/SPOT</b></div>
-            <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You paid: <b>{order.usdtAmount} USDT</b></div>
-            <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#27ae60', fontWeight: 700 }}>Completed</span></div>
-            {balances && (
-              <div style={{ marginTop: 18, fontSize: 15, color: '#25324B' }}>
-                <div><b>New USDT Balance:</b> {balances.usdt}</div>
-                <div><b>New SPOT Balance:</b> {balances.spot}</div>
-              </div>
-            )}
-          </>
-        )}
-        {order && status === 'loading' && (
-          <div style={{ color: '#1e3c72', fontWeight: 600, fontSize: 18 }}>Processing…</div>
-        )}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 32 }}>
+        <div style={{
+          background: '#fff',
+          borderRadius: 0,
+          boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+          border: '1px solid #e3e6ef',
+          padding: '24px 32px',
+          minWidth: 200,
+          maxWidth: 380,
+          width: '100%',
+          textAlign: 'center',
+          marginBottom: 14,
+          fontFamily: 'inherit',
+        }}>
+          {!order && <div style={{ color: '#888', fontSize: 18 }}>No active order found.</div>}
+          {order && status === 'pending' && (
+            <>
+              <div style={{ fontSize: 20, fontWeight: 600, color: '#1e3c72', marginBottom: 10 }}>Buyer making payment…</div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{order.spotAmount} SPOT</b> @ <b>{order.price} USDT/SPOT</b></div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You will pay: <b>{order.usdtAmount} USDT</b></div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#f1c40f', fontWeight: 700 }}>Pending</span></div>
+              <div style={{ fontSize: 15, color: '#888', marginTop: 12 }}>Estimated time: <b>{formatTime(timeLeft)}</b></div>
+            </>
+          )}
+          {order && status === 'completed' && (
+            <>
+              <div style={{ fontSize: 20, fontWeight: 600, color: '#27ae60', marginBottom: 10 }}>Order Complete ✅</div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{order.spotAmount} SPOT</b> @ <b>{order.price} USDT/SPOT</b></div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You paid: <b>{order.usdtAmount} USDT</b></div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#27ae60', fontWeight: 700 }}>Completed</span></div>
+              {balances && (
+                <div style={{ marginTop: 18, fontSize: 15, color: '#25324B' }}>
+                  <div><b>New USDT Balance:</b> {balances.usdt}</div>
+                  <div><b>New SPOT Balance:</b> {balances.spot}</div>
+                </div>
+              )}
+            </>
+          )}
+          {order && status === 'loading' && (
+            <div style={{ color: '#1e3c72', fontWeight: 600, fontSize: 18 }}>Processing…</div>
+          )}
+        </div>
       </div>
     </div>
   );
