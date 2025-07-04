@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Modal from '../components/Modal';
+import { useNavigate } from 'react-router-dom';
 
 const API = process.env.REACT_APP_API_BASE_URL;
 
@@ -29,6 +30,7 @@ const BuySpotPage: React.FC = () => {
   const [spotAmount, setSpotAmount] = useState('');
   const [usdtAmount, setUsdtAmount] = useState(0);
   const [inputError, setInputError] = useState('');
+  const navigate = useNavigate();
 
   const fetchBuyers = async () => {
     setLoading(true);
@@ -112,6 +114,31 @@ const BuySpotPage: React.FC = () => {
     if (n >= 1_000_000) return (n / 1_000_000).toFixed(2).replace(/\.00$/, '') + 'M';
     if (n >= 1_000) return (n / 1_000).toFixed(2).replace(/\.00$/, '') + 'K';
     return n.toString();
+  };
+
+  // Place buy logic here
+  const handleBuySpot = async () => {
+    if (!selectedBuyer || !spotAmount || !!inputError) return;
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Not authenticated');
+      const res = await axios.post(
+        `${API}/api/p2p/orders`,
+        {
+          buyerId: selectedBuyer.userId,
+          buyerUsername: selectedBuyer.username,
+          price: selectedBuyer.price,
+          spotAmount: parseFloat(spotAmount),
+          usdtAmount: usdtAmount,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // Close modal and go to order page (optionally pass orderId)
+      setShowModal(false);
+      navigate('/order', { state: { orderId: res.data.order._id } });
+    } catch (err: any) {
+      setInputError(err?.response?.data?.error || err.message || 'Order failed');
+    }
   };
 
   return (
@@ -312,7 +339,7 @@ const BuySpotPage: React.FC = () => {
                   letterSpacing: 1
                 }}
                 disabled={!!inputError || !spotAmount}
-                onClick={() => {/* Place buy logic here */}}
+                onClick={handleBuySpot}
               >
                 Buy Spot
               </button>
