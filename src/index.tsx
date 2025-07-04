@@ -32,6 +32,7 @@ import { NetworkStatusProvider } from './NetworkStatusProvider';
 import ProChat from './pages/ProChat';
 import AdminStaking from './pages/AdminStaking';
 import BuySpotPage from './pages/Buy';
+import SellSpotPage from './pages/Sell';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Root container missing in index.html');
@@ -131,6 +132,11 @@ root.render(
             <Route path="/buy" element={
               <ProtectedRoute>
                 <BuySpotPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/sell" element={
+              <ProtectedRoute>
+                <SellSpotPage />
               </ProtectedRoute>
             } />
           </Routes>

@@ -249,54 +249,6 @@ export const getAdminTeamUsers = async () => {
     return res.data;
 };
 
-export const sendProChatMessage = async (message: string, imageUrl?: string, userEmail?: string, spotid?: string) => {
-  const token = localStorage.getItem('token');
-  if (!token) throw new Error('Not authenticated');
-  const API = process.env.REACT_APP_API_BASE_URL;
-  const res = await axios.post(`${API}/api/chat`, { message, imageUrl, userEmail, spotid }, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.data;
-};
-
-// Fetch ProChat messages for the authenticated user
-export async function fetchProChatMessages() {
-  const token = localStorage.getItem('token');
-  if (!token) throw new Error('Not authenticated');
-  const API = process.env.REACT_APP_API_BASE_URL;
-  const res = await axios.get(`${API}/api/chat`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.data.chats;
-}
-
-// ADMIN: Fetch all latest user chats
-export const fetchAllUserChats = async () => {
-    const adminToken = localStorage.getItem('adminToken');
-    if (!adminToken) throw new Error('Not authenticated as admin');
-    const res = await axios.get(`${API}/api/chat/admin/chat-messages`, {
-        headers: { Authorization: `Bearer ${adminToken}` },
-    });
-    return res.data;
-};
-
-// ADMIN: Fetch chat messages by user email
-export const fetchChatByUser = async (email: string) => {
-    const adminToken = localStorage.getItem('adminToken');
-    if (!adminToken) throw new Error('Not authenticated as admin');
-    const res = await axios.get(`${API}/api/chat/admin/chat-messages/${email}`, {
-        headers: { Authorization: `Bearer ${adminToken}` },
-    });
-    return res.data;
-};
-
-export async function getMarketCandles() {
-  const API = process.env.REACT_APP_API_BASE_URL;
-  const res = await fetch(`${API}/api/market/candles`);
-  if (!res.ok) throw new Error('Failed to fetch candles');
-  return res.json();
-}
-
 // API call to resolve email to userId
 export const getUserIdByEmail = async (email: string) => {
   const token = localStorage.getItem('token');
@@ -305,13 +257,4 @@ export const getUserIdByEmail = async (email: string) => {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data.userId;
-};
-
-export const sellToSimulatedBuyer = async (buyerId: number, amount: number) => {
-    const token = localStorage.getItem('token');
-    if (!token) throw new Error('Not authenticated');
-    const res = await axios.post(`${API}/api/simulated-buyers/sell`, { buyerId, amount }, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
-    return res.data;
 };
