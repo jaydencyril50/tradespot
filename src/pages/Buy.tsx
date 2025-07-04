@@ -116,98 +116,106 @@ const BuySpotPage: React.FC = () => {
           <div style={{ color: '#888', fontSize: 16, textAlign: 'center', margin: '40px 0' }}>No matching buyers found.</div>
         )}
         {!loading && !error && filteredBuyers.length > 0 && (
-          filteredBuyers.map((buyer) => (
-            <div
-              key={buyer._id}
-              style={{
-                background: '#fff',
-                borderRadius: 0,
-                boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-                border: '1px solid #e3e6ef',
-                padding: '12px 16px',
-                minWidth: 200,
-                maxWidth: 380,
-                width: '100%',
-                textAlign: 'center',
-                marginBottom: 14, // Add gap between cards
-                fontFamily: 'inherit',
-                height: 170,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              onClick={() => {
-                setSelectedBuyer(buyer);
-                setShowModal(true);
-                setSpotAmount('');
-                setInputError('');
-                setUsdtAmount(0);
-              }}
-              tabIndex={0}
-              role="button"
-              aria-label={`Buy from ${buyer.username}`}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginBottom: 6 }}>
-                <span style={{ fontWeight: 700, color: '#25324B', fontSize: '1.1rem', letterSpacing: 1 }}>{buyer.username}#{buyer.userId}</span>
-              </div>
-              <div style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                Status: 
-                <span style={{
-                  display: 'inline-block',
-                  width: 10,
-                  height: 10,
-                  borderRadius: '50%',
-                  marginRight: 6,
-                  background: buyer.status === 'online' ? '#27ae60' : buyer.status === 'recently' ? '#f1c40f' : '#888',
-                  boxShadow: '0 0 4px ' + (buyer.status === 'online' ? '#27ae60' : buyer.status === 'recently' ? '#f1c40f' : '#888'),
-                }}></span>
-                <strong style={{ color: buyer.status === 'online' ? '#27ae60' : buyer.status === 'recently' ? '#f1c40f' : '#888' }}>{buyer.status.charAt(0).toUpperCase() + buyer.status.slice(1)}</strong>
-              </div>
-              <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
-                VIP Level: {buyer.vipLevel} | SPOT Balance: {buyer.spotBalance}
-              </div>
-              <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
-                Trade Limit: {buyer.minLimit} USDT – {buyer.maxLimit} USDT
-              </div>
-              <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
-                Rating: <span style={{ color: '#f1c40f', fontWeight: 700 }}>⭐ {buyer.rating}</span>
-              </div>
+          filteredBuyers.map((buyer) => {
+            const isDisabled = buyer.status === 'offline' || buyer.status === 'recently';
+            return (
               <div
+                key={buyer._id}
                 style={{
+                  background: '#fff',
+                  borderRadius: 0,
+                  boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+                  border: '1px solid #e3e6ef',
+                  padding: '12px 16px',
+                  minWidth: 200,
+                  maxWidth: 380,
+                  width: '100%',
+                  textAlign: 'center',
+                  marginBottom: 14, // Add gap between cards
+                  fontFamily: 'inherit',
+                  height: 170,
                   display: 'flex',
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
+                  flexDirection: 'column',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  gap: 8,
-                  width: '100%',
-                  marginTop: 4,
-                  marginBottom: 0,
-                  minHeight: 22,
+                  cursor: isDisabled ? 'not-allowed' : 'pointer',
+                  pointerEvents: isDisabled ? 'none' : 'auto',
                 }}
+                onClick={() => {
+                  if (!isDisabled) {
+                    setSelectedBuyer(buyer);
+                    setShowModal(true);
+                    setSpotAmount('');
+                    setInputError('');
+                    setUsdtAmount(0);
+                  }
+                }}
+                tabIndex={isDisabled ? -1 : 0}
+                role="button"
+                aria-label={`Buy from ${buyer.username}`}
+                aria-disabled={isDisabled}
               >
-                {buyer.reviews.map((review, idx) => (
-                  <span
-                    key={idx}
-                    style={{
-                      color: '#888',
-                      fontSize: 14,
-                      fontStyle: 'italic',
-                      background: '#f6f9fe',
-                      borderRadius: 6,
-                      padding: '2px 8px',
-                      margin: 0,
-                      display: 'inline-block',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {review}
-                  </span>
-                ))}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginBottom: 6 }}>
+                  <span style={{ fontWeight: 700, color: '#25324B', fontSize: '1.1rem', letterSpacing: 1 }}>{buyer.username}#{buyer.userId}</span>
+                </div>
+                <div style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  Status: 
+                  <span style={{
+                    display: 'inline-block',
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    marginRight: 6,
+                    background: buyer.status === 'online' ? '#27ae60' : buyer.status === 'recently' ? '#f1c40f' : '#888',
+                    boxShadow: '0 0 4px ' + (buyer.status === 'online' ? '#27ae60' : buyer.status === 'recently' ? '#f1c40f' : '#888'),
+                  }}></span>
+                  <strong style={{ color: buyer.status === 'online' ? '#27ae60' : buyer.status === 'recently' ? '#f1c40f' : '#888' }}>{buyer.status.charAt(0).toUpperCase() + buyer.status.slice(1)}</strong>
+                </div>
+                <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
+                  VIP Level: {buyer.vipLevel} | SPOT Balance: {buyer.spotBalance}
+                </div>
+                <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
+                  Trade Limit: {buyer.minLimit} USDT – {buyer.maxLimit} USDT
+                </div>
+                <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
+                  Rating: <span style={{ color: '#f1c40f', fontWeight: 700 }}>⭐ {buyer.rating}</span>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: 8,
+                    width: '100%',
+                    marginTop: 4,
+                    marginBottom: 0,
+                    minHeight: 22,
+                  }}
+                >
+                  {buyer.reviews.map((review, idx) => (
+                    <span
+                      key={idx}
+                      style={{
+                        color: '#888',
+                        fontSize: 14,
+                        fontStyle: 'italic',
+                        background: '#f6f9fe',
+                        borderRadius: 6,
+                        padding: '2px 8px',
+                        margin: 0,
+                        display: 'inline-block',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {review}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))
+            )
+          })
         )}
         {/* Modal for buying spot */}
         {showModal && selectedBuyer && (
