@@ -84,6 +84,24 @@ const BuySpotPage: React.FC = () => {
     setInputError(error);
   }, [spotAmount, selectedBuyer, userUSDTBalance]);
 
+  // --- Status randomizer for buyers ---
+  useEffect(() => {
+    if (!buyers.length) return;
+    const interval = setInterval(() => {
+      setBuyers(prevBuyers => prevBuyers.map(buyer => {
+        // Randomly pick a new status
+        const statuses = ['online', 'offline', 'recently'];
+        let newStatus = statuses[Math.floor(Math.random() * statuses.length)];
+        // Avoid repeating the same status
+        while (newStatus === buyer.status && statuses.length > 1) {
+          newStatus = statuses[Math.floor(Math.random() * statuses.length)];
+        }
+        return { ...buyer, status: newStatus };
+      }));
+    }, 2 * 60 * 60 * 1000); // 2 hours in ms
+    return () => clearInterval(interval);
+  }, [buyers.length]);
+
   // Helper to format numbers with K/M/B suffix
   const formatNumber = (n: number): string => {
     if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(2).replace(/\.00$/, '') + 'B';

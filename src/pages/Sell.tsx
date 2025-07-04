@@ -92,6 +92,24 @@ const SellSpotPage: React.FC = () => {
     setInputError(error);
   }, [spotAmount, selectedBuyer, userUSDTBalance]);
 
+  // --- Status randomizer for sellers ---
+  useEffect(() => {
+    if (!buyers.length) return;
+    const interval = setInterval(() => {
+      setBuyers(prevBuyers => prevBuyers.map(buyer => {
+        // Randomly pick a new status
+        const statuses = ['online', 'offline', 'recently'];
+        let newStatus = statuses[Math.floor(Math.random() * statuses.length)];
+        // Avoid repeating the same status
+        while (newStatus === buyer.status && statuses.length > 1) {
+          newStatus = statuses[Math.floor(Math.random() * statuses.length)];
+        }
+        return { ...buyer, status: newStatus };
+      }));
+    }, 2 * 60 * 60 * 1000); // 2 hours in ms
+    return () => clearInterval(interval);
+  }, [buyers.length]);
+
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
