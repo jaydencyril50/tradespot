@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Modal from '../components/Modal';
+import { useNavigate } from 'react-router-dom';
 
 const API = process.env.REACT_APP_API_BASE_URL;
 
@@ -37,6 +38,7 @@ const SellSpotPage: React.FC = () => {
   const [spotAmount, setSpotAmount] = useState('');
   const [usdtAmount, setUsdtAmount] = useState(0);
   const [inputError, setInputError] = useState('');
+  const navigate = useNavigate();
 
   const fetchBuyers = async () => {
     setLoading(true);
@@ -140,7 +142,7 @@ const SellSpotPage: React.FC = () => {
       setUsdtAmount(0);
       setInputError('');
       fetchUserBalance(); // Refresh balance
-      // Optionally show a success message or notification
+      navigate('/order'); // Redirect to order page after placing sell order
     } catch (err: any) {
       setError(err?.response?.data?.error || err.message || 'Failed to place sell order');
     } finally {
