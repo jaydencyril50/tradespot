@@ -118,7 +118,7 @@ const BuySpotPage: React.FC = () => {
                 VIP Level: {buyer.vipLevel} | SPOT Balance: {buyer.spotBalance}
               </div>
               <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
-                Trade Limit: ${buyer.minLimit} – ${buyer.maxLimit}
+                Trade Limit: {buyer.minLimit} USDT – {buyer.maxLimit} USDT
               </div>
               <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
                 Rating: <span style={{ color: '#f1c40f', fontWeight: 700 }}>⭐ {buyer.rating}</span>
