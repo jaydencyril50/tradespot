@@ -114,6 +114,40 @@ const SellSpotPage: React.FC = () => {
     return () => clearInterval(interval);
   }, [buyers.length]);
 
+  // --- Place Sell Order ---
+  const handleSell = async () => {
+    if (!selectedBuyer || !spotAmount || !!inputError) return;
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Not authenticated');
+      setLoading(true);
+      setError('');
+      const res = await axios.post(
+        `${API}/api/p2p/sell-orders`,
+        {
+          sellerId: selectedBuyer.userId,
+          sellerUsername: selectedBuyer.username,
+          price: selectedBuyer.price,
+          spotAmount: parseFloat(spotAmount),
+          usdtAmount: usdtAmount,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setShowModal(false);
+      setSpotAmount('');
+      setUsdtAmount(0);
+      setInputError('');
+      fetchUserBalance(); // Refresh balance
+      // Optionally show a success message or notification
+    } catch (err: any) {
+      setError(err?.response?.data?.error || err.message || 'Failed to place sell order');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
@@ -312,7 +346,7 @@ const SellSpotPage: React.FC = () => {
                   letterSpacing: 1
                 }}
                 disabled={!!inputError || !spotAmount}
-                onClick={() => {/* Place sell logic here */}}
+                onClick={handleSell}
               >
                 Sell Spot
               </button>
