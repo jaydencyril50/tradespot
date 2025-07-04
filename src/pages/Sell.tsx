@@ -199,7 +199,7 @@ const SellSpotPage: React.FC = () => {
                   <strong style={{ color: buyer.status === 'online' ? '#27ae60' : buyer.status === 'recently' ? '#f1c40f' : '#888' }}>{buyer.status.charAt(0).toUpperCase() + buyer.status.slice(1)}</strong>
                 </div>
                 <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
-                  VIP Level: {buyer.vipLevel} | SPOT Balance: {buyer.spotBalance}
+                  VIP Level: {buyer.vipLevel === 1 ? 'm🏅' : buyer.vipLevel === 2 ? '💎' : '👑'} | SPOT Balance: {buyer.spotBalance}
                 </div>
                 <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
                   Trade Limit: {formatNumber(buyer.minLimit)} – {formatNumber(buyer.maxLimit)} USDT
