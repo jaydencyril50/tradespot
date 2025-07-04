@@ -50,7 +50,7 @@ const BuySpotPage: React.FC = () => {
           BUY SPOT
         </span>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 12, gap: 10 }}>
         {/* Search bar */}
         <input
           type="text"
@@ -59,11 +59,11 @@ const BuySpotPage: React.FC = () => {
           placeholder="Search buyer username..."
           style={{
             width: '100%',
-            maxWidth: 400,
+            maxWidth: 375,
             padding: 10,
             border: '1px solid #ccc',
             borderRadius: 6,
-            marginBottom: 20,
+            marginBottom: 10,
             fontSize: 16,
             fontFamily: 'inherit',
           }}
@@ -89,7 +89,7 @@ const BuySpotPage: React.FC = () => {
                 maxWidth: 380,
                 width: '100%',
                 textAlign: 'center',
-                marginBottom: 0,
+                marginBottom: 14, // Add gap between cards
                 fontFamily: 'inherit',
                 height: 170,
                 display: 'flex',
@@ -123,11 +123,39 @@ const BuySpotPage: React.FC = () => {
               <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
                 Rating: <span style={{ color: '#f1c40f', fontWeight: 700 }}>⭐ {buyer.rating}</span>
               </div>
-              <ul style={{ paddingLeft: 16, margin: 0, color: '#888', fontSize: 14, fontStyle: 'italic', listStyle: 'disc', textAlign: 'left', width: '100%' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: 8,
+                  width: '100%',
+                  marginTop: 4,
+                  marginBottom: 0,
+                  minHeight: 22,
+                }}
+              >
                 {buyer.reviews.map((review, idx) => (
-                  <li key={idx}>{review}</li>
+                  <span
+                    key={idx}
+                    style={{
+                      color: '#888',
+                      fontSize: 14,
+                      fontStyle: 'italic',
+                      background: '#f6f9fe',
+                      borderRadius: 6,
+                      padding: '2px 8px',
+                      margin: 0,
+                      display: 'inline-block',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {review}
+                  </span>
                 ))}
-              </ul>
+              </div>
             </div>
           ))
         )}
