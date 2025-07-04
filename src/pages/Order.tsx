@@ -101,12 +101,12 @@ const OrderPage: React.FC = () => {
 
   // Start timer when order is loaded and pending
   useEffect(() => {
-    if (!selectedOrder || selectedOrder.status !== 'pending') return;
-    // Random 1–10 min (in seconds)
-    const min = 1 * 60, max = 10 * 60;
-    const randomSec = Math.floor(Math.random() * (max - min + 1)) + min;
-    setTimeLeft(randomSec);
-    setTimer(randomSec);
+    if (!selectedOrder || selectedOrder.status !== 'pending' || !selectedOrder.autoCompleteAt) return;
+    const end = new Date(selectedOrder.autoCompleteAt).getTime();
+    const now = Date.now();
+    const diff = Math.max(0, Math.floor((end - now) / 1000));
+    setTimeLeft(diff);
+    setTimer(diff);
   }, [selectedOrder]);
 
   // Countdown effect
@@ -155,32 +155,71 @@ const OrderPage: React.FC = () => {
           MY ORDER
         </span>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 32 }}>
-        {orders.length > 1 && (
-          <div style={{ marginBottom: 18, width: '100%', maxWidth: 380 }}>
-            <div style={{ fontWeight: 600, color: '#25324B', marginBottom: 6, fontSize: 16 }}>Your Orders:</div>
-            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              {orders.map((o: any) => (
-                <button
-                  key={o._id}
-                  onClick={() => setSelectedOrder(o)}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: 6,
-                    border: o._id === selectedOrder?._id ? '2px solid #1e3c72' : '1px solid #e3e6ef',
-                    background: o._id === selectedOrder?._id ? '#f6f9fe' : '#fff',
-                    color: '#25324B',
-                    fontWeight: o._id === selectedOrder?._id ? 700 : 500,
-                    cursor: 'pointer',
-                    fontSize: 15,
-                  }}
-                >
-                  {o.status === 'pending' ? 'Pending' : 'Completed'} | {o.spotAmount} SPOT
-                </button>
-              ))}
-            </div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 7 }}>
+        <div style={{ marginBottom: 10, width: '100%', maxWidth: 380, marginTop: 7 }}>
+          <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 50 }}>
+            <button
+              onClick={() => {
+                const pending = orders.find((o: any) => o.status === 'pending');
+                if (pending) setSelectedOrder(pending);
+              }}
+              style={{
+                padding: '6px 12px',
+                borderRadius: 6,
+                border: selectedOrder && selectedOrder.status === 'pending' ? '2px solid #1e3c72' : '1px solid #e3e6ef',
+                background: selectedOrder && selectedOrder.status === 'pending' ? '#f6f9fe' : '#fff',
+                color: '#25324B',
+                fontWeight: selectedOrder && selectedOrder.status === 'pending' ? 700 : 500,
+                cursor: orders.some((o: any) => o.status === 'pending') ? 'pointer' : 'not-allowed',
+                fontSize: 15,
+                opacity: orders.some((o: any) => o.status === 'pending') ? 1 : 0.6,
+              }}
+              disabled={!orders.some((o: any) => o.status === 'pending')}
+            >
+              Pending
+            </button>
+            {orders.some((o: any) => o.status === 'cancelled') && (
+              <button
+                onClick={() => {
+                  const cancelled = orders.find((o: any) => o.status === 'cancelled');
+                  if (cancelled) setSelectedOrder(cancelled);
+                }}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: 6,
+                  border: selectedOrder && selectedOrder.status === 'cancelled' ? '2px solid #1e3c72' : '1px solid #e3e6ef',
+                  background: selectedOrder && selectedOrder.status === 'cancelled' ? '#f6f9fe' : '#fff',
+                  color: '#25324B',
+                  fontWeight: selectedOrder && selectedOrder.status === 'cancelled' ? 700 : 500,
+                  cursor: 'pointer',
+                  fontSize: 15,
+                }}
+              >
+                Cancelled
+              </button>
+            )}
+            {orders.some((o: any) => o.status === 'completed') && (
+              <button
+                onClick={() => {
+                  const completed = orders.find((o: any) => o.status === 'completed');
+                  if (completed) setSelectedOrder(completed);
+                }}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: 6,
+                  border: selectedOrder && selectedOrder.status === 'completed' ? '2px solid #1e3c72' : '1px solid #e3e6ef',
+                  background: selectedOrder && selectedOrder.status === 'completed' ? '#f6f9fe' : '#fff',
+                  color: '#25324B',
+                  fontWeight: selectedOrder && selectedOrder.status === 'completed' ? 700 : 500,
+                  cursor: 'pointer',
+                  fontSize: 15,
+                }}
+              >
+                Completed
+              </button>
+            )}
           </div>
-        )}
+        </div>
         <div style={{
           background: '#fff',
           borderRadius: 0,
