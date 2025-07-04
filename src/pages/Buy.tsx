@@ -190,7 +190,7 @@ const BuySpotPage: React.FC = () => {
                   Rating: <span style={{ color: '#f1c40f', fontWeight: 700 }}>⭐ {buyer.rating}</span>
                 </div>
                 <div style={{ fontSize: '0.98rem', color: '#555', marginBottom: 2 }}>
-                  <strong>Price:</strong> <span style={{ color: '#1e3c72', fontWeight: 700 }}>{buyer.price} USDT/spot</span>
+                  <strong>Price:</strong> <span style={{ color: '#1e3c72', fontWeight: 700 }}>{buyer.price} USDT/SPOT</span>
                 </div>
                 <div
                   style={{
@@ -237,7 +237,7 @@ const BuySpotPage: React.FC = () => {
                 Buy from {selectedBuyer.username}#{selectedBuyer.userId}
               </h2>
               <div style={{ marginBottom: 8 }}>
-                <strong>Price per Spot:</strong> <span style={{ color: '#1e3c72', fontWeight: 700 }}>{selectedBuyer.price} USDT</span>
+                <strong>Price per Spot:</strong> <span style={{ color: '#1e3c72', fontWeight: 700 }}>{selectedBuyer.price} USDT/SPOT</span>
               </div>
               <div style={{ marginBottom: 8 }}>
                 <strong>Your USDT Balance:</strong> {userUSDTBalance !== null ? userUSDTBalance : '...'}
