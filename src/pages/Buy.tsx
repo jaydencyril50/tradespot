@@ -255,7 +255,17 @@ const BuySpotPage: React.FC = () => {
         {showModal && selectedBuyer && (
           <Modal onClose={() => setShowModal(false)}>
             <div style={{ padding: 20, minWidth: 300, background: '#fff', borderRadius: 0 }}>
-              <h2 style={{ marginBottom: 10, fontSize: '1.15rem', fontWeight: 700, color: '#25324B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <h2 style={{
+                marginBottom: 10,
+                fontSize: '1.15rem',
+                fontWeight: 700,
+                color: '#25324B',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                textAlign: 'center',
+                width: '100%'
+              }}>
                 Buy from {selectedBuyer.username}#{selectedBuyer.userId}
               </h2>
               <div style={{ marginBottom: 8 }}>
@@ -280,7 +290,7 @@ const BuySpotPage: React.FC = () => {
                 />
               </div>
               <div style={{ marginBottom: 8 }}>
-                <strong>USDT You Will Get:</strong> {usdtAmount}
+                <strong>USDT You Will Pay:</strong> {usdtAmount}
               </div>
               {inputError && <div style={{ color: '#e74c3c', marginBottom: 8, textAlign: 'center', fontSize: 15 }}>{inputError}</div>}
               <button

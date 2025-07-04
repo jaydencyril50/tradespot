@@ -33,7 +33,7 @@ const SellSpotPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [selectedBuyer, setSelectedBuyer] = useState<Buyer | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [userUSDTBalance, setUserUSDTBalance] = useState<number | null>(null);
+  const [userSpotBalance, setUserSpotBalance] = useState<number | null>(null);
   const [spotAmount, setSpotAmount] = useState('');
   const [usdtAmount, setUsdtAmount] = useState(0);
   const [inputError, setInputError] = useState('');
@@ -51,7 +51,7 @@ const SellSpotPage: React.FC = () => {
     }
   };
 
-  // Fetch logged-in user's USDT balance (fetch like profile.tsx)
+  // Fetch logged-in user's SPOT balance (fetch like profile.tsx)
   const fetchUserBalance = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -59,9 +59,9 @@ const SellSpotPage: React.FC = () => {
       const res = await axios.get(`${API}/api/portfolio`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setUserUSDTBalance(res.data.usdtBalance || 0);
+      setUserSpotBalance(res.data.spotBalance || 0);
     } catch (err: any) {
-      setUserUSDTBalance(null);
+      setUserSpotBalance(null);
     }
   };
 
@@ -90,11 +90,11 @@ const SellSpotPage: React.FC = () => {
       error = `Minimum trade is ${selectedBuyer.minLimit} USDT (${(selectedBuyer.minLimit/(selectedBuyer.price || 500)).toFixed(2)} spot)`;
     } else if (usdt > selectedBuyer.maxLimit) {
       error = `Maximum trade is ${selectedBuyer.maxLimit} USDT (${(selectedBuyer.maxLimit/(selectedBuyer.price || 500)).toFixed(2)} spot)`;
-    } else if (userUSDTBalance !== null && usdt > userUSDTBalance) {
-      error = `You do not have enough USDT. Your balance: ${userUSDTBalance} USDT`;
+    } else if (userSpotBalance !== null && spot > userSpotBalance) {
+      error = `You do not have enough SPOT. Your balance: ${userSpotBalance} SPOT`;
     }
     setInputError(error);
-  }, [spotAmount, selectedBuyer, userUSDTBalance]);
+  }, [spotAmount, selectedBuyer, userSpotBalance]);
 
   // --- Status randomizer for sellers ---
   useEffect(() => {
@@ -255,14 +255,24 @@ const SellSpotPage: React.FC = () => {
         {showModal && selectedBuyer && (
           <Modal onClose={() => setShowModal(false)}>
             <div style={{ padding: 20, minWidth: 300, background: '#fff', borderRadius: 0 }}>
-              <h2 style={{ marginBottom: 10, fontSize: '1.15rem', fontWeight: 700, color: '#25324B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <h2 style={{
+                marginBottom: 10,
+                fontSize: '1.15rem',
+                fontWeight: 700,
+                color: '#25324B',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                textAlign: 'center', // Center header
+                width: '100%'
+              }}>
                 Sell to {selectedBuyer.username}#{selectedBuyer.userId}
               </h2>
               <div style={{ marginBottom: 8 }}>
                 <strong>Price per Spot:</strong> <span style={{ color: '#1e3c72', fontWeight: 700 }}>{selectedBuyer.price} USDT</span>
               </div>
               <div style={{ marginBottom: 8 }}>
-                <strong>Your USDT Balance:</strong> {userUSDTBalance !== null ? userUSDTBalance : '...'}
+                <strong>Your SPOT Balance:</strong> {userSpotBalance !== null ? userSpotBalance : '...'}
               </div>
               <div style={{ marginBottom: 8 }}>
                 <strong>Trader's Trade Limit:</strong> {formatNumber(selectedBuyer.minLimit)} – {formatNumber(selectedBuyer.maxLimit)} USDT
