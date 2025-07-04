@@ -8,7 +8,7 @@ const OrderPage: React.FC = () => {
   const location = useLocation();
   const [orders, setOrders] = useState<any[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
-  const [status, setStatus] = useState<'pending' | 'completed' | 'loading'>('loading');
+  const [status, setStatus] = useState<'pending' | 'completed' | 'loading' | 'cancelled'>('loading');
   const [timer, setTimer] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [balances, setBalances] = useState<{ usdt: number; spot: number } | null>(null);
@@ -25,6 +25,21 @@ const OrderPage: React.FC = () => {
       setSelectedOrder(res.data.order);
       setStatus('completed');
       setBalances({ usdt: res.data.usdtBalance, spot: res.data.spotBalance });
+    } catch {
+      setStatus('pending');
+    }
+  };
+
+  // Cancel order (user-initiated)
+  const cancelOrder = async () => {
+    if (!selectedOrder) return;
+    setStatus('loading');
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Not authenticated');
+      const res = await axios.patch(`${API}/api/p2p/orders/${selectedOrder._id}/cancel`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      setSelectedOrder(res.data.order);
+      setStatus('cancelled');
     } catch {
       setStatus('pending');
     }
@@ -191,6 +206,16 @@ const OrderPage: React.FC = () => {
               <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{selectedOrder.spotAmount} SPOT</b> @ <b>{selectedOrder.price} USDT/SPOT</b></div>
               <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You will pay: <b>{selectedOrder.usdtAmount} USDT</b></div>
               <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#f1c40f', fontWeight: 700 }}>Pending</span></div>
+              <button onClick={cancelOrder} style={{ marginTop: 1, padding: '6px 12px', background: '#e74c3c', color: '#fff', border: 'none', borderRadius: 5, fontWeight: 600, fontSize: 14, cursor: 'pointer', width: 140 }}>Cancel Order</button>
+            </>
+          )}
+          {selectedOrder && selectedOrder.status === 'cancelled' && (
+            <>
+              <div style={{ fontSize: 20, fontWeight: 600, color: '#e74c3c', marginBottom: 10 }}>Order Cancelled ❌</div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{selectedOrder._id}</b></div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Amount: <b>{selectedOrder.spotAmount} SPOT</b> @ <b>{selectedOrder.price} USDT/SPOT</b></div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>You would have paid: <b>{selectedOrder.usdtAmount} USDT</b></div>
+              <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#e74c3c', fontWeight: 700 }}>Cancelled</span></div>
             </>
           )}
           {selectedOrder && selectedOrder.status === 'completed' && (
