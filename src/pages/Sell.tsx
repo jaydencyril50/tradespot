@@ -51,11 +51,15 @@ const SellSpotPage: React.FC = () => {
     }
   };
 
-  // Fetch logged-in user's USDT balance
+  // Fetch logged-in user's USDT balance (fetch like profile.tsx)
   const fetchUserBalance = async () => {
     try {
-      const res = await axios.get(`${API}/api/user/balance`);
-      setUserUSDTBalance(res.data.balance);
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Not authenticated');
+      const res = await axios.get(`${API}/api/portfolio`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUserUSDTBalance(res.data.usdtBalance || 0);
     } catch (err: any) {
       setUserUSDTBalance(null);
     }
