@@ -102,8 +102,8 @@ const OrderPage: React.FC = () => {
   // Start timer when order is loaded and pending
   useEffect(() => {
     if (!selectedOrder || selectedOrder.status !== 'pending') return;
-    // Random 2–15 min (in seconds)
-    const min = 2 * 60, max = 15 * 60;
+    // Random 1–10 min (in seconds)
+    const min = 1 * 60, max = 10 * 60;
     const randomSec = Math.floor(Math.random() * (max - min + 1)) + min;
     setTimeLeft(randomSec);
     setTimer(randomSec);
