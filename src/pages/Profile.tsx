@@ -12,7 +12,8 @@ interface UserProfile {
   profilePicture?: string;
   usdtBalance?: number;
   spotBalance?: number;
-  flexBalance?: number; // Added flexBalance
+  flexBalance?: number;
+  vipLevel?: number; // Add vipLevel
   recentTransactions?: any[];
 }
 
@@ -46,7 +47,8 @@ const Profile: React.FC = () => {
           profilePicture: res.data.profilePicture || undefined,
           usdtBalance: res.data.usdtBalance || 0,
           spotBalance: res.data.spotBalance || 0,
-          flexBalance: res.data.flexBalance || 0, // Ensure flexBalance is set
+          flexBalance: res.data.flexBalance || 0,
+          vipLevel: res.data.vipLevel, // Always use backend value
         });
       } catch (err) {
         setError('Failed to load profile.');
@@ -85,8 +87,9 @@ const Profile: React.FC = () => {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'flex-start',
+          position: 'relative', // For VIP badge positioning
         }}>
-          <label htmlFor="profile-upload" style={{ cursor: 'pointer', marginLeft: 8, marginRight: 12 }}>
+          <label htmlFor="profile-upload" style={{ cursor: 'pointer', marginLeft: 8, marginRight: 12, position: 'relative' }}>
             <div style={{
               width: 70,
               height: 70,
@@ -95,6 +98,7 @@ const Profile: React.FC = () => {
               justifyContent: 'center',
               borderRadius: 8,
               background: '#eaf1fb',
+              position: 'relative',
             }}>
               {uploading ? (
                 <svg width="36" height="36" viewBox="0 0 50 50">
@@ -108,6 +112,28 @@ const Profile: React.FC = () => {
                   alt="Profile"
                   style={{ width: 70, height: 70, objectFit: 'cover', borderRadius: 8, background: '#eaf1fb', display: 'block' }}
                 />
+              )}
+              {/* VIP Badge */}
+              {user.vipLevel && (
+                <span style={{
+                  position: 'absolute',
+                  bottom: -10, // Move further down
+                  right: -15,  // Move further right
+                  fontSize: 30, // Slightly larger for emphasis
+                  zIndex: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: 0,
+                  border: 'none',
+                  background: 'none',
+                  boxShadow: 'none',
+                  letterSpacing: 0,
+                  fontFamily: 'serif',
+                  filter: 'drop-shadow(0 2px 4px rgba(30,60,114,0.18))',
+                  transition: 'all 0.18s cubic-bezier(.4,0,.2,1)',
+                }}>
+                  {user.vipLevel === 3 ? '👑' : user.vipLevel === 2 ? '💎' : '🏅'}
+                </span>
               )}
             </div>
             <input
