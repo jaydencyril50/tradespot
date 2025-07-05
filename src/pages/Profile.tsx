@@ -114,12 +114,12 @@ const Profile: React.FC = () => {
                 />
               )}
               {/* VIP Badge */}
-              {user.vipLevel && (
+              {typeof user.vipLevel === 'number' && (
                 <span style={{
                   position: 'absolute',
-                  bottom: -10, // Move further down
-                  right: -15,  // Move further right
-                  fontSize: 30, // Slightly larger for emphasis
+                  bottom: -10,
+                  right: -15,
+                  fontSize: 30,
                   zIndex: 2,
                   display: 'flex',
                   alignItems: 'center',
@@ -132,7 +132,7 @@ const Profile: React.FC = () => {
                   filter: 'drop-shadow(0 2px 4px rgba(30,60,114,0.18))',
                   transition: 'all 0.18s cubic-bezier(.4,0,.2,1)',
                 }}>
-                  {user.vipLevel === 3 ? '👑' : user.vipLevel === 2 ? '💎' : '🏅'}
+                  {user.vipLevel === 3 ? '👑' : user.vipLevel === 2 ? '💎' : user.vipLevel === 1 ? '🏅' : ''}
                 </span>
               )}
             </div>
