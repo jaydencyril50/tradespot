@@ -70,10 +70,10 @@ const SellSpotPage: React.FC = () => {
   useEffect(() => {
     fetchBuyers();
     fetchUserBalance();
-    // Poll for new prices every 2 minutes
+    // Poll for new prices every 2 hours
     const interval = setInterval(() => {
       fetchBuyers();
-    }, 2 * 60 * 1000);
+    }, 2 * 60 * 60 * 1000); // 2 hours in ms
     return () => clearInterval(interval);
   }, []);
 
