@@ -127,12 +127,13 @@ const Profile: React.FC = () => {
                   border: 'none',
                   background: 'none',
                   boxShadow: 'none',
-                  letterSpacing: 0,
                   fontFamily: 'serif',
                   filter: 'drop-shadow(0 2px 4px rgba(30,60,114,0.18))',
                   transition: 'all 0.18s cubic-bezier(.4,0,.2,1)',
                 }}>
-                  {user.vipLevel === 3 ? '👑' : user.vipLevel === 2 ? '💎' : user.vipLevel === 1 ? '🏅' : ''}
+                  {user.vipLevel === 3 && '👑'}
+                  {user.vipLevel === 2 && '💎'}
+                  {user.vipLevel === 1 && '🏅'}
                 </span>
               )}
             </div>
