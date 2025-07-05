@@ -12,6 +12,7 @@ interface UserProfile {
   profilePicture?: string;
   usdtBalance?: number;
   spotBalance?: number;
+  flexBalance?: number; // Added flexBalance
   recentTransactions?: any[];
 }
 
@@ -26,6 +27,7 @@ const Profile: React.FC = () => {
   const [hideWallet, setHideWallet] = useState(false);
   const [hideUSDT, setHideUSDT] = useState(false);
   const [hideSPOT, setHideSPOT] = useState(false);
+  const [hideFLEX, setHideFLEX] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,6 +46,7 @@ const Profile: React.FC = () => {
           profilePicture: res.data.profilePicture || undefined,
           usdtBalance: res.data.usdtBalance || 0,
           spotBalance: res.data.spotBalance || 0,
+          flexBalance: res.data.flexBalance || 0, // Ensure flexBalance is set
         });
       } catch (err) {
         setError('Failed to load profile.');
@@ -198,6 +201,13 @@ const Profile: React.FC = () => {
             title="Click to hide/show SPOT balance"
           >
             SPOT Balance: <span style={{ color: '#2a5298', fontWeight: 700 }}>{hideSPOT ? '****' : user.spotBalance?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          </div>
+          <div
+            style={{ fontWeight: 600, color: '#1e3c72', fontSize: 16, marginTop: 1, cursor: 'pointer', userSelect: 'none' }}
+            onClick={() => setHideFLEX(v => !v)}
+            title="Click to hide/show FLEX balance"
+          >
+            FLEX Balance: <span style={{ color: '#e67e22', fontWeight: 700 }}>{hideFLEX ? '****' : user.flexBalance?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
         </div>
         {/* Wallet Card */}
