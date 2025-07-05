@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { getTeamInfo } from '../services/api';
-import { isValidUser } from '../services/validUser';
 
 const Team: React.FC = () => {
   const [referralLink, setReferralLink] = useState('');
@@ -8,8 +7,6 @@ const Team: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
-  // For each member, check if they are a valid user (>= 0.6 SPOT in staking)
-  const [validUsers, setValidUsers] = useState<{ [id: string]: boolean }>({});
 
   useEffect(() => {
     const fetchTeam = async () => {
@@ -27,24 +24,6 @@ const Team: React.FC = () => {
     };
     fetchTeam();
   }, []);
-
-  useEffect(() => {
-    if (!members.length) return;
-    const fetchValidUsers = async () => {
-      const results: { [id: string]: boolean } = {};
-      await Promise.all(
-        members.map(async member => {
-          try {
-            results[member.id] = await isValidUser(member.id);
-          } catch {
-            results[member.id] = false;
-          }
-        })
-      );
-      setValidUsers(results);
-    };
-    fetchValidUsers();
-  }, [members]);
 
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
@@ -264,8 +243,8 @@ const Team: React.FC = () => {
               >
                 Joined: {new Date(member.joinedAt).toLocaleDateString()}
               </div>
-              <div style={{ fontSize: 18, marginTop: 2 }}>
-                Valid User: {validUsers[member.id] ? '✅' : '❌'}
+              <div style={{ fontSize: 13, marginTop: 2 }}>
+                TradeSpoter: {member.validMember ? '✅' : '❌'}
               </div>
             </div>
           ))
