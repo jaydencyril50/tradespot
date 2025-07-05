@@ -62,6 +62,11 @@ const BuySpotPage: React.FC = () => {
   useEffect(() => {
     fetchBuyers();
     fetchUserBalance();
+    // Poll for new prices every 2 minutes
+    const interval = setInterval(() => {
+      fetchBuyers();
+    }, 2 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const filteredBuyers = buyers.filter((buyer) =>
