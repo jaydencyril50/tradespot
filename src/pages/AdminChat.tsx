@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
+import { FaTimes } from 'react-icons/fa';
 import './AdminChat.css';
 
 // --- FIXED SOCKET_URL: Use a safe fallback and correct protocol ---
@@ -22,6 +23,7 @@ const AdminChat: React.FC = () => {
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [error, setError] = useState('');
+  const [showUserList, setShowUserList] = useState(true);
   const socketRef = useRef<any>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -122,62 +124,157 @@ const AdminChat: React.FC = () => {
     }
   };
 
+  // When a user is selected, show chat area and hide user list on mobile
+  const handleSelectUser = (user: any) => {
+    setSelectedUser(user);
+    setShowUserList(false);
+  };
+
   return (
-    <div className="admin-chat-container">
-      <div className="admin-chat-sidebar">
-        <h2>Users</h2>
-        {loadingUsers ? <div>Loading users...</div> : null}
-        <ul className="admin-chat-user-list">
-          {users.map((user) => (
-            <li
-              key={user._id}
-              className={selectedUser && selectedUser._id === user._id ? 'selected' : ''}
-              onClick={() => setSelectedUser(user)}
-            >
-              {user.email || user.username || user._id}
-            </li>
-          ))}
-        </ul>
+    <div style={{ minHeight: '100vh', background: '#fff', display: 'flex', flexDirection: 'column' }}>
+      {/* Header fixed at top */}
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10, background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+          ADMIN CHAT
+        </span>
       </div>
-      <div className="admin-chat-main">
-        {selectedUser ? (
-          <>
-            <div className="admin-chat-header">
-              <span>Chat with: <b>{selectedUser.email || selectedUser.username || selectedUser._id}</b></span>
+      {/* Main chat area */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'row', maxWidth: 900, width: '100%', margin: '0 auto', paddingTop: 70, paddingBottom: 70, height: '100vh', boxSizing: 'border-box', position: 'relative' }}>
+        {/* User list section, full screen on mobile or if no user selected */}
+        <div
+          className="admin-chat-sidebar"
+          style={{
+            width: showUserList || !selectedUser ? '100%' : 220,
+            background: '#f7f8fa',
+            borderRight: showUserList || !selectedUser ? 'none' : '1px solid #e3e6ef',
+            padding: '18px 0 0 0',
+            display: showUserList || !selectedUser ? 'flex' : 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            position: showUserList || !selectedUser ? 'absolute' : 'relative',
+            left: 0,
+            top: 0,
+            height: '100%',
+            zIndex: showUserList || !selectedUser ? 20 : 1,
+            transition: 'all 0.3s',
+            minHeight: 400,
+            maxWidth: showUserList || !selectedUser ? '100vw' : 220,
+          }}
+        >
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: '#25324B', marginBottom: 12 }}>Users</h2>
+          {loadingUsers ? <div>Loading users...</div> : null}
+          <ul style={{ listStyle: 'none', padding: 0, width: '100%' }}>
+            {users.map((user) => (
+              <li
+                key={user._id}
+                style={{
+                  padding: '10px 18px',
+                  cursor: 'pointer',
+                  background: selectedUser && selectedUser._id === user._id ? '#e3e6ef' : 'transparent',
+                  fontWeight: selectedUser && selectedUser._id === user._id ? 700 : 400,
+                  color: '#232b36',
+                  borderLeft: selectedUser && selectedUser._id === user._id ? '4px solid #10c98f' : '4px solid transparent',
+                  transition: 'background 0.2s',
+                }}
+                onClick={() => handleSelectUser(user)}
+              >
+                {user.email || user.username || user._id}
+              </li>
+            ))}
+          </ul>
+        </div>
+        {/* Chat main area, full screen on mobile if user selected */}
+        {selectedUser && !showUserList && (
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: '#f7f8fa', minHeight: 400, position: 'absolute', left: 0, top: 0, width: '100vw', height: '100%', zIndex: 30, transition: 'all 0.3s' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 18px 0 18px' }}>
+              <div style={{ fontWeight: 700, color: '#25324B', fontSize: '1.1rem', letterSpacing: 1 }}>
+                Chat with: <b>{selectedUser.email || selectedUser.username || selectedUser._id}</b>
+              </div>
+              <FaTimes style={{ fontSize: 22, color: '#232b36', cursor: 'pointer' }} onClick={() => setShowUserList(true)} />
             </div>
-            <div className="admin-chat-messages">
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 18px 0 18px', marginBottom: 8 }}>
               {loadingMessages ? (
                 <div>Loading messages...</div>
               ) : (
-                messages.length === 0 ? <div className="admin-chat-empty">No messages yet.</div> :
-                messages.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={msg.from === 'admin' ? 'admin-chat-bubble admin' : 'admin-chat-bubble user'}
-                  >
-                    <span className="admin-chat-bubble-content">{msg.content}</span>
-                    <span className="admin-chat-bubble-time">{new Date(msg.createdAt).toLocaleString()}</span>
-                  </div>
-                ))
+                messages.length === 0 ? <div style={{ color: '#888' }}>No messages yet.</div> :
+                  messages.map((msg, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        display: 'flex',
+                        flexDirection: msg.from === 'admin' ? 'row' : 'row-reverse',
+                        marginBottom: 10
+                      }}
+                    >
+                      <div style={{
+                        background: msg.from === 'admin' ? '#2a5298' : '#10c98f',
+                        color: '#fff',
+                        borderRadius: 16,
+                        padding: '8px 16px',
+                        maxWidth: 280,
+                        fontSize: 15,
+                        boxShadow: '0 1px 4px #e3e6ef',
+                      }}>{msg.content}</div>
+                      <div style={{ fontSize: 11, color: '#888', margin: msg.from === 'admin' ? '0 0 0 8px' : '0 8px 0 0', alignSelf: 'flex-end' }}>{new Date(msg.createdAt).toLocaleString()}</div>
+                    </div>
+                  ))
               )}
               <div ref={chatEndRef} />
             </div>
-            <form className="admin-chat-input-row" onSubmit={handleSend}>
-              <input
-                type="text"
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                placeholder="Type a message..."
-                autoFocus
-              />
-              <button type="submit" disabled={!input.trim()}>Send</button>
-            </form>
-            {error && <div className="admin-chat-error">{error}</div>}
-          </>
-        ) : (
-          <div className="admin-chat-empty">Select a user to start chatting.</div>
+            {/* Input fixed at bottom, card style, with shift effect */}
+            <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, background: 'transparent', padding: 12, display: 'flex', justifyContent: 'center', zIndex: 40, maxWidth: 900, margin: '0 auto' }}>
+              <div style={{
+                background: '#fff',
+                boxShadow: '0 4px 16px 0 rgba(30,60,114,0.18), 0 1.5px 6px 0 rgba(30,60,114,0.10)',
+                border: '1px solid #e3e6ef',
+                borderRadius: 10,
+                display: 'flex',
+                width: '100%',
+                maxWidth: 600,
+                padding: 8,
+              }}>
+                <input
+                  type="text"
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') handleSend(); }}
+                  placeholder="Type a message..."
+                  style={{ flex: 1, border: 'none', outline: 'none', fontSize: 16, padding: 8, borderRadius: 6, background: '#f7f8fa' }}
+                />
+                <button type="submit" onClick={handleSend} disabled={!input.trim()} style={{ marginLeft: 4, background: '#10c98f', color: '#fff', border: 'none', borderRadius: 3, padding: '8px 10px', fontWeight: 600, fontSize: 16, cursor: 'pointer' }}>Send</button>
+              </div>
+            </div>
+            {error && <div className="admin-chat-error" style={{ color: 'red', margin: 12 }}>{error}</div>}
+          </div>
+        )}
+        {/* Desktop chat area (sidebar + chat) */}
+        {selectedUser && showUserList === false && (
+          <div style={{ display: 'none' }} />
+        )}
+        {selectedUser && showUserList === true && (
+          <div style={{ display: 'none' }} />
+        )}
+        {/* Desktop: show both sidebar and chat */}
+        {selectedUser && (
+          <div className="admin-chat-main" style={{ flex: 1, display: showUserList ? 'none' : 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: '#f7f8fa', minHeight: 400 }}>
+            {/* ...existing chat area code... */}
+          </div>
         )}
       </div>
+      <style>
+        {`
+          @media (max-width: 900px) {
+            .admin-chat-sidebar { display: ${selectedUser && !showUserList ? 'none' : 'flex'} !important; }
+            div[style*="max-width: 900px"] { max-width: 100vw !important; }
+            div[style*="left: 220px"] { left: 0 !important; }
+          }
+          @media (max-width: 600px) {
+            div[style*="max-width: 600px"] { max-width: 100vw !important; padding-left: 0 !important; padding-right: 0 !important; }
+            div[style*="position: fixed"] { max-width: 100vw !important; }
+            div[style*="box-shadow"] button { margin-left: 2vw !important; }
+          }
+        `}
+      </style>
     </div>
   );
 };
