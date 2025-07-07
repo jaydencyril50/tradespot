@@ -125,27 +125,6 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
       setSpotidValid(false);
     }
   };
-
-  // Live code validation
-  const validateCode = async (value: string, spotidValue: string) => {
-    if (!value || !spotidValue) {
-      setCodeValid(null);
-      return;
-    }
-    try {
-      const API = process.env.REACT_APP_API_BASE_URL || '';
-      const resp = await fetch(`${API}/api/validate-password-code`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: value, spotid: spotidValue })
-      });
-      const data = await resp.json();
-      setCodeValid(data.valid === true);
-    } catch {
-      setCodeValid(false);
-    }
-  };
-
   return (
     <div style={{
       background: '#fff',
@@ -313,8 +292,6 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
             onChange={e => {
               setSpotid(e.target.value);
               validateSpotid(e.target.value);
-              // Optionally, revalidate code if already entered
-              if (code) validateCode(code, e.target.value);
             }}
             style={{ width: '100%', padding: 8, marginBottom: 4, border: spotidValid === false ? '1.5px solid #e74c3c' : '1px solid #ccc' }}
             required
@@ -330,17 +307,12 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
             value={code}
             onChange={e => {
               setCode(e.target.value);
-              validateCode(e.target.value, spotid);
+              // validateCode(e.target.value, spotid); // DISABLED
             }}
-            style={{ width: '100%', padding: 8, marginBottom: 4, border: codeValid === false ? '1.5px solid #e74c3c' : '1px solid #ccc' }}
+            style={{ width: '100%', padding: 8, marginBottom: 4 }}
             required={codeSent}
             disabled={!codeSent}
           />
-          {codeValid === false && (
-            <div style={{ color: '#e74c3c', fontSize: 13, marginTop: -4, marginBottom: 4 }}>
-              Invalid verification code
-            </div>
-          )}
           <div style={{ display: 'flex', width: '100%', gap: 8, marginTop: 4 }}>
             <button
               type="button"
@@ -379,7 +351,7 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
                 transition: 'background 0.2s',
                 alignSelf: 'center'
               }}
-              disabled={sendingCode || !passwordMatch || confirmPassword === '' || spotidValid === false || codeValid === false}
+              disabled={sendingCode || !passwordMatch || confirmPassword === '' || spotidValid === false}
             >
               Update Password
             </button>
