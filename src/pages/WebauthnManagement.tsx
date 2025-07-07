@@ -103,6 +103,17 @@ const WebauthnManagement: React.FC = () => {
       }
       const options = await resp.json();
       console.log('[WebAuthn] Registration options:', options);
+      // Convert challenge and user.id to Uint8Array as required by WebAuthn API
+      options.challenge = base64urlToUint8Array(options.challenge);
+      if (options.user && options.user.id) {
+        options.user.id = base64urlToUint8Array(options.user.id);
+      }
+      if (options.excludeCredentials) {
+        options.excludeCredentials = options.excludeCredentials.map((cred: any) => ({
+          ...cred,
+          id: base64urlToUint8Array(cred.id)
+        }));
+      }
       // 2. Call WebAuthn API
       let cred;
       try {
@@ -152,6 +163,16 @@ const WebauthnManagement: React.FC = () => {
     }
     setRegistering(false);
   };
+
+  // Helper to convert base64url to Uint8Array
+  function base64urlToUint8Array(base64url: string): Uint8Array {
+    let base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+    while (base64.length % 4) base64 += '=';
+    const str = atob(base64);
+    const bytes = new Uint8Array(str.length);
+    for (let i = 0; i < str.length; ++i) bytes[i] = str.charCodeAt(i);
+    return bytes;
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#fff', paddingBottom: 40 }}>
