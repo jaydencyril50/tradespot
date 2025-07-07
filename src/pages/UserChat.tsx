@@ -111,7 +111,7 @@ const UserChat: React.FC = () => {
           borderRadius: 12,
           display: 'flex',
           width: '100%',
-          maxWidth: 600,
+          maxWidth: 650,
           padding: 8,
         }}>
           <input
