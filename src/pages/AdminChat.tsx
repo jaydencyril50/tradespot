@@ -54,11 +54,11 @@ const AdminChat: React.FC = () => {
     const fetchMessages = async () => {
       try {
         const token = localStorage.getItem('adminToken');
-        // --- FIXED: Ensure correct API path ---
-        const res = await axios.get(`${API}/api/messages/user/${selectedUser._id}`, {
+        // --- FIXED: Use correct admin history endpoint ---
+        const res = await axios.get(`${API}/api/messages/admin/history/${selectedUser._id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setMessages(res.data.messages || []);
+        setMessages(res.data.history || []);
       } catch (e) {
         setError('Failed to load messages');
       } finally {
