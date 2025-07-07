@@ -67,6 +67,28 @@ const AdditionalSettings: React.FC = () => {
         >
          Change language
         </button>
+        <button
+          style={{
+            border: 'none',
+            borderRadius: 0,
+            padding: '10px 0',
+            fontWeight: 600,
+            fontSize: '1rem',
+            cursor: 'pointer',
+            marginTop: 8,
+            background: '#888', // match other buttons
+            color: '#fff',
+            boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
+            transition: 'background 0.2s',
+            alignSelf: 'center',
+            width: '100%'
+          }}
+          onClick={() => {
+            window.open('/apk/tradespot-latest.apk', '_blank');
+          }}
+        >
+         Download APK
+        </button>
       </div>
     </div>
   );
