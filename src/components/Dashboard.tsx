@@ -448,52 +448,57 @@ const Dashboard: React.FC = () => {
 		}
 	};
 
+	// Helper to check if WebAuthn is enabled for convert
+	const isWebauthnConvertEnabled = async () => {
+	  try {
+	    const token = localStorage.getItem('token');
+	    if (!token) return false;
+	    const res = await axios.get(`${API}/api/auth/webauthn-settings/settings`, {
+	      headers: { Authorization: `Bearer ${token}` },
+	      withCredentials: true
+	    });
+	    return !!(res.data.webauthnSettings && res.data.webauthnSettings.convert);
+	  } catch {
+	    return false;
+	  }
+	};
+
 	// Handle conversion
 	const handleConvert = async () => {
-		if (!convertAmount || isNaN(Number(convertAmount)) || Number(convertAmount) <= 0) return;
-		if (Number(convertAmount) > flexBalance) {
-			setConvertError('Insufficient FLEX balance');
-			return;
-		}
-		setConvertError('');
-		setConvertSuccess('');
-		try {
-			const token = localStorage.getItem('token');
-			if (!token) throw new Error('Not authenticated');
-			let res;
-			try {
-				res = await axios.post(`${API}/api/convert`, {
-					direction: 'FLEX_TO_USDT',
-					amount: Number(convertAmount),
-				}, { headers: { Authorization: `Bearer ${token}` } });
-			} catch (err: any) {
-				// If WebAuthn required
-				if (err?.response?.data?.error &&
-					(err.response.data.error.includes('Missing assertion response') || err.response.data.error.includes('WebAuthn verification failed'))) {
-					// Get user email (from local state or API)
-					let email = null;
-					try {
-						const me = await axios.get(`${API}/api/auth/user/me`, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
-						email = me.data.email;
-					} catch {}
-					if (!email) throw new Error('User email not found for WebAuthn');
-					// Prompt for WebAuthn
-					const assertionResp = await webauthnAuthenticate(email);
-					// Retry with assertionResp
-					res = await axios.post(`${API}/api/convert`, {
-						direction: 'FLEX_TO_USDT',
-						amount: Number(convertAmount),
-						assertionResp,
-					}, { headers: { Authorization: `Bearer ${token}` } });
-				} else {
-					throw err;
-				}
-			}
-			setConvertSuccess('Converted successfully!');
-			fetchBalances();
-		} catch (err: any) {
-			setConvertError(err?.response?.data?.error || err.message || 'Conversion failed');
-		}
+	  if (!convertAmount || isNaN(Number(convertAmount)) || Number(convertAmount) <= 0) return;
+	  if (Number(convertAmount) > flexBalance) {
+	    setConvertError('Insufficient FLEX balance');
+	    return;
+	  }
+	  setConvertError('');
+	  setConvertSuccess('');
+	  try {
+	    const token = localStorage.getItem('token');
+	    if (!token) throw new Error('Not authenticated');
+	    let assertionResp = undefined;
+	    // Check if WebAuthn is enabled for convert
+	    const webauthnEnabled = await isWebauthnConvertEnabled();
+	    if (webauthnEnabled) {
+	      // Get user email
+	      let email = null;
+	      try {
+	        const me = await axios.get(`${API}/api/auth/user/me`, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+	        email = me.data.email;
+	      } catch {}
+	      if (!email) throw new Error('User email not found for WebAuthn');
+	      assertionResp = await webauthnAuthenticate(email);
+	    }
+	    // Always send assertionResp if present
+	    const res = await axios.post(`${API}/api/convert`, {
+	      direction: 'FLEX_TO_USDT',
+	      amount: Number(convertAmount),
+	      ...(assertionResp ? { assertionResp } : {})
+	    }, { headers: { Authorization: `Bearer ${token}` } });
+	    setConvertSuccess('Converted successfully!');
+	    fetchBalances();
+	  } catch (err: any) {
+	    setConvertError(err?.response?.data?.error || err.message || 'Conversion failed');
+	  }
 	};
 
 	const openConvertModal = async () => {
