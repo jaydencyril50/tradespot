@@ -111,14 +111,16 @@ const AdminChat: React.FC = () => {
     if (!input.trim() || !selectedUser) return;
     const token = localStorage.getItem('adminToken');
     // Optimistically add message to UI instantly
+    const optimisticId = `optimistic-${Date.now()}-${Math.random()}`;
     const optimisticMsg = {
       from: 'admin',
       fromAdmin: true,
       to: selectedUser._id,
       content: input.trim(),
       createdAt: new Date().toISOString(),
-      // Optionally add a temporary id or flag
-      _optimistic: true
+      _optimistic: true,
+      _optimisticId: optimisticId,
+      _failed: false
     };
     setMessages((prev) => [...prev, optimisticMsg]);
     setInput('');
@@ -132,10 +134,11 @@ const AdminChat: React.FC = () => {
         to: selectedUser._id,
         content: optimisticMsg.content,
       });
-      // Optionally: replace optimistic message with real one if needed
+      // No success notice, do nothing
     } catch (e) {
       setError('Failed to send message');
-      // Optionally: remove optimistic message or mark as failed
+      // Mark the last optimistic message as failed
+      setMessages((prev) => prev.map(m => m._optimisticId === optimisticId ? { ...m, _failed: true } : m));
     }
   };
 
@@ -162,6 +165,10 @@ const AdminChat: React.FC = () => {
         <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
           ADMIN CHAT
         </span>
+        {/* Move X icon here, beside the header */}
+        {selectedUser && !showUserList && (
+          <FaTimes style={{ fontSize: 22, color: '#232b36', cursor: 'pointer', marginLeft: 18 }} onClick={() => setShowUserList(true)} />
+        )}
       </div>
       {/* Main chat area */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'row', maxWidth: 900, width: '100%', margin: '0 auto', paddingTop: 70, paddingBottom: 70, height: '100vh', boxSizing: 'border-box', position: 'relative' }}>
@@ -230,9 +237,6 @@ const AdminChat: React.FC = () => {
         {/* Chat main area, full screen on mobile if user selected */}
         {selectedUser && !showUserList && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: '#f7f8fa', minHeight: 400, position: 'absolute', left: 0, top: 0, width: '100vw', height: '100%', zIndex: 30, transition: 'all 0.3s' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 18px 0 18px' }}>
-              <FaTimes style={{ fontSize: 22, color: '#232b36', cursor: 'pointer' }} onClick={() => setShowUserList(true)} />
-            </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: '0 18px 0 18px', marginBottom: 8 }}>
               {loadingMessages ? (
                 <div>Loading messages...</div>
@@ -270,7 +274,10 @@ const AdminChat: React.FC = () => {
                           position: 'relative',
                         }}>
                           {msg.content}
-                          {/* Removed small user/admin label */}
+                          {/* Show send failed notice for failed optimistic messages */}
+                          {msg._failed && (
+                            <span style={{ color: 'red', fontSize: 12, marginTop: 4, display: 'block' }}>Send failed</span>
+                          )}
                         </div>
                         {/* Timestamp */}
                         <div style={{

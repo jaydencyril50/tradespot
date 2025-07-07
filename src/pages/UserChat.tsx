@@ -57,22 +57,38 @@ const UserChat: React.FC = () => {
     if (!input.trim()) return;
     const token = localStorage.getItem('token');
     // Optimistically add message to UI instantly
+    const optimisticId = `optimistic-${Date.now()}-${Math.random()}`;
     const optimisticMsg = {
       content: input,
       fromAdmin: false,
       createdAt: new Date().toISOString(),
       timestamp: new Date().toISOString(),
-      _optimistic: true
+      _optimistic: true,
+      _optimisticId: optimisticId,
+      _failed: false
     };
     setMessages(prev => [...prev, optimisticMsg]);
     setInput('');
     try {
       // --- FIXED: Correct send endpoint ---
       const res = await axios.post(`${API}/api/messages/user/send`, { content: input }, { headers: { Authorization: `Bearer ${token}` } });
-      setMessages(prev => prev.map(m => m._optimistic ? res.data.msg : m));
+      setMessages(prev => prev.map(m => m._optimisticId === optimisticId ? res.data.msg : m));
     } catch {
       setError('Failed to send message');
-      // Optionally: remove optimistic message or mark as failed
+      // Mark the last optimistic message as failed
+      setMessages(prev => prev.map(m => m._optimisticId === optimisticId ? { ...m, _failed: true } : m));
+    }
+  };
+
+  const retrySend = async (msg: any) => {
+    const token = localStorage.getItem('token');
+    setMessages(prev => prev.map(m => m._optimisticId === msg._optimisticId ? { ...m, _failed: false } : m));
+    try {
+      const res = await axios.post(`${API}/api/messages/user/send`, { content: msg.content }, { headers: { Authorization: `Bearer ${token}` } });
+      setMessages(prev => prev.map(m => m._optimisticId === msg._optimisticId ? res.data.msg : m));
+    } catch {
+      setError('Failed to send message');
+      setMessages(prev => prev.map(m => m._optimisticId === msg._optimisticId ? { ...m, _failed: true } : m));
     }
   };
 
@@ -104,7 +120,16 @@ const UserChat: React.FC = () => {
                       maxWidth: 280,
                       fontSize: 15,
                       boxShadow: '0 1px 4px #e3e6ef',
-                    }}>{msg.content}</div>
+                    }}>
+                      {msg.content}
+                      {/* Show send failed notice for failed optimistic messages */}
+                      {msg._failed && (
+                        <span style={{ color: 'red', fontSize: 12, marginTop: 4, display: 'block' }}>
+                          Send failed
+                          <button onClick={() => retrySend(msg)} style={{ marginLeft: 8, color: '#fff', background: '#e74c3c', border: 'none', borderRadius: 3, padding: '2px 8px', fontSize: 12, cursor: 'pointer' }}>Retry</button>
+                        </span>
+                      )}
+                    </div>
                     <div style={{ fontSize: 11, color: '#888', margin: msg.fromAdmin ? '0 0 0 8px' : '0 8px 0 0', alignSelf: 'flex-end' }}>{new Date(msg.timestamp).toLocaleString()}</div>
                   </div>
                 ))
