@@ -16,18 +16,24 @@ const WebauthnManagement: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
     fetchSettings();
-    // Check if user has a credential (for demo, you may want to fetch from /me or similar)
-    // TODO: Update this endpoint to match your backend, e.g. /api/auth/me if it exists
+    // Fetch user info from backend
     fetch(API + '/api/auth/user/me', {
       credentials: 'include',
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     })
       .then(res => res.json())
-      .then(data => setIsRegistered(!!(data.webauthnCredentials && data.webauthnCredentials.length > 0)))
-      .catch(() => setIsRegistered(false));
+      .then(data => {
+        setIsRegistered(!!(data.webauthnCredentials && data.webauthnCredentials.length > 0));
+        setUserEmail(data.email || null);
+      })
+      .catch(() => {
+        setIsRegistered(false);
+        setUserEmail(null);
+      });
   }, []);
 
   const fetchSettings = async () => {
@@ -75,7 +81,7 @@ const WebauthnManagement: React.FC = () => {
     setRegistering(true);
     setError(null);
     setSuccess(null);
-    const email = localStorage.getItem('email');
+    const email = userEmail;
     if (!email) {
       setError('User email not found. Please log out and log in again.');
       setRegistering(false);
