@@ -89,7 +89,7 @@ const WebauthnManagement: React.FC = () => {
     }
     try {
       // 1. Get registration options
-      const resp = await fetch(API + '/webauthn/register/options?email=' + encodeURIComponent(email), {
+      const resp = await fetch(API + '/api/auth/webauthn/register/options?email=' + encodeURIComponent(email), {
         credentials: 'include',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -115,7 +115,7 @@ const WebauthnManagement: React.FC = () => {
         transports: (publicKeyCred as any).response.getTransports ? (publicKeyCred as any).response.getTransports() : [],
         clientExtensionResults: publicKeyCred.getClientExtensionResults ? publicKeyCred.getClientExtensionResults() : {}
       };
-      const verifyResp = await fetch(API + '/webauthn/register/verify', {
+      const verifyResp = await fetch(API + '/api/webauthn/register/verify', {
         method: 'POST',
         credentials: 'include',
         headers: {
