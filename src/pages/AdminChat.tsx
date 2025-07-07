@@ -31,8 +31,8 @@ const AdminChat: React.FC = () => {
       setLoadingUsers(true);
       try {
         const token = localStorage.getItem('token');
-        // --- FIXED: Ensure correct API path ---
-        const res = await axios.get(`${API}/api/messages/users`, {
+        // --- FIXED: Use correct admin users endpoint ---
+        const res = await axios.get(`${API}/api/messages/admin/users`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(res.data.users || []);
