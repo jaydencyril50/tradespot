@@ -226,7 +226,8 @@ const AdminChat: React.FC = () => {
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: '#f7f8fa', minHeight: 400, position: 'absolute', left: 0, top: 0, width: '100vw', height: '100%', zIndex: 30, transition: 'all 0.3s' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 18px 0 18px' }}>
               <div style={{ fontWeight: 700, color: '#25324B', fontSize: '1.1rem', letterSpacing: 1 }}>
-                Chat with: <b>{selectedUser.email || selectedUser.username || selectedUser._id}</b>
+                {/* Only show user's email/username/id, no 'Chat with' */}
+                {selectedUser.email || selectedUser.username || selectedUser._id}
               </div>
               <FaTimes style={{ fontSize: 22, color: '#232b36', cursor: 'pointer' }} onClick={() => setShowUserList(true)} />
             </div>
