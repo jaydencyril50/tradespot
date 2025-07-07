@@ -1,0 +1,61 @@
+{
+  "name": "crypto-investment-platform",
+  "version": "1.0.0",
+  "description": "A platform for managing cryptocurrency investments.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "@simplewebauthn/browser": "^13.1.2",
+    "@types/axios": "^0.9.36",
+    "axios": "^0.21.4",
+    "framer-motion": "^12.23.0",
+    "lightweight-charts": "^3.8.0",
+    "lucide-react": "^0.525.0",
+    "qrcode.react": "^4.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.12.0",
+    "react-redux": "^7.2.5",
+    "react-router-dom": "^6.30.1",
+    "react-scripts": "^5.0.1",
+    "recharts": "^2.15.4",
+    "redux": "^4.1.0",
+    "sitemap": "^8.0.0",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.3",
+    "@types/qrcode.react": "^1.0.5",
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.18",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/socket.io": "^3.0.1",
+    "@types/socket.io-client": "^3.0.0",
+    "typescript": "^4.1.2"
+  },
+  "keywords": [
+    "TradeSpot",
+    "Global"
+  ],
+  "author": "TradeSpot Team",
+  "license": "MIT",
+  "proxy": "https://api.tradespot.online",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

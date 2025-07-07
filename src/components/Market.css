@@ -1,0 +1,213 @@
+/* Market Page Styles - extracted from inline styles in Market.tsx */
+
+.market-root {
+  min-height: 100vh;
+  background: #fff;
+}
+
+.market-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f6f9fe;
+  padding: 16px 24px 10px 18px;
+  border: 1.5px solid #232b36;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+}
+
+.market-header-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #232b36;
+  letter-spacing: 1px;
+  font-family: serif;
+}
+
+.market-header-profile {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #111;
+  object-fit: cover;
+  margin-left: 16px;
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.market-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
+  gap: 20px;
+}
+
+.market-chart-card {
+  background: #fff;
+  border-radius: 0;
+  box-shadow: 0 12px 40px 0 rgba(30,60,114,0.18), 0 4px 16px 0 rgba(30,60,114,0.10);
+  border: 1px solid #e3e6ef;
+  padding: 18px 18px 8px 18px;
+  min-width: 320px;
+  max-width: 1000px;
+  width: 100%;
+  margin-bottom: 0;
+  font-family: inherit;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.market-chart-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.market-chart-container {
+  width: 100%;
+  max-width: 1000px;
+  height: 500px;
+  position: relative;
+  background-color: #131722;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  padding: 0;
+  transition: all 0.3s;
+  overflow: hidden;
+}
+
+.market-buy-sell-order {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 8px;
+  margin-bottom: 24px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.market-buy-sell-order-vertical {
+  flex-direction: column !important;
+  gap: 0 !important;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto 40px auto;
+}
+
+.market-btn {
+  padding: 0;
+  border-radius: 0;
+  font-weight: 700;
+  font-size: 1.15rem;
+  cursor: pointer;
+  min-width: 0;
+  width: auto;
+  box-shadow: none;
+  transition: none;
+  border: none;
+  background: none;
+  color: #232b36;
+  letter-spacing: 0.5px;
+  margin: 0 auto;
+  display: block;
+}
+
+.market-btn.buy {
+  color: #27ae60;
+  background: none;
+}
+
+.market-btn.buy:hover, .market-btn.buy.active {
+  color: #219150;
+  background: none;
+}
+
+.market-btn.sell {
+  color: #e74c3c;
+  background: none;
+}
+
+.market-btn.sell:hover, .market-btn.sell.active {
+  color: #c0392b;
+  background: none;
+}
+
+.market-btn.order {
+  color: #232b36;
+  background: none;
+}
+
+.market-btn.order:hover, .market-btn.order.active {
+  color: #11151c;
+  background: none;
+}
+
+.market-btn-card {
+  background: #fff;
+  border-radius: 0;
+  box-shadow: 0 8px 32px 0 rgba(30,60,114,0.22), 0 8px 32px 0 rgba(30,60,114,0.18), 0 2px 8px 0 rgba(30,60,114,0.12);
+  border: none;
+  padding: 18px 18px 10px 18px;
+  min-width: 320px;
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  font-family: inherit;
+  transition: box-shadow 0.18s;
+}
+
+.market-btn-card:last-child {
+  margin-bottom: 0;
+}
+
+.market-btn-card .market-btn {
+  margin: 0;
+}
+
+.market-profile-modal {
+  background: #fff;
+  padding: 32px 36px;
+  min-width: 260px;
+  box-shadow: 0 8px 32px 0 rgba(30,60,114,0.18);
+  border-radius: 0;
+  font-family: inherit;
+  color: #232b36;
+  position: relative;
+  z-index: 2100;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .market-buy-sell-order-vertical {
+    flex-direction: row !important;
+    gap: 8px !important;
+    align-items: flex-start;
+    justify-content: center;
+    max-width: 100vw;
+    margin: 0 auto 40px auto;
+  }
+  .market-btn-card {
+    min-width: 0;
+    width: 30vw;
+    margin-left: 0;
+    margin-right: 0;
+    box-sizing: border-box;
+    box-shadow: 0 8px 40px 0 rgba(30,60,114,0.18), 0 8px 32px 0 rgba(30,60,114,0.12);
+    border-radius: 0;
+    margin-bottom: 0;
+  }
+}
