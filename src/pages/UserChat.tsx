@@ -2,8 +2,16 @@ import React, { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
 
-const API = process.env.REACT_APP_API_BASE_URL;
-const SOCKET_URL = API?.replace('/api', '') || '';
+// --- FIXED SOCKET_URL: Use a safe fallback and correct protocol ---
+const API = process.env.REACT_APP_API_BASE_URL || 'https://api.tradespot.online';
+let SOCKET_URL = '';
+if (API.startsWith('https://')) {
+  SOCKET_URL = API.replace('https://', 'wss://');
+} else if (API.startsWith('http://')) {
+  SOCKET_URL = API.replace('http://', 'ws://');
+} else {
+  SOCKET_URL = 'wss://api.tradespot.online';
+}
 
 const UserChat: React.FC = () => {
   const [messages, setMessages] = useState<any[]>([]);
@@ -16,8 +24,8 @@ const UserChat: React.FC = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return;
-    // Fetch chat history
-    axios.get(`${API}/messages/user/history`, { headers: { Authorization: `Bearer ${token}` } })
+    // --- FIXED: Correct chat history endpoint ---
+    axios.get(`${API}/api/messages/user/history`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => {
         setMessages(res.data.history || []);
         setLoading(false);
@@ -29,8 +37,8 @@ const UserChat: React.FC = () => {
     // Connect socket
     const socket = io(SOCKET_URL, { transports: ['websocket'], auth: { token } });
     socketRef.current = socket;
-    // Join room with userId
-    axios.get(`${API}/portfolio`, { headers: { Authorization: `Bearer ${token}` } })
+    // --- FIXED: Correct portfolio endpoint ---
+    axios.get(`${API}/api/portfolio`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => {
         socket.emit('join', res.data.id);
       });
@@ -49,7 +57,8 @@ const UserChat: React.FC = () => {
     if (!input.trim()) return;
     const token = localStorage.getItem('token');
     try {
-      const res = await axios.post(`${API}/messages/user/send`, { content: input }, { headers: { Authorization: `Bearer ${token}` } });
+      // --- FIXED: Correct send endpoint ---
+      const res = await axios.post(`${API}/api/messages/user/send`, { content: input }, { headers: { Authorization: `Bearer ${token}` } });
       setMessages(prev => [...prev, res.data.msg]);
       setInput('');
     } catch {
