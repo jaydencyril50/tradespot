@@ -82,6 +82,7 @@ const WebauthnManagement: React.FC = () => {
     setError(null);
     setSuccess(null);
     const email = userEmail;
+    console.log('[WebAuthn] Starting registration for', email);
     if (!email) {
       setError('User email not found. Please log out and log in again.');
       setRegistering(false);
@@ -89,6 +90,7 @@ const WebauthnManagement: React.FC = () => {
     }
     try {
       // 1. Get registration options
+      console.log('[WebAuthn] Fetching registration options...');
       const resp = await fetch(API + '/api/auth/webauthn/register/options?email=' + encodeURIComponent(email), {
         credentials: 'include',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -96,11 +98,22 @@ const WebauthnManagement: React.FC = () => {
       if (!resp.ok) {
         setError('Failed to get registration options.');
         setRegistering(false);
+        console.error('[WebAuthn] Failed to get registration options:', resp.status, await resp.text());
         return;
       }
       const options = await resp.json();
+      console.log('[WebAuthn] Registration options:', options);
       // 2. Call WebAuthn API
-      const cred = await navigator.credentials.create({ publicKey: options });
+      let cred;
+      try {
+        cred = await navigator.credentials.create({ publicKey: options });
+        console.log('[WebAuthn] Credential created:', cred);
+      } catch (err: any) {
+        console.error('[WebAuthn] navigator.credentials.create failed:', err);
+        setError('WebAuthn API failed: ' + (err && (err as Error).message ? (err as Error).message : String(err)));
+        setRegistering(false);
+        return;
+      }
       if (!cred) throw new Error('Registration was cancelled or failed.');
       const publicKeyCred = cred as PublicKeyCredential;
       // 3. Send attestation to backend
@@ -115,6 +128,7 @@ const WebauthnManagement: React.FC = () => {
         transports: (publicKeyCred as any).response.getTransports ? (publicKeyCred as any).response.getTransports() : [],
         clientExtensionResults: publicKeyCred.getClientExtensionResults ? publicKeyCred.getClientExtensionResults() : {}
       };
+      console.log('[WebAuthn] Sending attestation to backend:', attResp);
       const verifyResp = await fetch(API + '/api/webauthn/register/verify', {
         method: 'POST',
         credentials: 'include',
@@ -125,6 +139,7 @@ const WebauthnManagement: React.FC = () => {
         body: JSON.stringify({ email, attResp })
       });
       const verifyData = await verifyResp.json();
+      console.log('[WebAuthn] Backend verify response:', verifyData);
       if (verifyData.success) {
         setIsRegistered(true);
         setSuccess('Security key registered!');
@@ -132,6 +147,7 @@ const WebauthnManagement: React.FC = () => {
         setError(verifyData.error || 'Registration failed');
       }
     } catch (e: any) {
+      console.error('[WebAuthn] Registration error:', e);
       setError('Registration failed');
     }
     setRegistering(false);
