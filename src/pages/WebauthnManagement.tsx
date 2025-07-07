@@ -140,7 +140,7 @@ const WebauthnManagement: React.FC = () => {
         clientExtensionResults: publicKeyCred.getClientExtensionResults ? publicKeyCred.getClientExtensionResults() : {}
       };
       console.log('[WebAuthn] Sending attestation to backend:', attResp);
-      const verifyResp = await fetch(API + '/api/webauthn/register/verify', {
+      const verifyResp = await fetch(API + '/api/auth/webauthn/register/verify', {
         method: 'POST',
         credentials: 'include',
         headers: {
