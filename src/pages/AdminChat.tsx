@@ -30,7 +30,7 @@ const AdminChat: React.FC = () => {
     const fetchUsers = async () => {
       setLoadingUsers(true);
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('adminToken');
         // --- FIXED: Use correct admin users endpoint ---
         const res = await axios.get(`${API}/api/messages/admin/users`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -53,7 +53,7 @@ const AdminChat: React.FC = () => {
     setError('');
     const fetchMessages = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('adminToken');
         // --- FIXED: Ensure correct API path ---
         const res = await axios.get(`${API}/api/messages/user/${selectedUser._id}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -74,7 +74,7 @@ const AdminChat: React.FC = () => {
     if (!socketRef.current) {
       socketRef.current = io(SOCKET_URL, {
         transports: ['websocket'],
-        auth: { token: localStorage.getItem('token') },
+        auth: { token: localStorage.getItem('adminToken') },
       });
     }
     const socket = socketRef.current;
@@ -99,7 +99,7 @@ const AdminChat: React.FC = () => {
   const handleSend = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!input.trim() || !selectedUser) return;
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('adminToken');
     try {
       // Send via REST for persistence
       await axios.post(`${API}/api/messages/admin/send`, {
