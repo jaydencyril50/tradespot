@@ -539,6 +539,21 @@ const Dashboard: React.FC = () => {
 		}
 	};
 
+	// Helper to check if WebAuthn is enabled for transfer
+	const isWebauthnTransferEnabled = async () => {
+	  try {
+	    const token = localStorage.getItem('token');
+	    if (!token) return false;
+	    const res = await axios.get(`${API}/api/auth/webauthn-settings/settings`, {
+	      headers: { Authorization: `Bearer ${token}` },
+	      withCredentials: true
+	    });
+	    return !!(res.data.webauthnSettings && res.data.webauthnSettings.transfer);
+	  } catch {
+	    return false;
+	  }
+	};
+
 	// Handle transfer
 	const handleTransfer = async () => {
 		setTransferError('');
@@ -554,33 +569,27 @@ const Dashboard: React.FC = () => {
 		try {
 			const token = localStorage.getItem('token');
 			if (!token) throw new Error('Not authenticated');
-			let res;
-			try {
-				res = await transferFlex(transferEmail, Number(transferAmount), transferTwoFA);
-			} catch (err: any) {
-				if (err?.response?.data?.error &&
-					(err.response.data.error.includes('Missing assertion response') || err.response.data.error.includes('WebAuthn verification failed'))) {
-					// Get user email
-					let email = null;
-					try {
-						const me = await axios.get(`${API}/api/auth/user/me`, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
-						email = me.data.email;
-					} catch {}
-					if (!email) throw new Error('User email not found for WebAuthn');
-					// Prompt for WebAuthn
-					const assertionResp = await webauthnAuthenticate(email);
-					// Retry with assertionResp
-					res = await axios.post(`${API}/api/transfer`, {
-						recipientEmail: transferEmail,
-						amount: Number(transferAmount),
-						twoFAToken: transferTwoFA,
-						assertionResp,
-					}, { headers: { Authorization: `Bearer ${token}` } });
-				} else {
-					throw err;
-				}
+			let assertionResp = undefined;
+			// Check if WebAuthn is enabled for transfer
+			const webauthnEnabled = await isWebauthnTransferEnabled();
+			if (webauthnEnabled) {
+				// Get user email
+				let email = null;
+				try {
+					const me = await axios.get(`${API}/api/auth/user/me`, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+					email = me.data.email;
+				} catch {}
+				if (!email) throw new Error('User email not found for WebAuthn');
+				assertionResp = await webauthnAuthenticate(email);
 			}
-			setTransferSuccess(res.message || 'Transfer successful!');
+			// Always send assertionResp if present
+			const res = await axios.post(`${API}/api/transfer`, {
+				recipientEmail: transferEmail,
+				amount: Number(transferAmount),
+				twoFAToken: transferTwoFA,
+				...(assertionResp ? { assertionResp } : {})
+			}, { headers: { Authorization: `Bearer ${token}` } });
+			setTransferSuccess(res.data?.message || 'Transfer successful!');
 			setTransferEmail('');
 			setTransferAmount('');
 			setTransferTwoFA('');

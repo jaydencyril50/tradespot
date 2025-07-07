@@ -70,6 +70,21 @@ const Withdraw: React.FC = () => {
         }
     };
 
+    // Helper to check if WebAuthn is enabled for withdraw
+    const isWebauthnWithdrawEnabled = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return false;
+            const res = await axios.get(`${API}/api/auth/webauthn-settings/settings`, {
+                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true
+            });
+            return !!(res.data.webauthnSettings && res.data.webauthnSettings.withdraw);
+        } catch {
+            return false;
+        }
+    };
+
     // Handle withdrawal
     const handleWithdraw = async () => {
         setError('');
@@ -94,40 +109,28 @@ const Withdraw: React.FC = () => {
         try {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('Not authenticated');
-            let res;
-            try {
-                res = await axios.post(`${API}/api/withdraw`, {
-                    amount: Number(amount),
-                    verificationCode,
-                    twoFACode,
-                }, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-            } catch (err: any) {
-                if (err?.response?.data?.error &&
-                    (err.response.data.error.includes('Missing assertion response') || err.response.data.error.includes('WebAuthn verification failed'))) {
-                    // Get user email
-                    let email = null;
-                    try {
-                        const me = await axios.get(`${API}/api/auth/user/me`, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
-                        email = me.data.email;
-                    } catch {}
-                    if (!email) throw new Error('User email not found for WebAuthn');
-                    // Prompt for WebAuthn
-                    const assertionResp = await webauthnAuthenticate(email);
-                    // Retry with assertionResp
-                    res = await axios.post(`${API}/api/withdraw`, {
-                        amount: Number(amount),
-                        verificationCode,
-                        twoFACode,
-                        assertionResp,
-                    }, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
-                } else {
-                    throw err;
-                }
+            let assertionResp = undefined;
+            // Check if WebAuthn is enabled for withdraw
+            const webauthnEnabled = await isWebauthnWithdrawEnabled();
+            if (webauthnEnabled) {
+                // Get user email
+                let email = null;
+                try {
+                    const me = await axios.get(`${API}/api/auth/user/me`, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+                    email = me.data.email;
+                } catch {}
+                if (!email) throw new Error('User email not found for WebAuthn');
+                assertionResp = await webauthnAuthenticate(email);
             }
+            // Always send assertionResp if present
+            const res = await axios.post(`${API}/api/withdraw`, {
+                amount: Number(amount),
+                verificationCode,
+                twoFACode,
+                ...(assertionResp ? { assertionResp } : {})
+            }, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
             setSuccess('Withdrawal request submitted successfully.');
             setAmount('');
             setVerificationCode('');
