@@ -38,6 +38,7 @@ import UserChat from './pages/UserChat';
 import AdminChat from './pages/AdminChat';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import WebauthnManagement from './pages/WebauthnManagement';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Root container missing in index.html');
@@ -153,6 +154,11 @@ root.render(
               </ProtectedRoute>
             } />
             <Route path="/admin/chat" element={<AdminChat />} />
+            <Route path="/settings/webauthn" element={
+              <ProtectedRoute>
+                <WebauthnManagement />
+              </ProtectedRoute>
+            } />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>
