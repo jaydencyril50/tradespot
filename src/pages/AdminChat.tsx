@@ -133,8 +133,8 @@ const AdminChat: React.FC = () => {
   return (
     <div style={{ minHeight: '100vh', background: '#fff', display: 'flex', flexDirection: 'column' }}>
       {/* Header fixed at top */}
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10, background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10, background: '#25324B', color: '#fff', padding: '16px 24px 10px 18px', borderTopLeftRadius: 0, borderTopRightRadius: 0, fontWeight: 700, fontSize: 20, letterSpacing: 1, fontFamily: 'serif', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: 'none', boxShadow: '0 2px 16px #e3e6ef' }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', letterSpacing: 1, fontFamily: 'serif' }}>
           ADMIN CHAT
         </span>
       </div>
@@ -145,9 +145,9 @@ const AdminChat: React.FC = () => {
           className="admin-chat-sidebar"
           style={{
             width: showUserList || !selectedUser ? '100%' : 220,
-            background: '#f7f8fa',
+            background: '#fff',
             borderRight: showUserList || !selectedUser ? 'none' : '1px solid #e3e6ef',
-            padding: '18px 0 0 0',
+            padding: '0',
             display: showUserList || !selectedUser ? 'flex' : 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -161,27 +161,33 @@ const AdminChat: React.FC = () => {
             maxWidth: showUserList || !selectedUser ? '100vw' : 220,
           }}
         >
-          <h2 style={{ fontSize: 18, fontWeight: 700, color: '#25324B', marginBottom: 12 }}>Users</h2>
-          {loadingUsers ? <div>Loading users...</div> : null}
-          <ul style={{ listStyle: 'none', padding: 0, width: '100%' }}>
-            {users.map((user) => (
-              <li
-                key={user._id}
-                style={{
-                  padding: '10px 18px',
-                  cursor: 'pointer',
-                  background: selectedUser && selectedUser._id === user._id ? '#e3e6ef' : 'transparent',
-                  fontWeight: selectedUser && selectedUser._id === user._id ? 700 : 400,
-                  color: '#232b36',
-                  borderLeft: selectedUser && selectedUser._id === user._id ? '4px solid #10c98f' : '4px solid transparent',
-                  transition: 'background 0.2s',
-                }}
-                onClick={() => handleSelectUser(user)}
-              >
-                {user.email || user.username || user._id}
-              </li>
-            ))}
-          </ul>
+          <div style={{ width: '100%', background: '#25324B', color: '#fff', padding: '16px 24px 10px 18px', fontWeight: 700, fontSize: 20, letterSpacing: 1, fontFamily: 'serif', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: 'none', boxShadow: '0 2px 16px #e3e6ef' }}>
+            <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff', letterSpacing: 1, fontFamily: 'serif' }}>
+              USERS
+            </span>
+          </div>
+          <div style={{ flex: 1, width: '100%', overflowY: 'auto', padding: '18px 0 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            {loadingUsers ? <div>Loading users...</div> : null}
+            <ul style={{ listStyle: 'none', padding: 0, width: '100%' }}>
+              {users.map((user) => (
+                <li
+                  key={user._id}
+                  style={{
+                    padding: '10px 18px',
+                    cursor: 'pointer',
+                    background: selectedUser && selectedUser._id === user._id ? '#e3e6ef' : 'transparent',
+                    fontWeight: selectedUser && selectedUser._id === user._id ? 700 : 400,
+                    color: '#232b36',
+                    borderLeft: selectedUser && selectedUser._id === user._id ? '4px solid #10c98f' : '4px solid transparent',
+                    transition: 'background 0.2s',
+                  }}
+                  onClick={() => handleSelectUser(user)}
+                >
+                  {user.email || user.username || user._id}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
         {/* Chat main area, full screen on mobile if user selected */}
         {selectedUser && !showUserList && (
