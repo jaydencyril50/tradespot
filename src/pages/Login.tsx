@@ -410,6 +410,11 @@ const Login: React.FC = () => {
                         </span>
                     </span>
                 </div>
+                <div style={{ marginTop: 8, textAlign: 'center', width: '90%' }}>
+                    <span style={{ color: '#1e3c72', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline', fontSize: 15 }} onClick={() => navigate('/forgot-password')}>
+                        Forgot Password?
+                    </span>
+                </div>
             </form>
         </div>
     );

@@ -36,6 +36,8 @@ import SellSpotPage from './pages/Sell';
 import OrderPage from './pages/Order';
 import UserChat from './pages/UserChat';
 import AdminChat from './pages/AdminChat';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Root container missing in index.html');
@@ -50,6 +52,8 @@ root.render(
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             {/* Admin login and signup routes */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/signup" element={<AdminSignup />} />
