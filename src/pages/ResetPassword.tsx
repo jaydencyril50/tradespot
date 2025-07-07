@@ -47,6 +47,8 @@ const ResetPassword: React.FC = () => {
     }
   };
 
+  const passwordsMatch = password === confirm;
+
   if (!token) {
     return <div style={{ color: '#e74c3c', fontWeight: 500, fontSize: 18, textAlign: 'center', background: '#f6f9fe', padding: 16, borderRadius: 0, border: '1px solid #e3e6ef', maxWidth: 380, margin: '40px auto' }}>Invalid or missing token.</div>;
   }
@@ -104,7 +106,12 @@ const ResetPassword: React.FC = () => {
               disabled={loading}
               style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: '#eaf1fb', marginBottom: 8 }}
             />
-            <button type="submit" disabled={loading || !password || !confirm} style={{
+            {confirm && !passwordsMatch && (
+              <div style={{ color: '#e74c3c', fontSize: 14, marginBottom: 4, fontWeight: 500 }}>
+                Passwords do not match.
+              </div>
+            )}
+            <button type="submit" disabled={loading || !password || !confirm || !passwordsMatch} style={{
               width: '100%',
               background: '#888',
               color: '#fff',
@@ -113,7 +120,7 @@ const ResetPassword: React.FC = () => {
               borderRadius: 0,
               fontWeight: 600,
               fontSize: '1rem',
-              cursor: loading || !password || !confirm ? 'not-allowed' : 'pointer',
+              cursor: loading || !password || !confirm || !passwordsMatch ? 'not-allowed' : 'pointer',
               marginTop: 8,
               boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
               transition: 'background 0.2s',
