@@ -56,13 +56,23 @@ const UserChat: React.FC = () => {
   const sendMessage = async () => {
     if (!input.trim()) return;
     const token = localStorage.getItem('token');
+    // Optimistically add message to UI instantly
+    const optimisticMsg = {
+      content: input,
+      fromAdmin: false,
+      createdAt: new Date().toISOString(),
+      timestamp: new Date().toISOString(),
+      _optimistic: true
+    };
+    setMessages(prev => [...prev, optimisticMsg]);
+    setInput('');
     try {
       // --- FIXED: Correct send endpoint ---
       const res = await axios.post(`${API}/api/messages/user/send`, { content: input }, { headers: { Authorization: `Bearer ${token}` } });
-      setMessages(prev => [...prev, res.data.msg]);
-      setInput('');
+      setMessages(prev => prev.map(m => m._optimistic ? res.data.msg : m));
     } catch {
       setError('Failed to send message');
+      // Optionally: remove optimistic message or mark as failed
     }
   };
 

@@ -110,26 +110,32 @@ const AdminChat: React.FC = () => {
     if (e) e.preventDefault();
     if (!input.trim() || !selectedUser) return;
     const token = localStorage.getItem('adminToken');
+    // Optimistically add message to UI instantly
+    const optimisticMsg = {
+      from: 'admin',
+      fromAdmin: true,
+      to: selectedUser._id,
+      content: input.trim(),
+      createdAt: new Date().toISOString(),
+      // Optionally add a temporary id or flag
+      _optimistic: true
+    };
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setInput('');
     try {
       // Send via REST for persistence
       await axios.post(`${API}/api/messages/admin/send/${selectedUser._id}`, {
-        content: input.trim(),
+        content: optimisticMsg.content,
       }, { headers: { Authorization: `Bearer ${token}` } });
       // Emit via socket for real-time
       socketRef.current?.emit('admin-message', {
         to: selectedUser._id,
-        content: input.trim(),
+        content: optimisticMsg.content,
       });
-      setMessages((prev) => [...prev, {
-        from: 'admin',
-        fromAdmin: true, // FIX: add fromAdmin for consistency
-        to: selectedUser._id,
-        content: input.trim(),
-        createdAt: new Date().toISOString(),
-      }]);
-      setInput('');
+      // Optionally: replace optimistic message with real one if needed
     } catch (e) {
       setError('Failed to send message');
+      // Optionally: remove optimistic message or mark as failed
     }
   };
 
@@ -225,10 +231,6 @@ const AdminChat: React.FC = () => {
         {selectedUser && !showUserList && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: '#f7f8fa', minHeight: 400, position: 'absolute', left: 0, top: 0, width: '100vw', height: '100%', zIndex: 30, transition: 'all 0.3s' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 18px 0 18px' }}>
-              <div style={{ fontWeight: 700, color: '#25324B', fontSize: '1.1rem', letterSpacing: 1 }}>
-                {/* Only show user's email/username/id, no 'Chat with' */}
-                {selectedUser.email || selectedUser.username || selectedUser._id}
-              </div>
               <FaTimes style={{ fontSize: 22, color: '#232b36', cursor: 'pointer' }} onClick={() => setShowUserList(true)} />
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: '0 18px 0 18px', marginBottom: 8 }}>
