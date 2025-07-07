@@ -265,27 +265,6 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
           >
             Update Password
           </button>
-          <button
-            style={{
-              border: 'none',
-              borderRadius: 0,
-              padding: '10px 0',
-              fontWeight: 600,
-              fontSize: '1rem',
-              cursor: 'pointer',
-              marginTop: 0,
-              background: '#888',
-              color: '#fff',
-              boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
-              transition: 'background 0.2s',
-              alignSelf: 'center',
-              marginBottom: 12,
-              width: '90%'
-            }}
-            disabled
-          >
-            Register Biometric Device (Disabled)
-          </button>
         </>
       )}
       {showUpdatePassword && (
