@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
-const API = process.env.REACT_APP_API_BASE_URL;
+// --- Use same API base URL logic as AdminChat.tsx ---
+const API = process.env.REACT_APP_API_BASE_URL || 'https://api.tradespot.online';
 
 interface User {
   _id: string;
