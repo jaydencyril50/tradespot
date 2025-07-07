@@ -16,9 +16,9 @@ const AdminWithdrawals: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+      const token = localStorage.getItem('adminToken');
       const res = await axios.get(`${API}/api/admin/withdrawals`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: { Authorization: `Bearer ${token}` },
       });
       // Only keep withdrawals with status 'pending'
       setWithdrawals((res.data.withdrawals || []).filter((w: any) => !w.status || w.status === 'pending'));
@@ -45,9 +45,9 @@ const AdminWithdrawals: React.FC = () => {
     setActionLoading(id + action);
     setError('');
     try {
-      const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+      const token = localStorage.getItem('adminToken');
       await axios.post(`${API}/api/admin/withdrawals/${id}/${action}`, {}, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: { Authorization: `Bearer ${token}` },
       });
       await fetchWithdrawals();
     } catch (e: any) {

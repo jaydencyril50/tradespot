@@ -17,9 +17,9 @@ const AdminDeposit: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+      const token = localStorage.getItem('adminToken');
       const res = await axios.get(`${API}/api/admin/deposits?status=pending`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: { Authorization: `Bearer ${token}` },
       });
       setDeposits(res.data.deposits || []);
     } catch (e: any) {
@@ -37,9 +37,9 @@ const AdminDeposit: React.FC = () => {
     setActionLoading(id + action);
     setError('');
     try {
-      const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+      const token = localStorage.getItem('adminToken');
       await axios.post(`${API}/api/admin/deposits/${id}/${action}`, {}, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: { Authorization: `Bearer ${token}` },
       });
       fetchDeposits();
     } catch (e: any) {
