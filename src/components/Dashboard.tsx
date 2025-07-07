@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaTelegramPlane, FaWhatsapp, FaBell } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 import NoticeModal from './NoticeModal';
+import { webauthnAuthenticate } from '../utils/webauthn';
 
 // This is the chat/message icon SVG as a React component
 const ChatIcon: React.FC<{ size?: number; color?: string }> = ({ size = 28, color = '#25324B' }) => {
@@ -459,14 +460,39 @@ const Dashboard: React.FC = () => {
 		try {
 			const token = localStorage.getItem('token');
 			if (!token) throw new Error('Not authenticated');
-			const res = await axios.post(`${API}/api/convert`, {
-				direction: 'FLEX_TO_USDT',
-				amount: Number(convertAmount),
-			}, { headers: { Authorization: `Bearer ${token}` } });
+			let res;
+			try {
+				res = await axios.post(`${API}/api/convert`, {
+					direction: 'FLEX_TO_USDT',
+					amount: Number(convertAmount),
+				}, { headers: { Authorization: `Bearer ${token}` } });
+			} catch (err: any) {
+				// If WebAuthn required
+				if (err?.response?.data?.error &&
+					(err.response.data.error.includes('Missing assertion response') || err.response.data.error.includes('WebAuthn verification failed'))) {
+					// Get user email (from local state or API)
+					let email = null;
+					try {
+						const me = await axios.get(`${API}/api/auth/user/me`, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+						email = me.data.email;
+					} catch {}
+					if (!email) throw new Error('User email not found for WebAuthn');
+					// Prompt for WebAuthn
+					const assertionResp = await webauthnAuthenticate(email);
+					// Retry with assertionResp
+					res = await axios.post(`${API}/api/convert`, {
+						direction: 'FLEX_TO_USDT',
+						amount: Number(convertAmount),
+						assertionResp,
+					}, { headers: { Authorization: `Bearer ${token}` } });
+				} else {
+					throw err;
+				}
+			}
 			setConvertSuccess('Converted successfully!');
 			fetchBalances();
 		} catch (err: any) {
-			setConvertError(err?.response?.data?.error || 'Conversion failed');
+			setConvertError(err?.response?.data?.error || err.message || 'Conversion failed');
 		}
 	};
 
@@ -521,8 +547,34 @@ const Dashboard: React.FC = () => {
 			return;
 		}
 		try {
+			const token = localStorage.getItem('token');
+			if (!token) throw new Error('Not authenticated');
 			let res;
+			try {
 				res = await transferFlex(transferEmail, Number(transferAmount), transferTwoFA);
+			} catch (err: any) {
+				if (err?.response?.data?.error &&
+					(err.response.data.error.includes('Missing assertion response') || err.response.data.error.includes('WebAuthn verification failed'))) {
+					// Get user email
+					let email = null;
+					try {
+						const me = await axios.get(`${API}/api/auth/user/me`, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+						email = me.data.email;
+					} catch {}
+					if (!email) throw new Error('User email not found for WebAuthn');
+					// Prompt for WebAuthn
+					const assertionResp = await webauthnAuthenticate(email);
+					// Retry with assertionResp
+					res = await axios.post(`${API}/api/transfer`, {
+						recipientEmail: transferEmail,
+						amount: Number(transferAmount),
+						twoFAToken: transferTwoFA,
+						assertionResp,
+					}, { headers: { Authorization: `Bearer ${token}` } });
+				} else {
+					throw err;
+				}
+			}
 			setTransferSuccess(res.message || 'Transfer successful!');
 			setTransferEmail('');
 			setTransferAmount('');

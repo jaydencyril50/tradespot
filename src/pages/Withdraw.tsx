@@ -1,6 +1,7 @@
 // Withdraw page - content will be added later
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { webauthnAuthenticate } from '../utils/webauthn';
 
 const API = process.env.REACT_APP_API_BASE_URL;
 
@@ -93,13 +94,40 @@ const Withdraw: React.FC = () => {
         try {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('Not authenticated');
-            await axios.post(`${API}/api/withdraw`, {
-                amount: Number(amount),
-                verificationCode,
-                twoFACode,
-            }, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            let res;
+            try {
+                res = await axios.post(`${API}/api/withdraw`, {
+                    amount: Number(amount),
+                    verificationCode,
+                    twoFACode,
+                }, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+            } catch (err: any) {
+                if (err?.response?.data?.error &&
+                    (err.response.data.error.includes('Missing assertion response') || err.response.data.error.includes('WebAuthn verification failed'))) {
+                    // Get user email
+                    let email = null;
+                    try {
+                        const me = await axios.get(`${API}/api/auth/user/me`, { headers: { Authorization: `Bearer ${token}` }, withCredentials: true });
+                        email = me.data.email;
+                    } catch {}
+                    if (!email) throw new Error('User email not found for WebAuthn');
+                    // Prompt for WebAuthn
+                    const assertionResp = await webauthnAuthenticate(email);
+                    // Retry with assertionResp
+                    res = await axios.post(`${API}/api/withdraw`, {
+                        amount: Number(amount),
+                        verificationCode,
+                        twoFACode,
+                        assertionResp,
+                    }, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                } else {
+                    throw err;
+                }
+            }
             setSuccess('Withdrawal request submitted successfully.');
             setAmount('');
             setVerificationCode('');
