@@ -20,7 +20,8 @@ const WebauthnManagement: React.FC = () => {
   useEffect(() => {
     fetchSettings();
     // Check if user has a credential (for demo, you may want to fetch from /me or similar)
-    fetch(API + '/api/user/me', {
+    // TODO: Update this endpoint to match your backend, e.g. /api/auth/me if it exists
+    fetch(API + '/api/auth/user/me', {
       credentials: 'include',
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     })
@@ -33,7 +34,7 @@ const WebauthnManagement: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const resp = await fetch(API + '/api/webauthn-settings/settings', {
+      const resp = await fetch(API + '/api/auth/webauthn-settings/settings', {
         credentials: 'include',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -49,7 +50,7 @@ const WebauthnManagement: React.FC = () => {
     setError(null);
     setSuccess(null);
     try {
-      const resp = await fetch(API + '/api/webauthn-settings/settings', {
+      const resp = await fetch(API + '/api/auth/webauthn-settings/settings', {
         method: 'POST',
         credentials: 'include',
         headers: {
