@@ -33,7 +33,7 @@ const WebauthnManagement: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const resp = await fetch(API + '/webauthn-settings/settings', {
+      const resp = await fetch(API + '/api/webauthn-settings/settings', {
         credentials: 'include',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -49,7 +49,7 @@ const WebauthnManagement: React.FC = () => {
     setError(null);
     setSuccess(null);
     try {
-      const resp = await fetch(API + '/webauthn-settings/settings', {
+      const resp = await fetch(API + '/api/webauthn-settings/settings', {
         method: 'POST',
         credentials: 'include',
         headers: {
