@@ -1000,7 +1000,7 @@ const Dashboard: React.FC = () => {
 					boxShadow: '0 2px 8px rgba(30,60,114,0.10)'
 				}}
 				title="Chat"
-				onClick={() => navigate('/prochat')}
+				onClick={() => navigate('/chat')}
 			>
 				<ChatIcon size={28} color="#25324B" />
 			</button>

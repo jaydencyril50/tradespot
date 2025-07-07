@@ -33,6 +33,7 @@ import AdminStaking from './pages/AdminStaking';
 import BuySpotPage from './pages/Buy';
 import SellSpotPage from './pages/Sell';
 import OrderPage from './pages/Order';
+import UserChat from './pages/UserChat';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Root container missing in index.html');
@@ -137,6 +138,11 @@ root.render(
             <Route path="/order" element={
               <ProtectedRoute>
                 <OrderPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/chat" element={
+              <ProtectedRoute>
+                <UserChat />
               </ProtectedRoute>
             } />
           </Routes>
