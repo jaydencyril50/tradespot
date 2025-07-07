@@ -114,6 +114,7 @@ const AdminChat: React.FC = () => {
       });
       setMessages((prev) => [...prev, {
         from: 'admin',
+        fromAdmin: true, // FIX: add fromAdmin for consistency
         to: selectedUser._id,
         content: input.trim(),
         createdAt: new Date().toISOString(),
@@ -209,7 +210,8 @@ const AdminChat: React.FC = () => {
               ) : (
                 messages.length === 0 ? <div style={{ color: '#888' }}>No messages yet.</div> :
                   messages.map((msg, idx) => {
-                    const isAdmin = msg.from === 'admin';
+                    // FIX: Detect admin message by fromAdmin or from
+                    const isAdmin = msg.from === 'admin' || msg.fromAdmin === true;
                     return (
                       <div
                         key={idx}
@@ -239,17 +241,7 @@ const AdminChat: React.FC = () => {
                           position: 'relative',
                         }}>
                           {msg.content}
-                          {/* Optional: label for clarity on mobile */}
-                          <span style={{
-                            display: 'block',
-                            fontSize: 11,
-                            color: isAdmin ? '#c7e0ff' : '#888',
-                            marginTop: 4,
-                            textAlign: isAdmin ? 'right' : 'left',
-                            fontWeight: 500,
-                          }}>
-                            {isAdmin ? 'Admin' : 'User'}
-                          </span>
+                          {/* Removed small user/admin label */}
                         </div>
                         {/* Timestamp */}
                         <div style={{
@@ -259,7 +251,17 @@ const AdminChat: React.FC = () => {
                           alignSelf: 'flex-end',
                           minWidth: 80,
                           textAlign: isAdmin ? 'right' : 'left',
-                        }}>{new Date(msg.createdAt).toLocaleString()}</div>
+                        }}>
+                          {
+                            (() => {
+                              // Robustly handle both createdAt and timestamp, fallback to '-'
+                              const dateVal = msg.createdAt || msg.timestamp;
+                              if (!dateVal) return '-';
+                              const d = new Date(dateVal);
+                              return isNaN(d.getTime()) ? '-' : d.toLocaleString();
+                            })()
+                          }
+                        </div>
                       </div>
                     );
                   })
@@ -275,7 +277,7 @@ const AdminChat: React.FC = () => {
                 borderRadius: 10,
                 display: 'flex',
                 width: '100%',
-                maxWidth: 600,
+                maxWidth: 650,
                 padding: 8,
               }}>
                 <input
