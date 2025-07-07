@@ -130,10 +130,10 @@ const WebauthnManagement: React.FC = () => {
       // 3. Send attestation to backend
       const attResp = {
         id: publicKeyCred.id,
-        rawId: btoa(String.fromCharCode(...new Uint8Array(publicKeyCred.rawId))),
+        rawId: bufferToBase64url(publicKeyCred.rawId),
         response: {
-          clientDataJSON: btoa(String.fromCharCode(...new Uint8Array((publicKeyCred.response as AuthenticatorAttestationResponse).clientDataJSON))),
-          attestationObject: btoa(String.fromCharCode(...new Uint8Array((publicKeyCred.response as AuthenticatorAttestationResponse).attestationObject)))
+          clientDataJSON: bufferToBase64url((publicKeyCred.response as AuthenticatorAttestationResponse).clientDataJSON),
+          attestationObject: bufferToBase64url((publicKeyCred.response as AuthenticatorAttestationResponse).attestationObject)
         },
         type: publicKeyCred.type,
         transports: (publicKeyCred as any).response.getTransports ? (publicKeyCred as any).response.getTransports() : [],
@@ -172,6 +172,16 @@ const WebauthnManagement: React.FC = () => {
     const bytes = new Uint8Array(str.length);
     for (let i = 0; i < str.length; ++i) bytes[i] = str.charCodeAt(i);
     return bytes;
+  }
+
+  // Helper to convert ArrayBuffer to base64url
+  function bufferToBase64url(buffer: ArrayBuffer): string {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
 
   return (
