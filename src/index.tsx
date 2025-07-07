@@ -20,6 +20,7 @@ import { ThemeProvider } from './ThemeContext';
 import TransactionHistory from './pages/TransactionHistory';
 import NotificationsPage from './pages/NotificationsPage';
 import AdminLogin from './pages/AdminLogin';
+import AdminSignup from './pages/AdminSignup';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
 import AdminWithdrawals from './pages/AdminWithdrawals';
@@ -49,8 +50,9 @@ root.render(
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            {/* Admin login route */}
+            {/* Admin login and signup routes */}
             <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/signup" element={<AdminSignup />} />
             {/* Add more admin/protected routes here later */}
             <Route path="/dashboard" element={
               <ProtectedRoute>
