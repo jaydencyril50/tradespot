@@ -74,12 +74,23 @@ const WebauthnManagement: React.FC = () => {
     setRegistering(true);
     setError(null);
     setSuccess(null);
+    const email = localStorage.getItem('email');
+    if (!email) {
+      setError('User email not found. Please log out and log in again.');
+      setRegistering(false);
+      return;
+    }
     try {
       // 1. Get registration options
-      const resp = await fetch(API + '/webauthn/register/options?email=' + encodeURIComponent(localStorage.getItem('email') || ''), {
+      const resp = await fetch(API + '/webauthn/register/options?email=' + encodeURIComponent(email), {
         credentials: 'include',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
+      if (!resp.ok) {
+        setError('Failed to get registration options.');
+        setRegistering(false);
+        return;
+      }
       const options = await resp.json();
       // 2. Call WebAuthn API
       const cred = await navigator.credentials.create({ publicKey: options });
@@ -104,7 +115,7 @@ const WebauthnManagement: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({ email: localStorage.getItem('email'), attResp })
+        body: JSON.stringify({ email, attResp })
       });
       const verifyData = await verifyResp.json();
       if (verifyData.success) {
