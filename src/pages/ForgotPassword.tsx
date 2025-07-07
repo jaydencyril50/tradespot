@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+const API = process.env.REACT_APP_API_BASE_URL;
+
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');
   const [wallet, setWallet] = useState('');
@@ -13,7 +15,7 @@ const ForgotPassword: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('/auth/request-password-reset', {
+      const res = await fetch(`${API}/auth/request-password-reset`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, wallet, spotid }),
