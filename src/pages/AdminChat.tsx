@@ -87,9 +87,17 @@ const AdminChat: React.FC = () => {
     socket.on('admin-message', (msg: any) => {
       setMessages((prev) => [...prev, msg]);
     });
+    // Listen for new_message event (for live user messages)
+    socket.on('new_message', (msg: any) => {
+      // Only add if message is from the selected user
+      if (msg.sender === selectedUser._id) {
+        setMessages((prev) => [...prev, msg]);
+      }
+    });
     return () => {
       socket.off('user-message');
       socket.off('admin-message');
+      socket.off('new_message');
     };
   }, [selectedUser]);
 
