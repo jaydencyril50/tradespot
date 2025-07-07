@@ -203,27 +203,61 @@ const AdminChat: React.FC = () => {
                 <div>Loading messages...</div>
               ) : (
                 messages.length === 0 ? <div style={{ color: '#888' }}>No messages yet.</div> :
-                  messages.map((msg, idx) => (
-                    <div
-                      key={idx}
-                      style={{
-                        display: 'flex',
-                        flexDirection: msg.from === 'admin' ? 'row' : 'row-reverse',
-                        marginBottom: 10
-                      }}
-                    >
-                      <div style={{
-                        background: msg.from === 'admin' ? '#2a5298' : '#10c98f',
-                        color: '#fff',
-                        borderRadius: 16,
-                        padding: '8px 16px',
-                        maxWidth: 280,
-                        fontSize: 15,
-                        boxShadow: '0 1px 4px #e3e6ef',
-                      }}>{msg.content}</div>
-                      <div style={{ fontSize: 11, color: '#888', margin: msg.from === 'admin' ? '0 0 0 8px' : '0 8px 0 0', alignSelf: 'flex-end' }}>{new Date(msg.createdAt).toLocaleString()}</div>
-                    </div>
-                  ))
+                  messages.map((msg, idx) => {
+                    const isAdmin = msg.from === 'admin';
+                    return (
+                      <div
+                        key={idx}
+                        style={{
+                          display: 'flex',
+                          flexDirection: isAdmin ? 'row-reverse' : 'row',
+                          alignItems: 'flex-end',
+                          marginBottom: 12,
+                        }}
+                      >
+                        {/* Message bubble */}
+                        <div style={{
+                          background: isAdmin ? '#2a5298' : '#fff',
+                          color: isAdmin ? '#fff' : '#232b36',
+                          borderRadius: isAdmin
+                            ? '18px 18px 4px 18px'
+                            : '18px 18px 18px 4px',
+                          padding: '10px 16px',
+                          maxWidth: 280,
+                          fontSize: 15,
+                          boxShadow: isAdmin
+                            ? '0 1px 4px #b3c6ef'
+                            : '0 1px 4px #e3e6ef',
+                          border: isAdmin ? 'none' : '1px solid #e3e6ef',
+                          marginLeft: isAdmin ? 0 : 8,
+                          marginRight: isAdmin ? 8 : 0,
+                          position: 'relative',
+                        }}>
+                          {msg.content}
+                          {/* Optional: label for clarity on mobile */}
+                          <span style={{
+                            display: 'block',
+                            fontSize: 11,
+                            color: isAdmin ? '#c7e0ff' : '#888',
+                            marginTop: 4,
+                            textAlign: isAdmin ? 'right' : 'left',
+                            fontWeight: 500,
+                          }}>
+                            {isAdmin ? 'Admin' : 'User'}
+                          </span>
+                        </div>
+                        {/* Timestamp */}
+                        <div style={{
+                          fontSize: 11,
+                          color: '#888',
+                          margin: isAdmin ? '0 8px 0 0' : '0 0 0 8px',
+                          alignSelf: 'flex-end',
+                          minWidth: 80,
+                          textAlign: isAdmin ? 'right' : 'left',
+                        }}>{new Date(msg.createdAt).toLocaleString()}</div>
+                      </div>
+                    );
+                  })
               )}
               <div ref={chatEndRef} />
             </div>
