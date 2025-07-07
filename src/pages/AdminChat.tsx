@@ -174,25 +174,43 @@ const AdminChat: React.FC = () => {
         >
           <div style={{ flex: 1, width: '100%', overflowY: 'auto', padding: '18px 0 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             {loadingUsers ? <div>Loading users...</div> : null}
-            <ul style={{ listStyle: 'none', padding: 0, width: '100%' }}>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 18,
+              width: '100%',
+              padding: '0 0 24px 0',
+            }}>
               {users.map((user) => (
-                <li
+                <div
                   key={user._id}
                   style={{
-                    padding: '10px 18px',
+                    background: selectedUser && selectedUser._id === user._id ? '#e3e6ef' : '#fff',
+                    border: selectedUser && selectedUser._id === user._id ? '2px solid #10c98f' : '1px solid #e3e6ef',
+                    borderRadius: 12,
+                    boxShadow: '0 2px 12px 0 rgba(30,60,114,0.08)',
+                    padding: '18px 28px',
+                    minWidth: 220,
+                    maxWidth: 340,
+                    width: '80%',
+                    margin: '0 auto',
                     cursor: 'pointer',
-                    background: selectedUser && selectedUser._id === user._id ? '#e3e6ef' : 'transparent',
-                    fontWeight: selectedUser && selectedUser._id === user._id ? 700 : 400,
+                    fontWeight: selectedUser && selectedUser._id === user._id ? 700 : 500,
                     color: '#232b36',
-                    borderLeft: selectedUser && selectedUser._id === user._id ? '4px solid #10c98f' : '4px solid transparent',
-                    transition: 'background 0.2s',
+                    fontSize: 17,
+                    textAlign: 'center',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
                   onClick={() => handleSelectUser(user)}
                 >
                   {user.email || user.username || user._id}
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         </div>
         {/* Chat main area, full screen on mobile if user selected */}
