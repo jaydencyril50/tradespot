@@ -132,9 +132,19 @@ const AdminChat: React.FC = () => {
 
   return (
     <div style={{ minHeight: '100vh', background: '#fff', display: 'flex', flexDirection: 'column' }}>
-      {/* Header fixed at top */}
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10, background: '#25324B', color: '#fff', padding: '16px 24px 10px 18px', borderTopLeftRadius: 0, borderTopRightRadius: 0, fontWeight: 700, fontSize: 20, letterSpacing: 1, fontFamily: 'serif', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: 'none', boxShadow: '0 2px 16px #e3e6ef' }}>
-        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', letterSpacing: 1, fontFamily: 'serif' }}>
+      {/* Header styled to match Settings.tsx */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        background: '#f6f9fe',
+        padding: '16px 24px 10px 18px',
+        border: '1.5px solid #232b36',
+        borderTop: 0,
+        borderLeft: 0,
+        borderRight: 0,
+      }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
           ADMIN CHAT
         </span>
       </div>
@@ -161,11 +171,6 @@ const AdminChat: React.FC = () => {
             maxWidth: showUserList || !selectedUser ? '100vw' : 220,
           }}
         >
-          <div style={{ width: '100%', background: '#25324B', color: '#fff', padding: '16px 24px 10px 18px', fontWeight: 700, fontSize: 20, letterSpacing: 1, fontFamily: 'serif', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: 'none', boxShadow: '0 2px 16px #e3e6ef' }}>
-            <span style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff', letterSpacing: 1, fontFamily: 'serif' }}>
-              USERS
-            </span>
-          </div>
           <div style={{ flex: 1, width: '100%', overflowY: 'auto', padding: '18px 0 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             {loadingUsers ? <div>Loading users...</div> : null}
             <ul style={{ listStyle: 'none', padding: 0, width: '100%' }}>
