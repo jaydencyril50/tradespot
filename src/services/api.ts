@@ -99,8 +99,8 @@ export const validateReferralCode = async (code: string) => {
     return res.data.valid;
 };
 
-// Transfer SPOT to another user by email
-export const transferSpot = async (recipientEmail: string, amount: number, twoFAToken: string) => {
+// Transfer FLEX to another user by email
+export const transferFlex = async (recipientEmail: string, amount: number, twoFAToken: string) => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
     const res = await axios.post(`${API}/api/transfer`, { recipientEmail, amount, twoFAToken }, {

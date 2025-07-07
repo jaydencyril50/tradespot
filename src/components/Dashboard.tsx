@@ -11,7 +11,7 @@ import dogeIcon from '../assets/coins/dodge.png'; // Corrected filename for Doge
 import dotIcon from '../assets/coins/dot.png';
 import ltcIcon from '../assets/coins/ltc.png';
 import LiveClock from './LiveClock';
-import { transferSpot, getPortfolio } from '../services/api';
+import { transferFlex, getPortfolio } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { FaTelegramPlane, FaWhatsapp, FaBell } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
@@ -522,7 +522,7 @@ const Dashboard: React.FC = () => {
 		}
 		try {
 			let res;
-				res = await transferSpot(transferEmail, Number(transferAmount), transferTwoFA);
+				res = await transferFlex(transferEmail, Number(transferAmount), transferTwoFA);
 			setTransferSuccess(res.message || 'Transfer successful!');
 			setTransferEmail('');
 			setTransferAmount('');
@@ -709,12 +709,12 @@ const Dashboard: React.FC = () => {
         color: '#25324B',
         letterSpacing: 1,
         fontFamily: 'serif'
-      }}>Transfer SPOT</h2>
+      }}>Transfer FLEX</h2>
       <div style={{ fontSize: '0.95rem', color: '#555', marginBottom: 8 }}>
-        Send SPOT to another user instantly.
+        Send FLEX to another user instantly.
       </div>
       <div style={{ marginBottom: 12, fontWeight: 600, color: '#1e3c72' }}>
-        Your SPOT Balance: <span style={{ color: '#2a5298' }}>{flexBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+        Your FLEX Balance: <span style={{ color: '#2a5298' }}>{flexBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
       </div>
       <div style={{ marginBottom: 12 }}>
         <label style={{ fontWeight: 500, color: '#25324B', marginRight: 10 }}>Recipient Email:</label>
