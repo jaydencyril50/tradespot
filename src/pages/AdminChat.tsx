@@ -102,8 +102,7 @@ const AdminChat: React.FC = () => {
     const token = localStorage.getItem('adminToken');
     try {
       // Send via REST for persistence
-      await axios.post(`${API}/api/messages/admin/send`, {
-        to: selectedUser._id,
+      await axios.post(`${API}/api/messages/admin/send/${selectedUser._id}`, {
         content: input.trim(),
       }, { headers: { Authorization: `Bearer ${token}` } });
       // Emit via socket for real-time
