@@ -4,6 +4,7 @@ import { sendEmailVerificationCode, sendPasswordVerificationCode } from '../serv
 import { changeWallet, sendFundsPrivacyVerificationCode, verifyFundsPrivacy } from '../services/api';
 import { changeName, changeEmail } from '../services/api';
 import { changePassword } from '../services/api';
+import './PrivacySettings.css';
 
 const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   const navigate = useNavigate();
@@ -165,78 +166,26 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   };
 
   return (
-    <div style={{
-      background: '#fff',
-      borderRadius: 0,
-      boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-      padding: '12px 16px',
-      minWidth: 0,
-      maxWidth: 320,
-      width: '100%',
-      boxSizing: 'border-box',
-      textAlign: 'center',
-      marginBottom: 0,
-      fontFamily: 'inherit',
-      height: 300,
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: 0,
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-    }}>
+    <div className="privacy-settings-root">
       {success && (
-        <div style={{ color: 'green', fontSize: 15, marginBottom: 10, fontWeight: 600 }}>
+        <div className="privacy-settings-success">
           {success}
         </div>
       )}
-      <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#25324B', marginBottom: 4, letterSpacing: 1 }}>Privacy Settings</div>
-      <div style={{ fontSize: '0.95rem', color: '#555', marginBottom: 8 }}>
+      <div className="privacy-settings-title">Privacy Settings</div>
+      <div className="privacy-settings-desc">
         Control your privacy and security options here.
       </div>
       {!showUpdatePassword && (
         <>
           <button
-            style={{
-              border: 'none',
-              borderRadius: 0,
-              padding: '10px 0',
-              fontWeight: 600,
-              fontSize: '1rem',
-              cursor: 'pointer',
-              marginTop: 4,
-              background: '#888',
-              color: '#fff',
-              boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
-              transition: 'background 0.2s',
-              alignSelf: 'center',
-              marginBottom: 12,
-              width: '90%'
-            }}
+            className="privacy-settings-btn"
             onClick={() => navigate('/settings/2fa')}
           >
             Enable 2FA
           </button>
           <button
-            style={{
-              border: 'none',
-              borderRadius: 0,
-              padding: '10px 0',
-              fontWeight: 600,
-              fontSize: '1rem',
-              cursor: 'pointer',
-              marginTop: 0,
-              background: '#888',
-              color: '#fff',
-              boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
-              transition: 'background 0.2s',
-              alignSelf: 'center',
-              marginBottom: 12,
-              width: '90%'
-            }}
+            className="privacy-settings-btn"
             onClick={async () => {
               setSendingCode(true);
               setError(null);
@@ -259,22 +208,7 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
             {sendingCode ? 'Sending...' : 'Funds Privacy'}
           </button>
           <button
-            style={{
-              border: 'none',
-              borderRadius: 0,
-              padding: '10px 0',
-              fontWeight: 600,
-              fontSize: '1rem',
-              cursor: 'pointer',
-              marginTop: 0,
-              background: '#888',
-              color: '#fff',
-              boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
-              transition: 'background 0.2s',
-              alignSelf: 'center',
-              marginBottom: 12,
-              width: '90%'
-            }}
+            className="privacy-settings-btn"
             onClick={() => {
               setShowUpdatePassword(true);
               setCodeSent(false); // Reset so code is sent every time
@@ -284,22 +218,7 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
             Update Password
           </button>
           <button
-            style={{
-              border: 'none',
-              borderRadius: 0,
-              padding: '10px 0',
-              fontWeight: 600,
-              fontSize: '1rem',
-              cursor: 'pointer',
-              marginTop: 0,
-              background: '#888',
-              color: '#fff',
-              boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
-              transition: 'background 0.2s',
-              alignSelf: 'center',
-              marginBottom: 12,
-              width: '90%'
-            }}
+            className="privacy-settings-btn"
             onClick={handleWebauthnClick}
           >
             WebAuthn Security
@@ -308,14 +227,7 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
       )}
       {showUpdatePassword && (
         <form
-          style={{
-            width: '90%',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 8,
-            marginBottom: 12,
-            alignItems: 'center'
-          }}
+          className="privacy-settings-form"
           onSubmit={handleUpdatePassword}
         >
           <input
@@ -326,7 +238,7 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
               setNewPassword(e.target.value);
               setPasswordMatch(e.target.value === confirmPassword);
             }}
-            style={{ width: '100%', padding: 8, marginBottom: 4, border: passwordMatch || confirmPassword === '' ? '1px solid #ccc' : '1.5px solid #e74c3c' }}
+            className={`privacy-settings-input${passwordMatch || confirmPassword === '' ? '' : ' error'}`}
             required
           />
           <input
@@ -337,11 +249,11 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
               setConfirmPassword(e.target.value);
               setPasswordMatch(newPassword === e.target.value);
             }}
-            style={{ width: '100%', padding: 8, marginBottom: 4, border: passwordMatch || confirmPassword === '' ? '1px solid #ccc' : '1.5px solid #e74c3c' }}
+            className={`privacy-settings-input${passwordMatch || confirmPassword === '' ? '' : ' error'}`}
             required
           />
           {!passwordMatch && confirmPassword !== '' && (
-            <div style={{ color: '#e74c3c', fontSize: 13, marginTop: -4, marginBottom: 4 }}>
+            <div className="privacy-settings-error">
               Passwords do not match
             </div>
           )}
@@ -353,11 +265,11 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
               setSpotid(e.target.value);
               validateSpotid(e.target.value);
             }}
-            style={{ width: '100%', padding: 8, marginBottom: 4, border: spotidValid === false ? '1.5px solid #e74c3c' : '1px solid #ccc' }}
+            className={`privacy-settings-input${spotidValid === false ? ' error' : ''}`}
             required
           />
           {spotidValid === false && (
-            <div style={{ color: '#e74c3c', fontSize: 13, marginTop: -4, marginBottom: 4 }}>
+            <div className="privacy-settings-error">
               Invalid SPOTID
             </div>
           )}
@@ -369,7 +281,7 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
               setCode(e.target.value);
               // validateCode(e.target.value, spotid); // DISABLED
             }}
-            style={{ width: '100%', padding: 8, marginBottom: 4 }}
+            className="privacy-settings-input"
             required={codeSent}
             disabled={!codeSent}
           />
@@ -377,79 +289,26 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
             <button
               type="button"
               onClick={() => setShowUpdatePassword(false)}
-              style={{
-                border: 'none',
-                borderRadius: 0,
-                padding: '10px 0',
-                fontWeight: 600,
-                fontSize: '1rem',
-                cursor: 'pointer',
-                background: '#888',
-                color: '#fff',
-                width: '48%',
-                boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
-                transition: 'background 0.2s',
-                alignSelf: 'center'
-              }}
+              className="privacy-settings-modal-btn cancel"
             >
               Cancel
             </button>
             <button
               type="submit"
-              style={{
-                border: 'none',
-                borderRadius: 0,
-                padding: '10px 0',
-                fontWeight: 600,
-                fontSize: '1rem',
-                cursor: 'pointer',
-                background: '#25324B',
-                color: '#fff',
-                width: '48%',
-                marginBottom: 4,
-                boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
-                transition: 'background 0.2s',
-                alignSelf: 'center'
-              }}
+              className="privacy-settings-modal-btn continue"
               disabled={sendingCode || !passwordMatch || confirmPassword === '' || spotidValid === false}
             >
               Update Password
             </button>
           </div>
           {sendingCode && <div style={{ color: '#888', fontSize: 13 }}>Sending verification code...</div>}
-          {error && <div style={{ color: 'red', fontSize: 13 }}>{error}</div>}
+          {error && <div className="privacy-settings-error">{error}</div>}
           {success && <div style={{ color: 'green', fontSize: 13 }}>{success}</div>}
         </form>
       )}
       {showFundsPrivacyModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          background: 'rgba(30,40,60,0.65)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 3000,
-        }}>
-          <div style={{
-            background: '#fff',
-            borderRadius: 10,
-            boxShadow: '0 8px 32px 0 rgba(30,60,114,0.18), 0 2px 8px 0 rgba(30,60,114,0.10)',
-            minWidth: 0,
-            maxWidth: 340,
-            width: 320,
-            boxSizing: 'border-box',
-            textAlign: 'center',
-            fontFamily: 'inherit',
-            padding: '22px 18px 18px 18px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
+        <div className="privacy-settings-modal-overlay">
+          <div className="privacy-settings-modal-card" style={{ padding: '22px 18px 18px 18px' }}>
             <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#25324B', marginBottom: 6, letterSpacing: 1 }}>Funds Privacy Verification</div>
             <div style={{ fontSize: '0.95rem', color: '#555', marginBottom: 10 }}>
               Enter the details below to proceed.
@@ -463,7 +322,7 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
                 placeholder="Spot ID"
                 value={fundsSpotid}
                 onChange={e => setFundsSpotid(e.target.value)}
-                style={{ width: '100%', padding: '8px 10px', marginBottom: 4, border: '1px solid #ccc', borderRadius: 5, fontSize: 15, background: '#fafbfc' }}
+                className="privacy-settings-input"
                 required
               />
               <input
@@ -471,7 +330,7 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
                 placeholder="Email Verification Code"
                 value={fundsEmailCode}
                 onChange={e => setFundsEmailCode(e.target.value)}
-                style={{ width: '100%', padding: '8px 10px', marginBottom: 4, border: '1px solid #ccc', borderRadius: 5, fontSize: 15, background: '#fafbfc' }}
+                className="privacy-settings-input"
                 required
               />
               <input
@@ -479,7 +338,7 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
                 placeholder="Password"
                 value={fundsPassword}
                 onChange={e => setFundsPassword(e.target.value)}
-                style={{ width: '100%', padding: '8px 10px', marginBottom: 4, border: '1px solid #ccc', borderRadius: 5, fontSize: 15, background: '#fafbfc' }}
+                className="privacy-settings-input"
                 required
               />
               <input
@@ -487,48 +346,21 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
                 placeholder="2FA Code"
                 value={funds2fa}
                 onChange={e => setFunds2fa(e.target.value)}
-                style={{ width: '100%', padding: '8px 10px', marginBottom: 4, border: '1px solid #ccc', borderRadius: 5, fontSize: 15, background: '#fafbfc' }}
+                className="privacy-settings-input"
                 required
               />
-              <div style={{ display: 'flex', justifyContent: 'center', gap: 8, width: '100%', marginTop: 8 }}>
+              <div className="privacy-settings-modal-btn-row" style={{ marginTop: 8 }}>
                 <button
                   type="button"
                   onClick={() => setShowFundsPrivacyModal(false)}
-                  style={{
-                    border: 'none',
-                    borderRadius: 5,
-                    padding: '9px 0',
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    background: '#888',
-                    color: '#fff',
-                    boxShadow: '0 1px 4px rgba(30,60,114,0.08)',
-                    transition: 'background 0.2s',
-                    alignSelf: 'center',
-                    marginRight: 8,
-                    width: '48%'
-                  }}
+                  className="privacy-settings-modal-btn cancel"
                 >Cancel</button>
                 <button
                   type="submit"
-                  style={{
-                    border: 'none',
-                    borderRadius: 5,
-                    padding: '9px 0',
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    background: '#25324B',
-                    color: '#fff',
-                    boxShadow: '0 1px 4px rgba(30,60,114,0.08)',
-                    transition: 'background 0.2s',
-                    alignSelf: 'center',
-                    width: '48%'
-                  }}
+                  className="privacy-settings-modal-btn continue"
                 >Submit</button>
               </div>
-              {error && <div style={{ color: 'red', fontSize: 13, marginTop: 4 }}>{error}</div>}
+              {error && <div className="privacy-settings-error" style={{ marginTop: 4 }}>{error}</div>}
               {success && <div style={{ color: 'green', fontSize: 13, marginTop: 4 }}>{success}</div>}
             </form>
           </div>
@@ -536,81 +368,31 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
       )}
       {/* Password Modal for WebAuthn Security */}
       {showPasswordModal && (
-        <div style={{
-          position: 'fixed',
-          inset: 0, // replaces top/left/width/height for full overlay
-          background: 'rgba(30,40,60,0.65)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 3000,
-        }}>
-          <div style={{
-            background: '#fff',
-            borderRadius: 3,
-            boxShadow: '0 8px 32px 0 rgba(30,60,114,0.18), 0 2px 8px 0 rgba(30,60,114,0.10)',
-            minWidth: 0,
-            maxWidth: 320, // Only one maxWidth property
-            width: '100%',
-            boxSizing: 'border-box',
-            textAlign: 'center',
-            fontFamily: 'inherit',
-            padding: '20px 18px 18px 18px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: 'auto', // ensures centering
-          }}>
-            <div style={{ fontWeight: 700, fontSize: '1.08rem', color: '#25324B', marginBottom: 10 }}>Enter Password</div>
+        <div className="privacy-settings-modal-overlay">
+          <div className="privacy-settings-modal-card">
+            <div className="privacy-settings-modal-title">Enter Password</div>
             <form style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }} onSubmit={handlePasswordModalSubmit}>
               <input
                 type="password"
                 placeholder="Password"
                 value={passwordInput}
                 onChange={e => setPasswordInput(e.target.value)}
-                style={{ width: '100%', padding: '8px 10px', marginBottom: 6, border: '1px solid #ccc', borderRadius: 3, fontSize: 15, background: '#fafbfc' }}
+                className="privacy-settings-input"
                 required
                 autoFocus
               />
-              <div style={{ display: 'flex', gap: 8, width: '100%', marginTop: 2 }}>
+              <div className="privacy-settings-modal-btn-row">
                 <button
                   type="button"
                   onClick={() => setShowPasswordModal(false)}
-                  style={{
-                    border: 'none',
-                    borderRadius: 3,
-                    padding: '9px 0',
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    background: '#888',
-                    color: '#fff',
-                    width: '48%',
-                    boxShadow: '0 1px 4px rgba(30,60,114,0.08)',
-                    transition: 'background 0.2s',
-                    alignSelf: 'center'
-                  }}
+                  className="privacy-settings-modal-btn cancel"
                 >Cancel</button>
                 <button
                   type="submit"
-                  style={{
-                    border: 'none',
-                    borderRadius: 3,
-                    padding: '9px 0',
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    background: '#25324B',
-                    color: '#fff',
-                    width: '48%',
-                    boxShadow: '0 1px 4px rgba(30,60,114,0.08)',
-                    transition: 'background 0.2s',
-                    alignSelf: 'center'
-                  }}
+                  className="privacy-settings-modal-btn continue"
                 >Continue</button>
               </div>
-              {passwordModalError && <div style={{ color: 'red', fontSize: 13, marginTop: 4 }}>{passwordModalError}</div>}
+              {passwordModalError && <div className="privacy-settings-error" style={{ marginTop: 4 }}>{passwordModalError}</div>}
             </form>
           </div>
         </div>
@@ -632,58 +414,6 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
           aria-label="Close"
         >&times;</button>
       )}
-       <style>
-        {`
-          @media (max-width: 600px) {
-            body, html, #root {
-              width: 100vw !important;
-              overflow-x: hidden !important;
-            }
-            div[style*="box-shadow"] {
-              max-width: 90vw !important;
-              min-width: 0 !important;
-              width: 90vw !important;
-              margin-left: 0 !important;
-              margin-right: 0 !important;
-              padding: 10px 0 !important;
-              box-sizing: border-box !important;
-              border-radius: 0 !important;
-            }
-            div[style*="box-shadow"] input {
-              max-width: 87vw !important;
-              width: 100% !important;
-              box-sizing: border-box !important;
-            }
-            div[style*="box-shadow"] div[style*="display: flex"][style*="gap"] {
-              padding: 0 !important;
-              box-sizing: border-box !important;
-              gap: 8px !important;
-            }
-            /* Main privacy settings buttons only: full width on mobile */
-            div[style*="box-shadow"] > button {
-              width: 95% !important;
-              min-width: 0 !important;
-              border-radius: 0 !important;
-              margin: 0 !important;
-              padding: 10px 0 !important;
-              font-size: 1rem !important;
-            }
-            div[style*="box-shadow"] .MuiButtonBase-root {
-              border-radius: 0 !important;
-            }
-            /* Add gap between main privacy settings buttons on mobile */
-            div[style*="box-shadow"] > button:not(:last-of-type) {
-              margin-bottom: 12px !important;
-            }
-            /* Fix modal button container padding on mobile for password modal */
-            div[style*="box-shadow"] form > div[style*="display: flex"][style*="gap"] {
-              padding-left: 8px !important;
-              padding-right: 8px !important;
-              box-sizing: border-box !important;
-            }
-          }
-        `}
-      </style>
     </div>
   );
 };
