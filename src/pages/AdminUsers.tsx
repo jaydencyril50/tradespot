@@ -105,16 +105,20 @@ const AdminUsers: React.FC = () => {
     try {
       const token = localStorage.getItem('adminToken');
       if (!token) throw new Error('Not authenticated');
-      const res = await axios.post(
+      await axios.post(
         `${API}/api/admin/users/${userId}/toggle-valid-member`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setUsers(users => users.map(u =>
-        u._id === userId ? { ...u, validMember: res.data.validMember } : u
-      ));
-      if (selectedUser && selectedUser._id === userId) {
-        setSelectedUser({ ...selectedUser, validMember: res.data.validMember });
+      // Refetch users to ensure up-to-date validMember status
+      const res = await axios.get(`${API}/api/admin/users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUsers(res.data.users || []);
+      // Update selectedUser if open
+      if (selectedUser) {
+        const updated = res.data.users.find((u: User) => u._id === selectedUser._id);
+        if (updated) setSelectedUser(updated);
       }
     } catch (e: any) {
       setError(e?.response?.data?.error || e.message || 'Failed to toggle valid member.');
