@@ -5,8 +5,10 @@ import { changeWallet, sendFundsPrivacyVerificationCode, verifyFundsPrivacy } fr
 import { changeName, changeEmail } from '../services/api';
 import { changePassword } from '../services/api';
 import './PrivacySettings.css';
+import { useTheme } from '../ThemeContext';
 
 const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [showUpdatePassword, setShowUpdatePassword] = useState(false);
   const [newPassword, setNewPassword] = useState('');
@@ -144,7 +146,7 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
     try {
       // Call backend route for password verification
       const token = localStorage.getItem('token');
-      const resp = await fetch(`${API}/api/auth/webauthn-settings/verify-password`, {
+      const resp = await fetch(`${API}/api/webauthn-settings/settings/verify-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -166,7 +168,7 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   };
 
   return (
-    <div className="privacy-settings-root">
+    <div className={`privacy-settings-root ${theme}`}>
       {success && (
         <div className="privacy-settings-success">
           {success}

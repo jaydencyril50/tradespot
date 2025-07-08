@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
 
+    <!-- Set theme before React loads to prevent flicker -->
+    <script>
+      document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
+    </script>
+
     <!-- 🔥 SEO & Branding Meta -->
     <title>TradeSpot | Secure Crypto Investing Platform</title>
     <meta name="description" content="TradeSpot is a modern crypto investment platform built for fast, safe, and smart crypto investment. Join a trusted community of investors.">

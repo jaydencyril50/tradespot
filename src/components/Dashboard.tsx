@@ -17,6 +17,7 @@ import { FaTelegramPlane, FaWhatsapp, FaBell } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 import NoticeModal from './NoticeModal';
 import { webauthnAuthenticate } from '../utils/webauthn';
+import { useTheme } from '../ThemeContext';
 
 // This is the chat/message icon SVG as a React component
 const ChatIcon: React.FC<{ size?: number; color?: string }> = ({ size = 28, color = '#25324B' }) => {
@@ -246,6 +247,7 @@ const trustedTypesPolicy = window.trustedTypes?.createPolicy('default', {
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const chartRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme ? useTheme() : { theme: 'light' };
   const [marketData, setMarketData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -663,6 +665,16 @@ const Dashboard: React.FC = () => {
 		// eslint-disable-next-line
 	}, [transferEmail]);
 
+	// Green for dark mode, default for light
+	const mainButtonStyle = theme === 'dark' ? {
+		background: '#10c98f',
+		color: '#fff',
+		border: 'none',
+		boxShadow: '0 1px 4px rgba(16,201,143,0.18)',
+		transition: 'background 0.2s',
+		filter: 'none',
+	} : {};
+
 	return (
 		<div className='dashboard-gradient-bg dashboard-circles-container'>
 			<NoticeModal />
@@ -905,6 +917,7 @@ const Dashboard: React.FC = () => {
 							className='dashboard-circle dashboard-action-circle'
 							key={item.label}
 							tabIndex={0}
+							style={mainButtonStyle}
 							onClick={
 								item.label === 'DEPOSIT' ? () => !fundsLocked && navigate('/deposit') :
 								item.label === 'WITHDRAW' ? () => !fundsLocked && navigate('/withdraw') :
@@ -913,8 +926,8 @@ const Dashboard: React.FC = () => {
 								undefined
 							}
 						>
-							<span className='dashboard-circle-icon'>{item.icon}</span>
-							<span className='dashboard-circle-label'>{item.label}</span>
+							<span className='dashboard-circle-icon' style={theme === 'dark' ? { color: '#fff' } : {}}>{item.icon}</span>
+							<span className='dashboard-circle-label' style={theme === 'dark' ? { color: '#fff' } : {}}>{item.label}</span>
 						</button>
 					))}
 				</div>
