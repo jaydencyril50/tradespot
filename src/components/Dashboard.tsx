@@ -554,6 +554,16 @@ const Dashboard: React.FC = () => {
 	  }
 	};
 
+	const [isWebauthnTransferEnabledState, setIsWebauthnTransferEnabledState] = useState<boolean>(false);
+
+	// On mount, check if WebAuthn is enabled for transfer and set state
+	useEffect(() => {
+		(async () => {
+			const enabled = await isWebauthnTransferEnabled();
+			setIsWebauthnTransferEnabledState(enabled);
+		})();
+	}, []);
+
 	// Handle transfer
 	const handleTransfer = async () => {
 		setTransferError('');
@@ -836,7 +846,7 @@ const Dashboard: React.FC = () => {
         )}
       </div>
 	  {/* Set biometricEnabled to false if not implemented */}
-	  {!false && (
+	  {!isWebauthnTransferEnabledState && (
         <div style={{ marginBottom: 12 }}>
           <label style={{ fontWeight: 500, color: '#25324B', marginRight: 10 }}>2FA Code:</label>
           <input
@@ -854,6 +864,11 @@ const Dashboard: React.FC = () => {
             pattern="[0-9]{6}"
             inputMode="numeric"
           />
+        </div>
+      )}
+      {isWebauthnTransferEnabledState && (
+        <div style={{ color: '#888', fontSize: 14, marginBottom: 12 }}>
+          2FA not required when WebAuthn is enabled.
         </div>
       )}
       {transferError && <div style={{ color: '#e74c3c', marginBottom: 10 }}>{transferError}</div>}

@@ -16,6 +16,7 @@ const Withdraw: React.FC = () => {
     const [codeSent, setCodeSent] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [isWebauthnEnabled, setIsWebauthnEnabled] = useState<boolean>(false);
 
     // Fetch user portfolio on mount
     useEffect(() => {
@@ -84,6 +85,14 @@ const Withdraw: React.FC = () => {
             return false;
         }
     };
+
+    // On mount, check if WebAuthn is enabled and set state
+    useEffect(() => {
+        (async () => {
+            const enabled = await isWebauthnWithdrawEnabled();
+            setIsWebauthnEnabled(enabled);
+        })();
+    }, []);
 
     // Handle withdrawal
     const handleWithdraw = async () => {
@@ -213,14 +222,21 @@ const Withdraw: React.FC = () => {
                     </div>
                     <div style={{ marginBottom: 18 }}>
                         <label style={{ fontWeight: 500, color: '#25324B', marginBottom: 4, display: 'block' }}>2FA Code:</label>
-                        <input
-                            type="text"
-                            value={twoFACode}
-                            onChange={e => setTwoFACode(e.target.value)}
-                            style={{ width: '95%', padding: '8px', border: '1px solid #ccc', fontSize: 16 }}
-                            maxLength={6}
-                            inputMode="numeric"
-                        />
+                        {!isWebauthnEnabled && (
+                            <input
+                                type="text"
+                                value={twoFACode}
+                                onChange={e => setTwoFACode(e.target.value)}
+                                style={{ width: '95%', padding: '8px', border: '1px solid #ccc', fontSize: 16 }}
+                                maxLength={6}
+                                inputMode="numeric"
+                            />
+                        )}
+                        {isWebauthnEnabled && (
+                            <div style={{ color: '#888', fontSize: 14, marginTop: 4 }}>
+                                2FA not required when WebAuthn is enabled.
+                            </div>
+                        )}
                     </div>
                     {error && <div style={{ color: '#e74c3c', marginBottom: 10 }}>{error}</div>}
                     {success && <div style={{ color: '#10c98f', marginBottom: 10 }}>{success}</div>}
