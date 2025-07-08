@@ -4,7 +4,7 @@ const API = process.env.REACT_APP_API_BASE_URL;
 
 export const fetchMarketData = async () => {
     try {
-        const response = await axios.get(`${API}/market-data`);
+        const response = await axios.get(`${API}/api/market-data`);
         return response.data;
     } catch (error) {
         throw new Error('Error fetching market data');
@@ -40,7 +40,7 @@ export const loginUser = async (email: string, password: string, twoFAToken?: st
     try {
         const payload: any = { email, password };
         if (twoFAToken) payload.twoFAToken = twoFAToken;
-        const response = await axios.post(`${API}/auth/login`, payload);
+        const response = await axios.post(`${API}/api/auth/login`, payload);
         return response.data;
     } catch (error: any) {
         if (error.response && error.response.data && error.response.data.error) {
@@ -53,7 +53,7 @@ export const loginUser = async (email: string, password: string, twoFAToken?: st
 // Update registerUser to throw backend error message if available
 export const registerUser = async (fullName: string, email: string, password: string, wallet: string, referredBy?: string) => {
     try {
-        const response = await axios.post(`${API}/auth/register`, { fullName, email, password, wallet, referredBy });
+        const response = await axios.post(`${API}/api/auth/register`, { fullName, email, password, wallet, referredBy });
         return response.data;
     } catch (error: any) {
         if (error.response && error.response.data && error.response.data.error) {
@@ -221,7 +221,7 @@ export const changePassword = async (newPassword: string, code: string, spotid: 
 // Admin login
 export const adminLogin = async (email: string, password: string) => {
     try {
-        const response = await axios.post(`${API}/auth/admin/login`, { email, password });
+        const response = await axios.post(`${API}/api/auth/admin/login`, { email, password });
         return response.data;
     } catch (error: any) {
         if (error.response && error.response.data && error.response.data.error) {
@@ -264,7 +264,7 @@ export const getUserIdByEmail = async (email: string) => {
 export const getCurrentUser = async () => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.get(`${API}/auth/user/me`, {
+    const res = await axios.get(`${API}/api/auth/user/me`, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;

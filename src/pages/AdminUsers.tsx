@@ -14,6 +14,7 @@ interface User {
   flexBalance: number; // Added FLEX balance
   faceStatus?: 'not_verified' | 'pending' | 'verified';
   faceImage?: string;
+  validMember?: boolean;
 }
 
 const AdminUsers: React.FC = () => {
@@ -92,6 +93,31 @@ const AdminUsers: React.FC = () => {
       setUsers(users.filter(u => u._id !== userId));
     } catch (e: any) {
       setError(e?.response?.data?.error || e.message || 'Failed to delete user.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Toggle valid member status
+  const handleToggleValidMember = async (userId: string) => {
+    setLoading(true);
+    setError('');
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) throw new Error('Not authenticated');
+      const res = await axios.post(
+        `${API}/api/admin/users/${userId}/toggle-valid-member`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setUsers(users => users.map(u =>
+        u._id === userId ? { ...u, validMember: res.data.validMember } : u
+      ));
+      if (selectedUser && selectedUser._id === userId) {
+        setSelectedUser({ ...selectedUser, validMember: res.data.validMember });
+      }
+    } catch (e: any) {
+      setError(e?.response?.data?.error || e.message || 'Failed to toggle valid member.');
     } finally {
       setLoading(false);
     }
@@ -288,6 +314,30 @@ const AdminUsers: React.FC = () => {
                     onChange={e => setSelectedUser({ ...selectedUser, flexBalance: parseFloat(e.target.value) })}
                     style={{ width: '96%', padding: 6, marginTop: 4, borderRadius: 0, border: '1px solid #ccc' }}
                   />
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <b>Valid Member:</b>
+                  <span style={{ marginLeft: 8, fontWeight: 600, color: selectedUser.validMember ? '#27ae60' : '#e74c3c' }}>
+                    {selectedUser.validMember ? 'Yes' : 'No'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleToggleValidMember(selectedUser._id)}
+                    style={{
+                      marginLeft: 16,
+                      padding: '4px 12px',
+                      background: selectedUser.validMember ? '#e74c3c' : '#27ae60',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: 0,
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      fontSize: 14
+                    }}
+                    disabled={loading}
+                  >
+                    {selectedUser.validMember ? 'Revoke' : 'Make Valid'}
+                  </button>
                 </div>
                 <div style={{
                   display: 'flex',
