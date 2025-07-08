@@ -30,23 +30,23 @@ const ForgotPassword: React.FC = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
-        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card-bg)', padding: '16px 24px 10px 18px', border: '1.5px solid var(--primary)', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)', letterSpacing: 1, fontFamily: 'serif' }}>
           FORGOT PASSWORD
         </span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
         {submitted ? (
-          <div style={{ color: '#1e3c72', fontWeight: 500, fontSize: 18, textAlign: 'center', background: '#f6f9fe', padding: 16, borderRadius: 0, border: '1px solid #e3e6ef', maxWidth: 380 }}>
+          <div style={{ color: 'var(--primary)', fontWeight: 500, fontSize: 18, textAlign: 'center', background: 'var(--card-bg)', padding: 16, borderRadius: 0, border: '1px solid var(--card-bg)', maxWidth: 380 }}>
             If the provided details are correct, a reset link has been sent.
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{
-            background: '#fff',
+            background: 'var(--card-bg)',
             borderRadius: 0,
-            boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-            border: '1px solid #e3e6ef',
+            boxShadow: 'var(--card-shadow)',
+            border: '1px solid var(--card-bg)', // Make border less visible
             padding: '12px 16px',
             minWidth: 200,
             maxWidth: 380,
@@ -60,7 +60,7 @@ const ForgotPassword: React.FC = () => {
             alignItems: 'center',
             gap: 12
           }}>
-            <label htmlFor="email" style={{ alignSelf: 'flex-start', color: '#25324B', fontWeight: 500, marginBottom: 2 }}>Email:</label>
+            <label htmlFor="email" style={{ alignSelf: 'flex-start', color: 'var(--text)', fontWeight: 500, marginBottom: 2 }}>Email:</label>
             <input
               type="email"
               id="email"
@@ -68,9 +68,9 @@ const ForgotPassword: React.FC = () => {
               onChange={e => setEmail(e.target.value)}
               required
               disabled={loading}
-              style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: '#eaf1fb', marginBottom: 8 }}
+              style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: 'var(--bg)', color: 'var(--text)', marginBottom: 8 }}
             />
-            <label htmlFor="wallet" style={{ alignSelf: 'flex-start', color: '#25324B', fontWeight: 500, marginBottom: 2 }}>Wallet Address:</label>
+            <label htmlFor="wallet" style={{ alignSelf: 'flex-start', color: 'var(--text)', fontWeight: 500, marginBottom: 2 }}>Wallet Address:</label>
             <input
               type="text"
               id="wallet"
@@ -78,9 +78,9 @@ const ForgotPassword: React.FC = () => {
               onChange={e => setWallet(e.target.value)}
               required
               disabled={loading}
-              style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: '#eaf1fb', marginBottom: 8 }}
+              style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: 'var(--bg)', color: 'var(--text)', marginBottom: 8 }}
             />
-            <label htmlFor="spotid" style={{ alignSelf: 'flex-start', color: '#25324B', fontWeight: 500, marginBottom: 2 }}>Spot ID:</label>
+            <label htmlFor="spotid" style={{ alignSelf: 'flex-start', color: 'var(--text)', fontWeight: 500, marginBottom: 2 }}>Spot ID:</label>
             <input
               type="text"
               id="spotid"
@@ -88,12 +88,12 @@ const ForgotPassword: React.FC = () => {
               onChange={e => setSpotid(e.target.value)}
               required
               disabled={loading}
-              style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: '#eaf1fb', marginBottom: 8 }}
+              style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: 'var(--bg)', color: 'var(--text)', marginBottom: 8 }}
             />
             <button type="submit" disabled={loading || !email || !wallet || !spotid} style={{
               width: '100%',
-              background: '#888',
-              color: '#fff',
+              background: 'var(--secondary)',
+              color: 'var(--button-text)',
               padding: '10px 0',
               border: 'none',
               borderRadius: 0,

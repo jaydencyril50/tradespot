@@ -32,6 +32,7 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    document.body.setAttribute('data-theme', 'dark');
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -59,7 +60,10 @@ const Profile: React.FC = () => {
     fetchProfile();
     // Poll balances every 5 seconds
     const interval = setInterval(fetchProfile, 5000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      document.body.removeAttribute('data-theme');
+    };
   }, [navigate]);
 
   if (loading) return <div>Loading...</div>;
@@ -67,19 +71,19 @@ const Profile: React.FC = () => {
   if (!user) return <div>No profile data found.</div>;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
-        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card-bg)', padding: '16px 24px 10px 18px', border: '1.5px solid #282829', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)', letterSpacing: 1, fontFamily: 'serif' }}>
           PROFILE
         </span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
         {/* Profile Info Card */}
         <div style={{
-          background: '#fff',
+          background: 'var(--card-bg)',
           borderRadius: 0,
-          boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-          border: '1px solid #e3e6ef',
+          boxShadow: 'var(--card-shadow)',
+          border: '1px solid #282829',
           padding: '12px 16px',
           minWidth: 200,
           maxWidth: 380,
@@ -100,12 +104,12 @@ const Profile: React.FC = () => {
               alignItems: 'center',
               justifyContent: 'center',
               borderRadius: 8,
-              background: '#eaf1fb',
+              background: 'var(--bg)',
               position: 'relative',
             }}>
               {uploading ? (
                 <svg width="36" height="36" viewBox="0 0 50 50">
-                  <circle cx="25" cy="25" r="20" fill="none" stroke="#1e3c72" strokeWidth="5" strokeDasharray="31.4 31.4" strokeLinecap="round">
+                  <circle cx="25" cy="25" r="20" fill="none" stroke="var(--primary)" strokeWidth="5" strokeDasharray="31.4 31.4" strokeLinecap="round">
                     <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite" />
                   </circle>
                 </svg>
@@ -113,7 +117,7 @@ const Profile: React.FC = () => {
                 <img
                   src={user.profilePicture || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.fullName)}
                   alt="Profile"
-                  style={{ width: 70, height: 70, objectFit: 'cover', borderRadius: 8, background: '#eaf1fb', display: 'block' }}
+                  style={{ width: 70, height: 70, objectFit: 'cover', borderRadius: 8, background: 'var(--bg)', display: 'block' }}
                 />
               )}
               {/* VIP Badge */}
@@ -184,7 +188,7 @@ const Profile: React.FC = () => {
             justifyContent: 'center',
           }}>
             <div
-              style={{ fontSize: 22, fontWeight: 700, color: '#1e3c72', marginBottom: 4, cursor: 'pointer', userSelect: 'none' }}
+              style={{ fontSize: 22, fontWeight: 700, color: 'var(--primary)', marginBottom: 4, cursor: 'pointer', userSelect: 'none' }}
               onClick={() => setHideName((v) => !v)}
               title="Click to hide/show name"
             >
@@ -201,10 +205,10 @@ const Profile: React.FC = () => {
         </div>
         {/* Balances Card */}
         <div style={{
-          background: '#fff',
+          background: 'var(--card-bg)',
           borderRadius: 0,
-          boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-          border: '1px solid #e3e6ef',
+          boxShadow: 'var(--card-shadow)',
+          border: '1px solid #282829',
           padding: '12px 16px',
           minWidth: 200,
           maxWidth: 380,
@@ -219,21 +223,21 @@ const Profile: React.FC = () => {
           alignItems: 'center',
         }}>
           <div
-            style={{ fontWeight: 600, color: '#1e3c72', fontSize: 16, cursor: 'pointer', userSelect: 'none' }}
+            style={{ fontWeight: 600, color: 'var(--primary)', fontSize: 16, cursor: 'pointer', userSelect: 'none' }}
             onClick={() => setHideUSDT(v => !v)}
             title="Click to hide/show USDT balance"
           >
             USDT Balance: <span style={{ color: '#10c98f', fontWeight: 700 }}>{hideUSDT ? '****' : user.usdtBalance?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
           <div
-            style={{ fontWeight: 600, color: '#1e3c72', fontSize: 16, cursor: 'pointer', userSelect: 'none' }}
+            style={{ fontWeight: 600, color: 'var(--primary)', fontSize: 16, cursor: 'pointer', userSelect: 'none' }}
             onClick={() => setHideSPOT(v => !v)}
             title="Click to hide/show SPOT balance"
           >
             SPOT Balance: <span style={{ color: '#2a5298', fontWeight: 700 }}>{hideSPOT ? '****' : user.spotBalance?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
           <div
-            style={{ fontWeight: 600, color: '#1e3c72', fontSize: 16, marginTop: 1, cursor: 'pointer', userSelect: 'none' }}
+            style={{ fontWeight: 600, color: 'var(--primary)', fontSize: 16, marginTop: 1, cursor: 'pointer', userSelect: 'none' }}
             onClick={() => setHideFLEX(v => !v)}
             title="Click to hide/show FLEX balance"
           >
@@ -242,10 +246,10 @@ const Profile: React.FC = () => {
         </div>
         {/* Wallet Card */}
         <div style={{
-          background: '#fff',
+          background: 'var(--card-bg)',
           borderRadius: 0,
-          boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-          border: '1px solid #e3e6ef',
+          boxShadow: 'var(--card-shadow)',
+          border: '1px solid #282829',
           padding: '12px 16px',
           minWidth: 200,
           maxWidth: 380,
@@ -259,7 +263,7 @@ const Profile: React.FC = () => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-          <div style={{ fontWeight: 600, color: '#1e3c72', fontSize: 16 }}>
+          <div style={{ fontWeight: 600, color: 'var(--primary)', fontSize: 16 }}>
             Wallet Address:
             <span
               style={{
@@ -284,10 +288,10 @@ const Profile: React.FC = () => {
         </div>
         {/* Recent Transactions Card */}
         <div style={{
-          background: '#fff',
+          background: 'var(--card-bg)',
           borderRadius: 0,
-          boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-          border: '1px solid #e3e6ef',
+          boxShadow: 'var(--card-shadow)',
+          border: '1px solid #282829',
           padding: '12px 16px',
           minWidth: 200,
           maxWidth: 380,
@@ -302,7 +306,7 @@ const Profile: React.FC = () => {
           justifyContent: 'flex-start',
           alignItems: 'center',
         }}>
-          <div style={{ fontWeight: 700, color: '#1e3c72', fontSize: 17, marginBottom: 8 }}>Recent Transactions</div>
+          <div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: 17, marginBottom: 8 }}>Recent Transactions</div>
           {user.recentTransactions && user.recentTransactions.length > 0 ? (
             <>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, width: '100%', flex: 1, overflowY: 'auto' }}>
@@ -310,7 +314,7 @@ const Profile: React.FC = () => {
                   ? user.recentTransactions
                   : user.recentTransactions.slice(0, 5)
                 ).map((tx: any, idx: number) => (
-                  <li key={idx} style={{ marginBottom: 8, fontSize: 15, color: '#2a5298', background: '#f7faff', padding: '8px 12px', borderRadius: 4, boxShadow: '0 1px 4px #eaf1fb', textAlign: 'left' }}>
+                  <li key={idx} style={{ marginBottom: 8, fontSize: 15, color: 'var(--primary)', background: 'var(--bg)', padding: '8px 12px', borderRadius: 4, boxShadow: '0 1px 4px var(--bg)', textAlign: 'left' }}>
                     <span style={{ fontWeight: 600 }}>{tx.type}</span> &bull; {tx.amount} {tx.currency} <span style={{ color: '#888', fontWeight: 400 }}>on {new Date(tx.date).toLocaleString()}</span>
                   </li>
                 ))}
@@ -319,15 +323,15 @@ const Profile: React.FC = () => {
                 <button
                   style={{
                     marginTop: 8,
-                    background: '#eaf1fb',
-                    color: '#1e3c72',
+                    background: 'var(--bg)',
+                    color: 'var(--primary)',
                     border: 'none',
                     padding: '6px 18px',
                     borderRadius: 4,
                     cursor: 'pointer',
                     fontWeight: 600,
                     alignSelf: 'center',
-                    boxShadow: '0 1px 4px #eaf1fb',
+                    boxShadow: '0 1px 4px var(--bg)',
                     fontSize: 15
                   }}
                   onClick={() => {
@@ -341,7 +345,7 @@ const Profile: React.FC = () => {
                 <button
                   style={{
                     marginTop: 8,
-                    background: '#f7faff',
+                    background: 'var(--bg)',
                     color: '#d32f2f',
                     border: 'none',
                     padding: '6px 18px',
@@ -349,7 +353,7 @@ const Profile: React.FC = () => {
                     cursor: 'pointer',
                     fontWeight: 600,
                     alignSelf: 'center',
-                    boxShadow: '0 1px 4px #eaf1fb',
+                    boxShadow: '0 1px 4px var(--bg)',
                     fontSize: 15
                   }}
                   onClick={() => setShowAllTransactions(false)}
@@ -364,10 +368,10 @@ const Profile: React.FC = () => {
         </div>
         {/* Logout Card */}
         <div style={{
-          background: '#fff',
+          background: 'var(--card-bg)',
           borderRadius: 0,
-          boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-          border: '1px solid #e3e6ef',
+          boxShadow: 'var(--card-shadow)',
+          border: '1px solid #282829',
           padding: '12px 16px',
           minWidth: 200,
           maxWidth: 380,

@@ -14,26 +14,28 @@ const Modal: React.FC<ModalProps> = ({ onClose, children }) => {
         left: 0,
         width: '100vw',
         height: '100vh',
-        background: '#fff', // Full white overlay for fullscreen chat
+        background: 'rgba(0,0,0,0.45)', // darken the rest of the page
         zIndex: 2000,
-        display: 'flex',
-        flexDirection: 'column',
+        display: 'grid',
+        placeItems: 'center',
       }}
       onClick={onClose}
     >
       <div
         style={{
           position: 'relative',
-          width: '100vw',
-          height: '100vh',
-          maxWidth: '100vw',
-          margin: 0,
-          display: 'flex',
-          flexDirection: 'column',
+          width: 'auto',
+          maxWidth: '98vw',
+          margin: '0 auto',
+          background: 'var(--card-bg)',
+          color: 'var(--text)',
+          border: '1.5px solid var(--primary)', // Add border lines on modal edges
         }}
         onClick={e => e.stopPropagation()}
       >
-        {children}
+        <div style={{ width: '100%', maxWidth: 420 }}>
+          {children}
+        </div>
       </div>
     </div>
   );

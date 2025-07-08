@@ -36,15 +36,15 @@ const Team: React.FC = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          background: '#f6f9fe',
+          background: 'var(--card-bg)',
           padding: '16px 24px 10px 18px',
-          border: '1.5px solid #232b36',
+          border: '1.5px solid rgba(120,130,150,0.13)',
           borderTop: 0,
           borderLeft: 0,
           borderRight: 0,
@@ -54,7 +54,7 @@ const Team: React.FC = () => {
           style={{
             fontSize: '1.4rem',
             fontWeight: 700,
-            color: '#232b36',
+            color: 'var(--text)',
             letterSpacing: 1,
             fontFamily: 'serif',
           }}
@@ -76,11 +76,10 @@ const Team: React.FC = () => {
         {/* Referral Link Card */}
         <div
           style={{
-            background: '#fff',
+            background: 'var(--card-bg)',
             borderRadius: 0,
-            boxShadow:
-              '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-            border: '1px solid #e3e6ef',
+            boxShadow: 'var(--card-shadow)',
+            border: '1px solid rgba(120,130,150,0.13)',
             padding: '12px 16px',
             minWidth: 200,
             maxWidth: 380,
@@ -100,7 +99,7 @@ const Team: React.FC = () => {
               fontSize: '1.1rem',
               marginBottom: 4,
               fontWeight: 700,
-              color: '#25324B',
+              color: 'var(--text)',
               letterSpacing: 1,
             }}
           >
@@ -124,10 +123,10 @@ const Team: React.FC = () => {
                 padding: 8,
                 border: '1px solid #ccc',
                 fontSize: 15,
-                background: '#f7faff',
+                background: 'var(--bg)',
                 borderRadius: 0,
                 cursor: 'pointer',
-                color: copied ? '#1e3c72' : undefined,
+                color: copied ? 'var(--primary)' : 'var(--text)',
                 fontWeight: copied ? 600 : undefined,
               }}
               onFocus={e => e.target.select()}
@@ -141,15 +140,15 @@ const Team: React.FC = () => {
             />
             <button
               style={{
-                background: '#eaf1fb',
+                background: 'var(--bg)',
                 border: 'none',
                 borderRadius: 4,
                 padding: '6px 10px',
                 cursor: 'pointer',
                 fontWeight: 600,
-                color: '#1e3c72',
+                color: 'var(--primary)',
                 fontSize: 15,
-                boxShadow: '0 1px 4px #eaf1fb',
+                boxShadow: '0 1px 4px var(--bg)',
               }}
               title="Show QR Code"
               onClick={() => setShowQR(true)}
@@ -161,11 +160,10 @@ const Team: React.FC = () => {
         {/* Total Members Card */}
         <div
           style={{
-            background: '#fff',
+            background: 'var(--card-bg)',
             borderRadius: 0,
-            boxShadow:
-              '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-            border: '1px solid #e3e6ef',
+            boxShadow: 'var(--card-shadow)',
+            border: '1px solid rgba(120,130,150,0.13)',
             padding: '12px 16px',
             minWidth: 200,
             maxWidth: 380,
@@ -183,7 +181,7 @@ const Team: React.FC = () => {
           <div
             style={{
               fontWeight: 700,
-              color: '#25324B',
+              color: 'var(--text)',
               fontSize: '1.1rem',
               letterSpacing: 1,
             }}
@@ -195,9 +193,9 @@ const Team: React.FC = () => {
         {loading ? (
           <div
             style={{
-              background: '#fff',
+              background: 'var(--card-bg)',
               boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
-              border: '1px solid #e3e6ef',
+              border: '1px solid rgba(120,130,150,0.13)',
               borderRadius: 0,
               padding: 18,
               width: '100%',
@@ -205,6 +203,7 @@ const Team: React.FC = () => {
               textAlign: 'center',
               fontSize: 16,
               marginBottom: 20,
+              color: 'var(--text)'
             }}
           >
             Loading...
@@ -212,9 +211,9 @@ const Team: React.FC = () => {
         ) : members.length === 0 ? (
           <div
             style={{
-              background: '#fff',
+              background: 'var(--card-bg)',
               boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
-              border: '1px solid #e3e6ef',
+              border: '1px solid rgba(120,130,150,0.13)',
               borderRadius: 0,
               padding: 18,
               width: '100%',
@@ -222,6 +221,7 @@ const Team: React.FC = () => {
               textAlign: 'center',
               fontSize: 16,
               marginBottom: 20,
+              color: 'var(--text)'
             }}
           >
             No team members yet.
@@ -231,11 +231,10 @@ const Team: React.FC = () => {
             <div
               key={member.id}
               style={{
-                background: '#fff',
+                background: 'var(--card-bg)',
                 borderRadius: 0,
-                boxShadow:
-                  '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-                border: '1px solid #e3e6ef',
+                boxShadow: 'var(--card-shadow)',
+                border: '1px solid rgba(120,130,150,0.13)',
                 padding: '12px 16px',
                 minWidth: 200,
                 maxWidth: 380,
@@ -253,7 +252,7 @@ const Team: React.FC = () => {
               <div
                 style={{
                   fontWeight: 700,
-                  color: '#25324B',
+                  color: 'var(--text)',
                   fontSize: '1.05rem',
                   marginBottom: 4,
                 }}
@@ -261,7 +260,7 @@ const Team: React.FC = () => {
                 {member.fullName}
               </div>
               <div
-                style={{ color: '#555', fontSize: '0.97rem', marginBottom: 2 }}
+                style={{ color: 'var(--secondary)', fontSize: '0.97rem', marginBottom: 2 }}
               >
                 {member.email}
               </div>
@@ -270,7 +269,7 @@ const Team: React.FC = () => {
               >
                 Joined: {new Date(member.joinedAt).toLocaleDateString()}
               </div>
-              <div style={{ fontSize: 13, marginTop: 2 }}>
+              <div style={{ fontSize: 13, marginTop: 2, color: 'var(--text)' }}>
                 TradeSpoter: {member.validMember ? '✅' : '❌'}
               </div>
             </div>
@@ -290,7 +289,7 @@ const Team: React.FC = () => {
               height: '100vh',
               background: 'rgba(0,0,0,0.35)',
               display: 'flex',
-              alignItems: 'center', // changed from flex-end to center
+              alignItems: 'center',
               justifyContent: 'center',
               zIndex: 1000,
             }}
@@ -298,35 +297,57 @@ const Team: React.FC = () => {
           >
             <motion.div
               id="qrModalCard"
-              initial={{ y: 64 }} // slide up from 64px below center
+              initial={{ y: 64 }}
               animate={{ y: 0 }}
               exit={{ y: 64 }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
               style={{
-                background: '#fff',
+                background: 'var(--card-bg)',
                 padding: 24,
-                borderRadius: '3px', // fully rounded for center modal
-                boxShadow: '0 8px 32px rgba(30,60,114,0.18)',
+                borderRadius: '3px',
+                boxShadow: 'var(--card-shadow)',
+                border: '1px solid rgba(120,130,150,0.13)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                width: '100%',
-                maxWidth: 340,
-                minHeight: 200,
+                width: '90vw',
+                maxWidth: 320,
+                minHeight: 240,
+                justifyContent: 'center', // ensure vertical centering
               }}
               onClick={e => e.stopPropagation()}
             >
-              {/* QRCode directly in modal card */}
-              {/* @ts-ignore */}
-              <QRCodeCanvas value={referralLink} size={140} style={{ width: 140, height: 140, margin: '16px 0' }} />
+              {/* Responsive QR Wrapper */}
               <div
                 style={{
-                  marginTop: 0,
-                  fontSize: 15,
-                  color: '#1e3c72',
-                  wordBreak: 'break-all',
+                  background: '#fff',
+                  padding: 8,
+                  borderRadius: 4,
+                  boxShadow: '0 0 10px rgba(0,0,0,0.2)',
+                  width: '100%',
+                  maxWidth: 140,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center', // center vertically in wrapper
+                  margin: '0 auto', // center horizontally in modal
+                }}
+              >
+                <QRCodeCanvas
+                  value={referralLink}
+                  size={window.innerWidth < 600 ? 120 : 140}
+                  bgColor="#fff"
+                  fgColor="#000"
+                  style={{ width: '100%', maxWidth: 140, height: 'auto', display: 'block', margin: '0 auto' }}
+                />
+              </div>
+              <div
+                style={{
+                  marginTop: 25,
+                  fontSize: 14,
+                  color: 'var(--primary)',
+                  wordBreak: 'break-word',
                   textAlign: 'center',
-                  marginBottom: 8,
+                  padding: '0 8px',
                 }}
               >
                 {referralLink}
@@ -336,22 +357,30 @@ const Team: React.FC = () => {
                   #qrModalCard {
                     padding: 12px !important;
                     border-radius: 3px !important;
-                    width: 88vw !important;
-                    max-width: 300px !important;
+                    width: 90vw !important;
+                    max-width: 70vw !important;
                     min-height: 200px !important;
                   }
-                  #qrModalCard canvas {
-                    width: 120px !important;
-                    height: 120px !important;
+                  #qrModalCard > div:first-child {
+                    max-width: 90px !important;
+                    max-height: 300px !important;
+                    padding: 20px !important;
+                    margin: 0 auto !important;
+                    display: flex !important;
+                    justify-content: center !important;
+                    align-items: center !important;
                   }
-                  #qrModalCard button {
-                    width: 80% !important;
-                    max-width: 200px !important;
-                    margin-top: 12px !important;
+                  #qrModalCard canvas {
+                    width: 100% !important;
+                    height: auto !important;
+                    max-width: 120px !important;
+                    min-width: 125px !important;
+                    display: block !important;
+                    margin: 0 auto !important;
                   }
                   #qrModalCard div {
                     word-break: break-word !important;
-                    font-size: 14px !important;
+                    font-size: 13px !important;
                   }
                 }
               `}</style>

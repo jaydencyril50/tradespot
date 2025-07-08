@@ -6,7 +6,7 @@ const Home: React.FC = () => {
   return (
     <div style={{
       minHeight: "100vh",
-      background: "#f5f7fa",
+      background: "var(--bg)",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -14,8 +14,8 @@ const Home: React.FC = () => {
     }}>
       <div style={{
         width: "100%",
-        border: "1.5px solid #222",
-        background: "#fff",
+        border: "1.5px solid var(--primary)",
+        background: "var(--card-bg)",
         marginBottom: "0",
         marginTop: "0",
         boxSizing: "border-box"
@@ -26,24 +26,25 @@ const Home: React.FC = () => {
           letterSpacing: "0.08em",
           fontSize: "2rem",
           margin: "16px 0 10px 0",
-          fontFamily: "serif"
+          fontFamily: "serif",
+          color: "var(--primary)"
         }}>
           TRADESPOT
         </h1>
       </div>
       <div style={{
-        background: "#fff",
+        background: "var(--card-bg)",
         marginTop: "20px",
-        boxShadow: "0 6px 32px 0 #0005, 0 3px 12px 0 #0002",
+        boxShadow: "var(--card-shadow)",
         padding: "22px 18px 18px 18px",
         maxWidth: "340px",
         width: "100%",
         textAlign: "center",
-        border: "1px solid #e0e3e8"
+        border: "1px solid var(--card-bg)"
       }}>
         <h2 style={{
           fontWeight: "bold",
-          color: "#1a2233",
+          color: "var(--primary)",
           fontSize: "1rem",
           marginBottom: "10px",
           fontFamily: "serif"
@@ -51,7 +52,7 @@ const Home: React.FC = () => {
           Empowering Your Crypto Journey
         </h2>
         <p style={{
-          color: "#444",
+          color: "var(--text)",
           fontSize: "0.95rem",
           marginBottom: "18px",
           lineHeight: "1.5"
@@ -68,8 +69,8 @@ const Home: React.FC = () => {
         }}>
           <button
             style={{
-              background: "#888",
-              color: "#fff",
+              background: "var(--secondary)",
+              color: "var(--button-text)",
               fontWeight: "bold",
               fontSize: "0.95rem",
               border: "none",
@@ -84,8 +85,8 @@ const Home: React.FC = () => {
           </button>
           <button
             style={{
-              background: "#888",
-              color: "#fff",
+              background: "var(--secondary)",
+              color: "var(--button-text)",
               fontWeight: "bold",
               fontSize: "0.95rem",
               border: "none",
@@ -107,8 +108,8 @@ const Home: React.FC = () => {
           </button>
           <button
             style={{
-              background: "#888",
-              color: "#fff",
+              background: "var(--secondary)",
+              color: "var(--button-text)",
               fontWeight: "bold",
               fontSize: "0.95rem",
               border: "none",
@@ -136,52 +137,52 @@ const Home: React.FC = () => {
       }}>
         {/* Card 1 */}
         <div style={{
-          background: "#fff",
-          boxShadow: "0 8px 32px 0 #0004, 0 3px 12px 0 #0002",
+          background: "var(--card-bg)",
+          boxShadow: "var(--card-shadow)",
           padding: "18px 12px 14px 12px",
           textAlign: "center",
-          border: "1px solid #e0e3e8",
+          border: "1px solid var(--card-bg)",
           minHeight: "110px"
         }}>
           <div style={{ fontSize: "2.0rem", marginBottom: "10px" }}>🔒</div>
-          <div style={{ fontWeight: 650, fontSize: "1.0rem", marginBottom: "8px", color: "#1a2233", fontFamily: "serif" }}>
+          <div style={{ fontWeight: 650, fontSize: "1.0rem", marginBottom: "8px", color: "var(--primary)", fontFamily: "serif" }}>
             Secure Onboarding
           </div>
-          <div style={{ color: "#444", fontSize: "1.0rem" }}>
+          <div style={{ color: "var(--text)", fontSize: "1.0rem" }}>
             SPOT ID face verification and personal wallet for every user.
           </div>
         </div>
         {/* Card 2 */}
         <div style={{
-          background: "#fff",
-          boxShadow: "0 8px 32px 0 #0004, 0 3px 12px 0 #0002",
+          background: "var(--card-bg)",
+          boxShadow: "var(--card-shadow)",
           padding: "18px 12px 14px 12px",
           textAlign: "center",
-          border: "1px solid #e0e3e8",
+          border: "1px solid var(--card-bg)",
           minHeight: "110px"
         }}>
           <div style={{ fontSize: "2.0rem", marginBottom: "10px" }}>🤖</div>
-          <div style={{ fontWeight: 650, fontSize: "1.0rem", marginBottom: "8px", color: "#1a2233", fontFamily: "serif" }}>
+          <div style={{ fontWeight: 650, fontSize: "1.0rem", marginBottom: "8px", color: "var(--primary)", fontFamily: "serif" }}>
             AI-Powered Trading
           </div>
-          <div style={{ color: "#444", fontSize: "1.0rem" }}>
+          <div style={{ color: "var(--text)", fontSize: "1.0rem" }}>
             Automated bots and human experts maximize your returns, hands-free.
           </div>
         </div>
         {/* Card 3 */}
         <div style={{
-          background: "#fff",
-          boxShadow: "0 8px 32px 0 #0004, 0 3px 12px 0 #0002",
+          background: "var(--card-bg)",
+          boxShadow: "var(--card-shadow)",
           padding: "18px 12px 14px 12px",
           textAlign: "center",
-          border: "1px solid #e0e3e8",
+          border: "1px solid var(--card-bg)",
           minHeight: "110px"
         }}>
           <div style={{ fontSize: "2.0rem", marginBottom: "10px" }}>⚡</div>
-          <div style={{ fontWeight: 650, fontSize: "1.0rem", marginBottom: "8px", color: "#1a2233", fontFamily: "serif" }}>
+          <div style={{ fontWeight: 650, fontSize: "1.0rem", marginBottom: "8px", color: "var(--primary)", fontFamily: "serif" }}>
             Instant Transfers
           </div>
-          <div style={{ color: "#444", fontSize: "1.0rem" }}>
+          <div style={{ color: "var(--text)", fontSize: "1.0rem" }}>
             Send funds instantly to other users with zero blockchain fees.
           </div>
         </div>
@@ -200,11 +201,11 @@ const Home: React.FC = () => {
       }}>
         {/* 24/7 AI Support */}
         <div style={{
-          background: "#fff",
-          boxShadow: "0 8px 32px 0 #0004, 0 3px 12px 0 #0002",
+          background: "var(--card-bg)",
+          boxShadow: "var(--card-shadow)",
           padding: "18px 12px 14px 12px",
           textAlign: "center",
-          border: "1px solid #e0e3e8",
+          border: "1px solid var(--card-bg)",
           minHeight: "110px"
         }}>
           <div style={{ fontSize: "2.0rem", marginBottom: "10px" }}>
@@ -214,22 +215,22 @@ const Home: React.FC = () => {
             fontWeight: 650,
             fontSize: "1.0rem",
             marginBottom: "8px",
-            color: "#1a2233",
+            color: "var(--primary)",
             fontFamily: "serif"
           }}>
             24/7 AI Support
           </div>
-          <div style={{ color: "#444", fontSize: "1.0rem" }}>
+          <div style={{ color: "var(--text)", fontSize: "1.0rem" }}>
             Get help anytime from our SuperAI Bot and join the Social Hub.
           </div>
         </div>
         {/* Full Transparency */}
         <div style={{
-          background: "#fff",
-          boxShadow: "0 8px 32px 0 #0004, 0 3px 12px 0 #0002",
+          background: "var(--card-bg)",
+          boxShadow: "var(--card-shadow)",
           padding: "18px 12px 14px 12px",
           textAlign: "center",
-          border: "1px solid #e0e3e8",
+          border: "1px solid var(--card-bg)",
           minHeight: "110px"
         }}>
           <div style={{ fontSize: "2.0rem", marginBottom: "10px" }}>
@@ -239,12 +240,12 @@ const Home: React.FC = () => {
             fontWeight: 650,
             fontSize: "1.0rem",
             marginBottom: "8px",
-            color: "#1a2233",
+            color: "var(--primary)",
             fontFamily: "serif"
           }}>
             Full Transparency
           </div>
-          <div style={{ color: "#444", fontSize: "1.0rem" }}>
+          <div style={{ color: "var(--text)", fontSize: "1.0rem" }}>
             Admin oversight, real-time logs, and secure withdrawals for peace of mind.
           </div>
         </div>
@@ -260,11 +261,11 @@ const Home: React.FC = () => {
         marginBottom: "48px"
       }}>
         <div style={{
-          background: "#fff",
-          boxShadow: "0 12px 48px 0 #0006, 0 4px 16px 0 #0003",
+          background: "var(--card-bg)",
+          boxShadow: "var(--card-shadow)",
           padding: "18px 12px 28px 12px",
           textAlign: "center",
-          border: "1px solid #e0e3e8",
+          border: "1px solid var(--card-bg)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -281,13 +282,13 @@ const Home: React.FC = () => {
             fontWeight: 650,
             fontSize: "1.0rem",
             marginBottom: "8px",
-            color: "#1a2233",
+            color: "var(--primary)",
             fontFamily: "serif"
           }}>
-            Fast &amp; Secure Withdrawals
+            Fast & Secure Withdrawals
           </div>
           <div style={{
-            color: "#444",
+            color: "var(--text)",
             fontSize: "1.0rem",
             marginTop: "2px",
             maxWidth: "520px"

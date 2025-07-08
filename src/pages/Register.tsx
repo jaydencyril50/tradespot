@@ -23,6 +23,11 @@ const Register: React.FC = () => {
         const params = new URLSearchParams(window.location.search);
         const ref = params.get('ref') || '';
         setReferredBy(ref);
+        // Set dark theme for this page
+        document.body.setAttribute('data-theme', 'dark');
+        return () => {
+            document.body.removeAttribute('data-theme');
+        };
     }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -119,12 +124,12 @@ const Register: React.FC = () => {
     };
 
     return (
-        <div style={{ minHeight: '100vh', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <form onSubmit={handleSubmit} style={{
-                background: '#fff',
+                background: 'var(--card-bg)',
                 borderRadius: 0,
-                boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-                border: '1px solid #e3e6ef',
+                boxShadow: 'var(--card-shadow)',
+                border: '1px solid #282829',
                 padding: '12px 16px',
                 minWidth: 200,
                 maxWidth: 380,
@@ -138,19 +143,19 @@ const Register: React.FC = () => {
                 alignItems: 'center',
                 gap: 0
             }} autoComplete="off">
-                <h2 style={{ fontSize: '1.1rem', marginBottom: 16, fontWeight: 700, color: '#25324B', letterSpacing: 1 }}>Register</h2>
+                <h2 style={{ fontSize: '1.1rem', marginBottom: 16, fontWeight: 700, color: 'var(--primary)', letterSpacing: 1 }}>Register</h2>
                 {success && (
-                    <div style={{ background: '#d4edda', color: '#155724', padding: '10px', borderRadius: 0, marginBottom: 16, textAlign: 'center', fontWeight: 500, border: '1px solid #c3e6cb', width: '90%' }}>
+                    <div style={{ background: '#1a3a2a', color: '#b8ffb8', padding: '10px', borderRadius: 0, marginBottom: 16, textAlign: 'center', fontWeight: 500, border: '1px solid #2e5c3c', width: '90%' }}>
                         {success}
                     </div>
                 )}
                 {error && (
-                    <div style={{ background: '#f8d7da', color: '#721c24', padding: '10px', borderRadius: 0, marginBottom: 16, textAlign: 'center', fontWeight: 500, border: '1px solid #f5c6cb', width: '90%' }}>
+                    <div style={{ background: '#3a1a1a', color: '#ffb8b8', padding: '10px', borderRadius: 0, marginBottom: 16, textAlign: 'center', fontWeight: 500, border: '1px solid #5c2e2e', width: '90%' }}>
                         {error}
                     </div>
                 )}
                 <div style={{ marginBottom: '1rem', width: '90%' }}>
-                    <label htmlFor="register-fullname" style={{ display: 'block', marginBottom: 6, color: '#333', fontWeight: 500, textAlign: 'left' }}>Full Name:</label>
+                    <label htmlFor="register-fullname" style={{ display: 'block', marginBottom: 6, color: 'var(--text)', fontWeight: 500, textAlign: 'left' }}>Full Name:</label>
                     <input
                         id="register-fullname"
                         name="fullName"
@@ -159,11 +164,11 @@ const Register: React.FC = () => {
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFullName(e.target.value)}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: '#eaf1fb' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #444', fontSize: 16, background: '#23242a', color: 'var(--text)' }}
                     />
                 </div>
                 <div style={{ marginBottom: '1rem', width: '90%' }}>
-                    <label htmlFor="register-email" style={{ display: 'block', marginBottom: 6, color: '#333', fontWeight: 500, textAlign: 'left' }}>Email:</label>
+                    <label htmlFor="register-email" style={{ display: 'block', marginBottom: 6, color: 'var(--text)', fontWeight: 500, textAlign: 'left' }}>Email:</label>
                     <input
                         id="register-email"
                         name="email"
@@ -172,7 +177,7 @@ const Register: React.FC = () => {
                         onChange={handleEmailChange}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: emailValid || email === '' ? '1px solid #ccc' : '1.5px solid #e74c3c', fontSize: 16, background: '#eaf1fb' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: emailValid || email === '' ? '1px solid #444' : '1.5px solid #e74c3c', fontSize: 16, background: '#23242a', color: 'var(--text)' }}
                     />
                     {!emailValid && email !== '' && (
                         <div style={{ color: '#e74c3c', fontSize: 13, marginTop: 4 }}>
@@ -181,7 +186,7 @@ const Register: React.FC = () => {
                     )}
                 </div>
                 <div style={{ marginBottom: '1rem', width: '90%' }}>
-                    <label htmlFor="register-password" style={{ display: 'block', marginBottom: 6, color: '#333', fontWeight: 500, textAlign: 'left' }}>Password:</label>
+                    <label htmlFor="register-password" style={{ display: 'block', marginBottom: 6, color: 'var(--text)', fontWeight: 500, textAlign: 'left' }}>Password:</label>
                     <input
                         id="register-password"
                         name="password"
@@ -190,11 +195,11 @@ const Register: React.FC = () => {
                         onChange={handlePasswordChange}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: passwordMatch || confirmPassword === '' ? '1px solid #ccc' : '1.5px solid #e74c3c', fontSize: 16, background: '#eaf1fb' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: passwordMatch || confirmPassword === '' ? '1px solid #444' : '1.5px solid #e74c3c', fontSize: 16, background: '#23242a', color: 'var(--text)' }}
                     />
                 </div>
                 <div style={{ marginBottom: '1rem', width: '90%' }}>
-                    <label htmlFor="register-confirm-password" style={{ display: 'block', marginBottom: 6, color: '#333', fontWeight: 500, textAlign: 'left' }}>Confirm Password:</label>
+                    <label htmlFor="register-confirm-password" style={{ display: 'block', marginBottom: 6, color: 'var(--text)', fontWeight: 500, textAlign: 'left' }}>Confirm Password:</label>
                     <input
                         id="register-confirm-password"
                         name="confirmPassword"
@@ -203,11 +208,11 @@ const Register: React.FC = () => {
                         onChange={handleConfirmPasswordChange}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: passwordMatch || confirmPassword === '' ? '1px solid #ccc' : '1.5px solid #e74c3c', fontSize: 16, background: '#eaf1fb' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: passwordMatch || confirmPassword === '' ? '1px solid #444' : '1.5px solid #e74c3c', fontSize: 16, background: '#23242a', color: 'var(--text)' }}
                     />
                 </div>
                 <div style={{ marginBottom: '1.5rem', width: '90%' }}>
-                    <label htmlFor="register-wallet" style={{ display: 'block', marginBottom: 6, color: '#333', fontWeight: 500, textAlign: 'left' }}>TRC20 Wallet Address:</label>
+                    <label htmlFor="register-wallet" style={{ display: 'block', marginBottom: 6, color: 'var(--text)', fontWeight: 500, textAlign: 'left' }}>TRC20 Wallet Address:</label>
                     <input
                         id="register-wallet"
                         name="wallet"
@@ -216,7 +221,7 @@ const Register: React.FC = () => {
                         onChange={handleWalletChange}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: walletValid || wallet === '' ? '1px solid #ccc' : '1.5px solid #e74c3c', fontSize: 16, background: '#eaf1fb' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: walletValid || wallet === '' ? '1px solid #444' : '1.5px solid #e74c3c', fontSize: 16, background: '#23242a', color: 'var(--text)' }}
                     />
                     {!walletValid && wallet !== '' && (
                         <div style={{ color: '#e74c3c', fontSize: 13, marginTop: 4 }}>
@@ -225,7 +230,7 @@ const Register: React.FC = () => {
                     )}
                 </div>
                 <div style={{ marginBottom: '1rem', width: '90%' }}>
-                    <label htmlFor="register-referral" style={{ display: 'block', marginBottom: 6, color: '#333', fontWeight: 500, textAlign: 'left' }}>Referral Code:</label>
+                    <label htmlFor="register-referral" style={{ display: 'block', marginBottom: 6, color: 'var(--text)', fontWeight: 500, textAlign: 'left' }}>Referral Code:</label>
                     <input
                         id="register-referral"
                         name="referredBy"
@@ -235,7 +240,7 @@ const Register: React.FC = () => {
                         onBlur={handleReferralBlur}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: referralValid || referredBy === '' ? '1px solid #ccc' : '1.5px solid #e74c3c', fontSize: 16, background: '#eaf1fb' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: referralValid || referredBy === '' ? '1px solid #444' : '1.5px solid #e74c3c', fontSize: 16, background: '#23242a', color: 'var(--text)' }}
                     />
                     {!referralValid && referredBy !== '' && (
                         <div style={{ color: '#e74c3c', fontSize: 13, marginTop: 4 }}>Referral code does not exist.</div>
@@ -246,8 +251,8 @@ const Register: React.FC = () => {
                 </div>
                 <button type="submit" style={{
                     width: '90%',
-                    background: '#888',
-                    color: '#fff',
+                    background: 'var(--secondary)',
+                    color: 'var(--button-text)',
                     padding: '10px 0',
                     border: 'none',
                     borderRadius: 0,
@@ -263,8 +268,8 @@ const Register: React.FC = () => {
                     Register
                 </button>
                 <div style={{ marginTop: 8, textAlign: 'center', width: '90%' }}>
-                    <span style={{ color: '#333', fontSize: 15 }}>Already have an account?{' '}
-                        <span style={{ color: '#1e3c72', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline' }} onClick={() => navigate('/login')}>
+                    <span style={{ color: 'var(--text)', fontSize: 15 }}>Already have an account?{' '}
+                        <span style={{ color: 'var(--primary)', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline' }} onClick={() => navigate('/login')}>
                             Login
                         </span>
                     </span>

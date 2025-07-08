@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../ThemeContext';
 
 const AdditionalSettings: React.FC = () => {
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
+  const [showThemeModal, setShowThemeModal] = useState(false);
+
   return (
-    <div style={{ minHeight: '100vh', background: '#f6f9fe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{
-        background: '#fff',
+        background: 'var(--card-bg)',
         borderRadius: 0,
-        boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+        boxShadow: 'var(--card-shadow)',
         padding: '12px 16px',
         minWidth: 200,
         maxWidth: 380,
@@ -23,8 +27,8 @@ const AdditionalSettings: React.FC = () => {
         alignItems: 'center',
         gap: 0
       }}>
-        <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#25324B', marginBottom: 4, letterSpacing: 1 }}>Additional Settings</div>
-        <div style={{ fontSize: '0.95rem', color: '#555', marginBottom: 8 }}>
+        <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--primary)', marginBottom: 4, letterSpacing: 1 }}>Additional Settings</div>
+        <div style={{ fontSize: '0.95rem', color: 'var(--text)', marginBottom: 8 }}>
           Configure extra options and features here.
         </div>
         <button
@@ -36,14 +40,14 @@ const AdditionalSettings: React.FC = () => {
             fontSize: '1rem',
             cursor: 'pointer',
             marginTop: 4,
-            background: '#888',
-            color: '#fff',
+            background: 'var(--secondary)',
+            color: '#fff', // force white text
             boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
             transition: 'background 0.2s',
             alignSelf: 'center',
             width: '100%'
           }}
-          // onClick={() => {}}
+          onClick={() => setShowThemeModal(true)}
         >
          Change theme
         </button>
@@ -56,14 +60,13 @@ const AdditionalSettings: React.FC = () => {
             fontSize: '1rem',
             cursor: 'pointer',
             marginTop: 8,
-            background: '#888',
-            color: '#fff',
+            background: 'var(--secondary)',
+            color: '#fff', // force white text
             boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
             transition: 'background 0.2s',
             alignSelf: 'center',
             width: '100%'
           }}
-          // onClick={() => {}}
         >
          Change language
         </button>
@@ -76,8 +79,8 @@ const AdditionalSettings: React.FC = () => {
             fontSize: '1rem',
             cursor: 'pointer',
             marginTop: 8,
-            background: '#888', // match other buttons
-            color: '#fff',
+            background: 'var(--secondary)',
+            color: '#fff', // force white text
             boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
             transition: 'background 0.2s',
             alignSelf: 'center',
@@ -89,6 +92,91 @@ const AdditionalSettings: React.FC = () => {
         >
          Download APK
         </button>
+        {showThemeModal && (
+          <div style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(30,40,60,0.65)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 3000,
+          }}>
+            <div style={{
+              background: 'var(--card-bg)',
+              borderRadius: 8,
+              boxShadow: 'var(--card-shadow)',
+              minWidth: 0,
+              maxWidth: 320,
+              width: '100%',
+              boxSizing: 'border-box',
+              textAlign: 'center',
+              fontFamily: 'inherit',
+              padding: '22px 18px 18px 18px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: 'auto',
+            }}>
+              <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--primary)', marginBottom: 10 }}>Theme</div>
+              <div style={{ fontSize: '1rem', color: 'var(--text)', marginBottom: 16 }}>
+                Select your preferred theme mode:
+              </div>
+              <div style={{ display: 'flex', gap: 12, marginBottom: 18 }}>
+                <button
+                  style={{
+                    padding: '8px 18px',
+                    borderRadius: 4,
+                    border: theme === 'light' ? '2px solid #25324B' : '1px solid #888',
+                    background: theme === 'light' ? '#fff' : 'var(--secondary)',
+                    color: theme === 'light' ? '#25324B' : 'var(--text)',
+                    fontWeight: 600,
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => setTheme('light')}
+                  disabled={theme === 'light'}
+                >
+                  Light
+                </button>
+                <button
+                  style={{
+                    padding: '8px 18px',
+                    borderRadius: 4,
+                    border: theme === 'dark' ? '2px solid #25324B' : '1px solid #888',
+                    background: theme === 'dark' ? '#232b36' : 'var(--secondary)',
+                    color: theme === 'dark' ? '#e3e6ef' : 'var(--text)',
+                    fontWeight: 600,
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => setTheme('dark')}
+                  disabled={theme === 'dark'}
+                >
+                  Dark
+                </button>
+              </div>
+              <button
+                style={{
+                  border: 'none',
+                  borderRadius: 3,
+                  padding: '9px 0',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  background: 'var(--secondary)',
+                  color: 'var(--text)',
+                  width: '100%',
+                  boxShadow: '0 1px 4px rgba(30,60,114,0.08)',
+                  transition: 'background 0.2s',
+                  alignSelf: 'center',
+                }}
+                onClick={() => setShowThemeModal(false)}
+              >Close</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

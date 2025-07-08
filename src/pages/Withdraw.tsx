@@ -154,19 +154,19 @@ const Withdraw: React.FC = () => {
     };
 
     return (
-        <div style={{ minHeight: '100vh', background: '#fff' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
-                <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+        <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card-bg)', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
+                <span style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text)', letterSpacing: 1, fontFamily: 'serif' }}>
                     WITHDRAW FLEX
                 </span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 60px)', gap: 20 }}>
-                <div style={{ background: '#fff', boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)', border: '1px solid #e3e6ef', padding: '18px 24px', minWidth: 200, maxWidth: 380, width: '100%', textAlign: 'center', fontFamily: 'inherit' }}>
+                <div style={{ background: 'var(--card-bg)', boxShadow: 'var(--card-shadow)', border: '1px solid #e3e6ef', padding: '18px 24px', minWidth: 200, maxWidth: 380, width: '100%', textAlign: 'center', fontFamily: 'inherit' }}>
                     <div style={{ marginBottom: 16, fontWeight: 600, color: '#1e3c72' }}>
                         FLEX Balance: <span style={{ color: '#10c98f' }}>{loading ? 'Loading...' : flexBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     </div>
                     <div style={{ marginBottom: 18 }}>
-                        <label style={{ fontWeight: 500, color: '#25324B', marginBottom: 4, display: 'block' }}>Withdrawal Wallet Address:</label>
+                        <label style={{ fontWeight: 500, color: 'var(--text)', marginBottom: 4, display: 'block' }}>Withdrawal Wallet Address:</label>
                         <input
                             type="text"
                             value={wallet}
@@ -175,14 +175,14 @@ const Withdraw: React.FC = () => {
                         />
                     </div>
                     <div style={{ marginBottom: 18 }}>
-                        <label style={{ fontWeight: 500, color: '#25324B', marginBottom: 4, display: 'block' }}>Amount to Withdraw:</label>
+                        <label style={{ fontWeight: 500, color: 'var(--text)', marginBottom: 4, display: 'block' }}>Amount to Withdraw:</label>
                         <input
                             type="number"
                             min="0"
                             step="any"
                             value={amount}
                             onChange={handleAmountChange}
-                            style={{ width: '95%', padding: '8px', border: '1px solid #ccc', fontSize: 16 }}
+                            style={{ width: '95%', padding: '8px', border: '1px solid #ccc', fontSize: 16, background: 'var(--card-bg)', color: 'var(--text)' }}
                         />
                         {amount && Number(amount) > flexBalance && (
                             <div style={{ color: '#e74c3c', fontWeight: 600, marginTop: 4, fontSize: 14 }}>Insufficient funds.</div>
@@ -190,12 +190,12 @@ const Withdraw: React.FC = () => {
                     </div>
                     <div style={{ marginBottom: 18, display: 'flex', alignItems: 'center' }}>
                         <div style={{ flex: 1 }}>
-                            <label style={{ fontWeight: 500, color: '#25324B', marginBottom: 4, display: 'block' }}>Email Verification Code:</label>
+                            <label style={{ fontWeight: 500, color: 'var(--text)', marginBottom: 4, display: 'block' }}>Email Verification Code:</label>
                             <input
                                 type="text"
                                 value={verificationCode}
                                 onChange={e => setVerificationCode(e.target.value)}
-                                style={{ width: '90%', padding: '8px', border: '1px solid #ccc', fontSize: 16 }}
+                                style={{ width: '90%', padding: '8px', border: '1px solid #ccc', fontSize: 16, background: 'var(--card-bg)', color: 'var(--text)' }}
                                 maxLength={6}
                                 inputMode="numeric"
                             />
@@ -210,8 +210,8 @@ const Withdraw: React.FC = () => {
                                 padding: '8px 12px',
                                 border: 'none',
                                 borderRadius: 0,
-                                background: '#1e3c72',
-                                color: '#fff',
+                                background: 'var(--primary)',
+                                color: 'var(--button-text)',
                                 fontWeight: 600,
                                 cursor: sendingCode ? 'not-allowed' : 'pointer',
                                 minWidth: 80,
@@ -221,13 +221,13 @@ const Withdraw: React.FC = () => {
                         </button>
                     </div>
                     <div style={{ marginBottom: 18 }}>
-                        <label style={{ fontWeight: 500, color: '#25324B', marginBottom: 4, display: 'block' }}>2FA Code:</label>
+                        <label style={{ fontWeight: 500, color: 'var(--text)', marginBottom: 4, display: 'block' }}>2FA Code:</label>
                         {!isWebauthnEnabled && (
                             <input
                                 type="text"
                                 value={twoFACode}
                                 onChange={e => setTwoFACode(e.target.value)}
-                                style={{ width: '95%', padding: '8px', border: '1px solid #ccc', fontSize: 16 }}
+                                style={{ width: '95%', padding: '8px', border: '1px solid #ccc', fontSize: 16, background: 'var(--card-bg)', color: 'var(--text)' }}
                                 maxLength={6}
                                 inputMode="numeric"
                             />
@@ -245,8 +245,8 @@ const Withdraw: React.FC = () => {
                         disabled={loading}
                         style={{
                             width: '95%',
-                            background: '#888',
-                            color: '#fff',
+                            background: 'var(--secondary)',
+                            color: 'var(--button-text)',
                             padding: '12px 0',
                             border: 'none',
                             borderRadius: 0,

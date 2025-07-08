@@ -296,15 +296,15 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div style={{ minHeight: '100vh', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {showCaptcha && (
                 <CaptchaModal onSuccess={handleCaptchaSuccess} onClose={() => setShowCaptcha(false)} />
             )}
             <form onSubmit={twoFARequired ? handle2FASubmit : handleSubmit} style={{
-                background: '#fff',
+                background: 'var(--card-bg)',
                 borderRadius: 0,
-                boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-                border: '1px solid #e3e6ef',
+                boxShadow: 'var(--card-shadow)',
+                border: '1px solid var(--card-bg)',
                 padding: '12px 16px',
                 minWidth: 200,
                 maxWidth: 380,
@@ -318,9 +318,9 @@ const Login: React.FC = () => {
                 alignItems: 'center',
                 gap: 0
             }} autoComplete="off">
-                <h2 style={{ fontSize: '1.1rem', marginBottom: 16, fontWeight: 700, color: '#25324B', letterSpacing: 1 }}>Login</h2>
+                <h2 style={{ fontSize: '1.1rem', marginBottom: 16, fontWeight: 700, color: 'var(--primary)', letterSpacing: 1 }}>Login</h2>
                 <div style={{ marginBottom: '1rem', width: '90%' }}>
-                    <label htmlFor="login-email" style={{ display: 'block', marginBottom: 6, color: '#333', fontWeight: 500, textAlign: 'left' }}>Email:</label>
+                    <label htmlFor="login-email" style={{ display: 'block', marginBottom: 6, color: 'var(--text)', fontWeight: 500, textAlign: 'left' }}>Email:</label>
                     <input
                         id="login-email"
                         name="email"
@@ -329,7 +329,7 @@ const Login: React.FC = () => {
                         onChange={handleEmailChange}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: emailValid || email === '' ? '1px solid #ccc' : '1.5px solid #e74c3c', fontSize: 16, background: '#eaf1fb' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: emailValid || email === '' ? '1px solid #ccc' : '1.5px solid #e74c3c', fontSize: 16, background: 'var(--bg)', color: 'var(--text)' }}
                     />
                     {!emailValid && email !== '' && (
                         <div style={{ color: '#e74c3c', fontSize: 13, marginTop: 4 }}>
@@ -338,7 +338,7 @@ const Login: React.FC = () => {
                     )}
                 </div>
                 <div style={{ marginBottom: '1.2rem', width: '90%' }}>
-                    <label htmlFor="login-password" style={{ display: 'block', marginBottom: 6, color: '#333', fontWeight: 500, textAlign: 'left' }}>Password:</label>
+                    <label htmlFor="login-password" style={{ display: 'block', marginBottom: 6, color: 'var(--text)', fontWeight: 500, textAlign: 'left' }}>Password:</label>
                     <input
                         id="login-password"
                         name="password"
@@ -347,12 +347,12 @@ const Login: React.FC = () => {
                         onChange={e => setPassword(e.target.value)}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: '#eaf1fb' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: 'var(--bg)', color: 'var(--text)' }}
                     />
                 </div>
                 {twoFARequired && (
                     <div style={{ marginBottom: '1.2rem', width: '90%' }}>
-                        <label htmlFor="login-2fa" style={{ display: 'block', marginBottom: 6, color: '#333', fontWeight: 500, textAlign: 'left' }}>2FA Code:</label>
+                        <label htmlFor="login-2fa" style={{ display: 'block', marginBottom: 6, color: 'var(--text)', fontWeight: 500, textAlign: 'left' }}>2FA Code:</label>
                         <input
                             id="login-2fa"
                             name="twofa"
@@ -361,7 +361,7 @@ const Login: React.FC = () => {
                             onChange={e => setTwoFACode(e.target.value)}
                             required
                             autoComplete="off"
-                            style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: '#eaf1fb' }}
+                            style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: 'var(--bg)', color: 'var(--text)' }}
                             maxLength={6}
                             pattern="[0-9]{6}"
                             inputMode="numeric"
@@ -371,8 +371,8 @@ const Login: React.FC = () => {
                 {error && <p style={{ color: '#d32f2f', background: '#ffeaea', padding: '0.5rem', borderRadius: 0, textAlign: 'center', marginBottom: 12, width: '90%' }}>{error}</p>}
                 <button type="submit" style={{
                     width: '90%',
-                    background: '#888',
-                    color: '#fff',
+                    background: 'var(--secondary)',
+                    color: 'var(--button-text)',
                     padding: '10px 0',
                     border: 'none',
                     borderRadius: 0,
@@ -396,9 +396,9 @@ const Login: React.FC = () => {
                     gap: 12,
                     width: '90%',
                     padding: '10px 0',
-                    backgroundColor: '#fff',
-                    color: '#3c4043',
-                    border: '1px solid #dadce0',
+                    backgroundColor: 'var(--card-bg)',
+                    color: 'var(--text)',
+                    border: '1px solid var(--card-bg)',
                     borderRadius: 4,
                     fontWeight: 500,
                     fontSize: '1rem',
@@ -408,11 +408,11 @@ const Login: React.FC = () => {
                     transition: 'background 0.3s, box-shadow 0.3s',
                   }}
                   onMouseOver={(e) => {
-                    e.currentTarget.style.backgroundColor = '#f7f8f8';
+                    e.currentTarget.style.backgroundColor = 'var(--bg)';
                     e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.12)';
                   }}
                   onMouseOut={(e) => {
-                    e.currentTarget.style.backgroundColor = '#fff';
+                    e.currentTarget.style.backgroundColor = 'var(--card-bg)';
                     e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.1)';
                   }}
                 >
@@ -424,14 +424,14 @@ const Login: React.FC = () => {
                   Sign in with Google
                 </button>
                 <div style={{ marginTop: 8, textAlign: 'center', width: '90%' }}>
-                    <span style={{ color: '#333', fontSize: 15 }}>Don't have an account?{' '}
-                        <span style={{ color: '#1e3c72', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline' }} onClick={() => navigate('/register')}>
+                    <span style={{ color: 'var(--text)', fontSize: 15 }}>Don't have an account?{' '}
+                        <span style={{ color: 'var(--primary)', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline' }} onClick={() => navigate('/register')}>
                             Register
                         </span>
                     </span>
                 </div>
                 <div style={{ marginTop: 8, textAlign: 'center', width: '90%' }}>
-                    <span style={{ color: '#1e3c72', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline', fontSize: 15 }} onClick={() => navigate('/forgot-password')}>
+                    <span style={{ color: 'var(--primary)', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline', fontSize: 15 }} onClick={() => navigate('/forgot-password')}>
                         Forgot Password?
                     </span>
                 </div>

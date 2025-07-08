@@ -72,27 +72,27 @@ const ResetPassword: React.FC = () => {
   const passwordsMatch = password === confirm;
 
   if (tokenValid === false) {
-    return <div style={{ color: '#e74c3c', fontWeight: 500, fontSize: 18, textAlign: 'center', background: '#f6f9fe', padding: 16, borderRadius: 0, border: '1px solid #e3e6ef', maxWidth: 380, margin: '40px auto' }}>{error || 'Invalid or expired token.'}</div>;
+    return <div style={{ color: 'var(--text)', fontWeight: 500, fontSize: 18, textAlign: 'center', background: 'var(--card-bg)', padding: 16, borderRadius: 0, border: '1px solid #e3e6ef', maxWidth: 380, margin: '40px auto' }}>{error || 'Invalid or expired token.'}</div>;
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
-        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card-bg)', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text)', letterSpacing: 1, fontFamily: 'serif' }}>
           RESET PASSWORD
         </span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
         {success ? (
-          <div style={{ color: '#27ae60', fontWeight: 500, fontSize: 18, textAlign: 'center', background: '#f6f9fe', padding: 16, borderRadius: 0, border: '1px solid #e3e6ef', maxWidth: 380 }}>
+          <div style={{ color: '#27ae60', fontWeight: 500, fontSize: 18, textAlign: 'center', background: 'var(--card-bg)', padding: 16, borderRadius: 0, border: '1px solid #e3e6ef', maxWidth: 380 }}>
             Password has been reset! You may now <a href="/login" style={{ color: '#1e3c72', fontWeight: 600 }}>log in</a>.
           </div>
         ) : (
           tokenValid === true && (
             <form onSubmit={handleSubmit} style={{
-              background: '#fff',
+              background: 'var(--card-bg)',
               borderRadius: 0,
-              boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+              boxShadow: 'var(--card-shadow)',
               border: '1px solid #e3e6ef',
               padding: '12px 16px',
               minWidth: 200,
@@ -107,7 +107,7 @@ const ResetPassword: React.FC = () => {
               alignItems: 'center',
               gap: 12
             }}>
-              <label htmlFor="password" style={{ alignSelf: 'flex-start', color: '#25324B', fontWeight: 500, marginBottom: 2 }}>New Password:</label>
+              <label htmlFor="password" style={{ alignSelf: 'flex-start', color: 'var(--text)', fontWeight: 500, marginBottom: 2 }}>New Password:</label>
               <input
                 type="password"
                 id="password"
@@ -116,9 +116,9 @@ const ResetPassword: React.FC = () => {
                 required
                 minLength={6}
                 disabled={loading}
-                style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: '#eaf1fb', marginBottom: 8 }}
+                style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: 'var(--bg)', color: 'var(--text)', marginBottom: 8 }}
               />
-              <label htmlFor="confirm" style={{ alignSelf: 'flex-start', color: '#25324B', fontWeight: 500, marginBottom: 2 }}>Confirm Password:</label>
+              <label htmlFor="confirm" style={{ alignSelf: 'flex-start', color: 'var(--text)', fontWeight: 500, marginBottom: 2 }}>Confirm Password:</label>
               <input
                 type="password"
                 id="confirm"
@@ -127,7 +127,7 @@ const ResetPassword: React.FC = () => {
                 required
                 minLength={6}
                 disabled={loading}
-                style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: '#eaf1fb', marginBottom: 8 }}
+                style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: 'var(--bg)', color: 'var(--text)', marginBottom: 8 }}
               />
               {confirm && !passwordsMatch && (
                 <div style={{ color: '#e74c3c', fontSize: 14, marginBottom: 4, fontWeight: 500 }}>
@@ -136,8 +136,8 @@ const ResetPassword: React.FC = () => {
               )}
               <button type="submit" disabled={loading || !password || !confirm || !passwordsMatch} style={{
                 width: '100%',
-                background: '#888',
-                color: '#fff',
+                background: 'var(--secondary)',
+                color: 'var(--button-text)',
                 padding: '10px 0',
                 border: 'none',
                 borderRadius: 0,

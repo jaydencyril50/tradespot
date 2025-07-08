@@ -349,10 +349,10 @@ const SimulatedMarketChart = () => {
   }, [profileModalOpen]);
 
   return (
-    <div className="market-root">
+    <div className="market-root" style={{ background: 'var(--bg)', minHeight: '100vh' }}>
       {/* Header Bar */}
-      <div className="market-header">
-        <span className="market-header-title">
+      <div className="market-header" style={{ background: 'var(--card-bg)', borderBottom: '1.5px solid var(--primary)' }}>
+        <span className="market-header-title" style={{ color: 'var(--primary)' }}>
           SPOT/USDT MARKET
         </span>
         <img
@@ -367,24 +367,24 @@ const SimulatedMarketChart = () => {
         {/* Chart Card */}
         <div
           className="market-chart-card"
-          style={isFullscreen ? { padding: 0, height: '100vh' } : {}}
+          style={Object.assign({}, isFullscreen ? { padding: 0, height: '100vh' } : {}, { background: 'var(--card-bg)', boxShadow: 'var(--card-shadow)', border: '1px solid var(--card-bg)' })}
         >
           {/* Chart Controls */}
-          <div className="market-chart-controls">
+          <div className="market-chart-controls" style={{ color: 'var(--text)' }}>
             <label><input type="checkbox" checked={showSMA} onChange={() => setShowSMA(!showSMA)} /> SMA</label>
             <label><input type="checkbox" checked={showEMA} onChange={() => setShowEMA(!showEMA)} /> EMA</label>
             <label><input type="checkbox" checked={showRSI} onChange={() => setShowRSI(!showRSI)} /> RSI</label>
             <label><input type="checkbox" checked={showMACD} onChange={() => setShowMACD(!showMACD)} /> MACD</label>
             <span
               onClick={() => setIsFullscreen(f => !f)}
-              style={{ cursor: 'pointer', marginLeft: 8, fontSize: 22, display: 'flex', alignItems: 'center' }}
+              style={{ cursor: 'pointer', marginLeft: 8, fontSize: 22, display: 'flex', alignItems: 'center', color: 'var(--primary)' }}
               title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
             >
               {/* SVG Zoom/Fullscreen Icon */}
               {isFullscreen ? (
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#232b36" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18H5a2 2 0 0 1-2-2v-4"/><polyline points="7 16 3 16 3 12"/><path d="M15 6h4a2 2 0 0 1 2 2v4"/><polyline points="17 8 21 8 21 12"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18H5a2 2 0 0 1-2-2v-4"/><polyline points="7 16 3 16 3 12"/><path d="M15 6h4a2 2 0 0 1 2 2v4"/><polyline points="17 8 21 8 21 12"/></svg>
               ) : (
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#232b36" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
               )}
             </span>
           </div>
@@ -404,8 +404,9 @@ const SimulatedMarketChart = () => {
               zIndex: 9999,
               borderRadius: 0,
               boxShadow: '0 0 0 9999px rgba(0,0,0,0.85)',
-              margin: 0
-            } : {}}
+              margin: 0,
+              background: 'var(--bg)'
+            } : { background: 'var(--bg)' }}
           >
             {isFullscreen && (
               <button
@@ -450,37 +451,95 @@ const SimulatedMarketChart = () => {
         </div>
         {/* Buy/Sell/Order Buttons Section */}
         <div className="market-buy-sell-order market-buy-sell-order-vertical">
-          <div className="market-btn-card">
-            <button
-              type="button"
+          <div className="market-btn-card" style={{ background: 'var(--card-bg)', boxShadow: 'var(--card-shadow)', border: '1px solid var(--card-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 50 }}>
+            <span
               onClick={() => {
                 setTradeType('buy');
                 navigate('/buy');
               }}
               className={`market-btn buy${tradeType === 'buy' ? ' active' : ''}`}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--primary)',
+                fontSize: '1.2rem',
+                padding: 0,
+                minWidth: 80,
+                borderRadius: 3,
+                fontWeight: 800,
+                height: 'auto',
+                cursor: 'pointer',
+                outline: 'none',
+                boxShadow: 'none',
+                display: 'inline-block',
+                textDecoration: tradeType === 'buy' ? 'underline' : 'none',
+                transition: 'color 0.2s',
+                textAlign: 'center',
+              }}
+              tabIndex={0}
+              role="button"
             >
               Buy
-            </button>
+            </span>
           </div>
-          <div className="market-btn-card">
-            <button
-              type="button"
+          <div className="market-btn-card" style={{ background: 'var(--card-bg)', boxShadow: 'var(--card-shadow)', border: '1px solid var(--card-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 50 }}>
+            <span
               onClick={() => {
+                setTradeType('sell');
                 navigate('/sell');
               }}
               className={`market-btn sell${tradeType === 'sell' ? ' active' : ''}`}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--primary)',
+                fontSize: '1.2rem',
+                padding: 0,
+                minWidth: 80,
+                borderRadius: 3,
+                fontWeight: 800,
+                height: 'auto',
+                cursor: 'pointer',
+                outline: 'none',
+                boxShadow: 'none',
+                display: 'inline-block',
+                textDecoration: tradeType === 'sell' ? 'underline' : 'none',
+                transition: 'color 0.2s',
+                textAlign: 'center',
+              }}
+              tabIndex={0}
+              role="button"
             >
               Sell
-            </button>
+            </span>
           </div>
-          <div className="market-btn-card">
-            <button
-              type="button"
+          <div className="market-btn-card" style={{ background: 'var(--card-bg)', boxShadow: 'var(--card-shadow)', border: '1px solid var(--card-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 50 }}>
+            <span
               onClick={() => navigate('/order')}
               className="market-btn order"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--primary)',
+                fontSize: '1.2rem',
+                padding: 0,
+                minWidth: 70,
+                borderRadius: 3,
+                fontWeight: 800,
+                height: 'auto',
+                cursor: 'pointer',
+                outline: 'none',
+                boxShadow: 'none',
+                display: 'inline-block',
+                textDecoration: 'none',
+                transition: 'color 0.2s',
+                textAlign: 'center',
+              }}
+              tabIndex={0}
+              role="button"
             >
               Order
-            </button>
+            </span>
           </div>
         </div>
       </div>
@@ -503,8 +562,9 @@ const SimulatedMarketChart = () => {
           <div
             className="market-profile-modal"
             onClick={e => e.stopPropagation()}
+            style={{ background: 'var(--card-bg)', color: 'var(--text)', boxShadow: 'var(--card-shadow)', border: '1px solid var(--card-bg)' }}
           >
-            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Account Overview</div>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8, color: 'var(--primary)' }}>Account Overview</div>
             <div><b>USDT Balance:</b> {userUSDTBalance !== null ? userUSDTBalance + ' USDT' : '...'}</div>
             <div><b>SPOT Balance:</b> {userSpotBalance !== null ? userSpotBalance + ' SPOT' : '...'}</div>
             {/* FLEX Profit Activation Button */}

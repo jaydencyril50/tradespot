@@ -8,6 +8,14 @@ const NotificationsPage: React.FC = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    // Set dark theme for this page
+    document.body.setAttribute('data-theme', 'dark');
+    return () => {
+      document.body.removeAttribute('data-theme');
+    };
+  }, []);
+
+  useEffect(() => {
     const fetchNotifications = async () => {
       setLoading(true);
       setError('');
@@ -38,14 +46,14 @@ const NotificationsPage: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
-        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card-bg)', padding: '16px 24px 10px 18px', border: '1.5px solid #282829', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)', letterSpacing: 1, fontFamily: 'serif' }}>
           NOTIFICATIONS
         </span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20, marginBottom: 40 }}>
-        {loading && <div style={{ color: '#1e3c72', fontWeight: 500 }}>Loading...</div>}
+        {loading && <div style={{ color: 'var(--primary)', fontWeight: 500 }}>Loading...</div>}
         {error && <div style={{ color: '#e74c3c', marginBottom: 16, fontWeight: 500 }}>{error}</div>}
         {!loading && notifications.length === 0 && !error && (
           <div style={{ color: '#888', fontSize: 16, textAlign: 'center', margin: '40px 0' }}>No notifications.</div>
@@ -55,10 +63,10 @@ const NotificationsPage: React.FC = () => {
             <div
               key={n._id || idx}
               style={{
-                background: '#fff',
+                background: 'var(--card-bg)',
                 borderRadius: 0,
-                boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-                border: '1px solid #e3e6ef',
+                boxShadow: 'var(--card-shadow)',
+                border: '1px solid #282829',
                 padding: '12px 16px',
                 minWidth: 200,
                 maxWidth: 380,
@@ -72,10 +80,10 @@ const NotificationsPage: React.FC = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 fontWeight: n.read ? 400 : 600,
-                color: '#25324B',
+                color: 'var(--text)',
               }}
             >
-              <div style={{ fontWeight: 700, color: '#1e3c72', fontSize: 15, marginBottom: 4 }}>{n.message}</div>
+              <div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: 15, marginBottom: 4 }}>{n.message}</div>
               <div style={{ color: '#888', fontSize: 13 }}>{new Date(n.createdAt).toLocaleString()}</div>
             </div>
           ))

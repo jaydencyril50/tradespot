@@ -163,20 +163,27 @@ const OrderPage: React.FC = () => {
   // Filtered orders based on filter state
   const filteredOrders = filter === 'all' ? orders : orders.filter((o: any) => o.status === filter);
 
+  useEffect(() => {
+    document.body.setAttribute('data-theme', 'dark');
+    return () => {
+      document.body.removeAttribute('data-theme');
+    };
+  }, []);
+
   return (
-    <div style={{ minHeight: '100vh', background: '#fff' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        background: '#f6f9fe',
+        background: 'var(--card-bg)',
         padding: '16px 24px 10px 18px',
-        border: '1.5px solid #232b36',
+        border: '1.5px solid #282829',
         borderTop: 0,
         borderLeft: 0,
         borderRight: 0
       }}>
-        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)', letterSpacing: 1, fontFamily: 'serif' }}>
           MY ORDER
         </span>
       </div>
@@ -188,9 +195,9 @@ const OrderPage: React.FC = () => {
               style={{
                 padding: '6px 12px',
                 borderRadius: 6,
-                border: filter === 'all' ? '2px solid #1e3c72' : '1px solid #e3e6ef',
-                background: filter === 'all' ? '#f6f9fe' : '#fff',
-                color: '#25324B',
+                border: filter === 'all' ? '2px solid var(--primary)' : '1px solid #282829',
+                background: filter === 'all' ? 'var(--card-bg)' : 'var(--bg)',
+                color: 'var(--text)',
                 fontWeight: filter === 'all' ? 700 : 500,
                 cursor: 'pointer',
                 fontSize: 15,
@@ -203,9 +210,9 @@ const OrderPage: React.FC = () => {
               style={{
                 padding: '6px 12px',
                 borderRadius: 6,
-                border: filter === 'pending' ? '2px solid #1e3c72' : '1px solid #e3e6ef',
-                background: filter === 'pending' ? '#f6f9fe' : '#fff',
-                color: '#25324B',
+                border: filter === 'pending' ? '2px solid var(--primary)' : '1px solid #282829',
+                background: filter === 'pending' ? 'var(--card-bg)' : 'var(--bg)',
+                color: 'var(--text)',
                 fontWeight: filter === 'pending' ? 700 : 500,
                 cursor: 'pointer',
                 fontSize: 15,
@@ -218,9 +225,9 @@ const OrderPage: React.FC = () => {
               style={{
                 padding: '6px 12px',
                 borderRadius: 6,
-                border: filter === 'cancelled' ? '2px solid #1e3c72' : '1px solid #e3e6ef',
-                background: filter === 'cancelled' ? '#f6f9fe' : '#fff',
-                color: '#25324B',
+                border: filter === 'cancelled' ? '2px solid var(--primary)' : '1px solid #282829',
+                background: filter === 'cancelled' ? 'var(--card-bg)' : 'var(--bg)',
+                color: 'var(--text)',
                 fontWeight: filter === 'cancelled' ? 700 : 500,
                 cursor: 'pointer',
                 fontSize: 15,
@@ -233,9 +240,9 @@ const OrderPage: React.FC = () => {
               style={{
                 padding: '6px 12px',
                 borderRadius: 6,
-                border: filter === 'completed' ? '2px solid #1e3c72' : '1px solid #e3e6ef',
-                background: filter === 'completed' ? '#f6f9fe' : '#fff',
-                color: '#25324B',
+                border: filter === 'completed' ? '2px solid var(--primary)' : '1px solid #282829',
+                background: filter === 'completed' ? 'var(--card-bg)' : 'var(--bg)',
+                color: 'var(--text)',
                 fontWeight: filter === 'completed' ? 700 : 500,
                 cursor: 'pointer',
                 fontSize: 15,
@@ -251,10 +258,10 @@ const OrderPage: React.FC = () => {
         )}
         {filteredOrders.map((order: any) => (
           <div key={order._id} style={{
-            background: '#fff',
+            background: 'var(--card-bg)',
             borderRadius: 0,
-            boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-            border: '1px solid #e3e6ef',
+            boxShadow: 'var(--card-shadow)',
+            border: '1px solid #282829',
             padding: '12px 16px',
             minWidth: 200,
             maxWidth: 360,
@@ -270,23 +277,23 @@ const OrderPage: React.FC = () => {
             {/* Show correct info for buy/sell order */}
             {order.status === 'pending' && (
               <>
-                <div style={{ fontSize: 20, fontWeight: 600, color: '#1e3c72', marginBottom: 10 }}>
+                <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--primary)', marginBottom: 10 }}>
                   {order.type === 'buy' ? 'Seller making payment…' : 'Buyer making payment…'}
                 </div>
-                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
+                <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
                 {/* Unified layout for buy and sell */}
-                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>
+                <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>
                   RATE: <b>{order.price} USDT/SPOT</b>
                 </div>
-                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>
+                <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>
                   {order.type === 'buy'
                     ? <>DEBIT: <b>{order.usdtAmount} USDT</b> | CREDIT: <b>{order.spotAmount} SPOT</b></>
                     : <>CREDIT: <b>{order.usdtAmount} USDT</b> | DEBIT: <b>{order.spotAmount} SPOT</b> </>}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                  <div style={{ fontSize: 16, color: '#25324B' }}>Status: <span style={{ color: '#f1c40f', fontWeight: 700 }}>Pending</span></div>
+                  <div style={{ fontSize: 16, color: 'var(--text)' }}>Status: <span style={{ color: '#f1c40f', fontWeight: 700 }}>Pending</span></div>
                   {/* Countdown timer */}
-                  <div style={{ fontSize: 15, color: '#1e3c72', fontWeight: 600, background: '#f6f9fe', borderRadius: 6, padding: '2px 10px' }}>
+                  <div style={{ fontSize: 15, color: 'var(--primary)', fontWeight: 600, background: 'var(--bg)', borderRadius: 6, padding: '2px 10px' }}>
                     {orderCountdowns[order._id] != null
                       ? formatTime(orderCountdowns[order._id])
                       : '10m 00s'}
@@ -298,39 +305,39 @@ const OrderPage: React.FC = () => {
             {order.status === 'cancelled' && (
               <>
                 <div style={{ fontSize: 20, fontWeight: 600, color: '#e74c3c', marginBottom: 10 }}>Order Cancelled ❌</div>
-                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
-                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>RATE: <b>{order.price} USDT/SPOT</b></div>
+                <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
+                <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>RATE: <b>{order.price} USDT/SPOT</b></div>
                 {order.type === 'buy' ? (
                   <>
-                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>DEBIT: <b>{order.usdtAmount} USDT</b> | CREDIT: <b>{order.spotAmount} SPOT</b></div>
+                    <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>DEBIT: <b>{order.usdtAmount} USDT</b> | CREDIT: <b>{order.spotAmount} SPOT</b></div>
                   </>
                 ) : (
                   <>
-                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>CREDIT: <b>{order.usdtAmount} USDT</b> | DEBIT: <b>{order.spotAmount} SPOT</b></div>
+                    <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>CREDIT: <b>{order.usdtAmount} USDT</b> | DEBIT: <b>{order.spotAmount} SPOT</b></div>
                   </>
                 )}
-                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#e74c3c', fontWeight: 700 }}>Cancelled</span></div>
+                <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>Status: <span style={{ color: '#e74c3c', fontWeight: 700 }}>Cancelled</span></div>
               </>
             )}
             {order.status === 'completed' && (
               <>
                 <div style={{ fontSize: 20, fontWeight: 600, color: '#27ae60', marginBottom: 10 }}>Order Complete ✅</div>
-                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
-                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>RATE: <b>{order.price} USDT/SPOT</b></div>
+                <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
+                <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>RATE: <b>{order.price} USDT/SPOT</b></div>
                 {order.type === 'buy' ? (
                   <>
-                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>COST: <b>{order.usdtAmount} USDT</b> | CREDITED: <b>{order.spotAmount} SPOT</b></div>
+                    <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>COST: <b>{order.usdtAmount} USDT</b> | CREDITED: <b>{order.spotAmount} SPOT</b></div>
                   </>
                 ) : (
                   <>
-                    <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>CREDITED: <b>{order.usdtAmount} USDT</b> | DEBITED: <b>{order.spotAmount} SPOT</b></div>
+                    <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>CREDITED: <b>{order.usdtAmount} USDT</b> | DEBITED: <b>{order.spotAmount} SPOT</b></div>
                   </>
                 )}
-                <div style={{ fontSize: 16, color: '#25324B', marginBottom: 8 }}>Status: <span style={{ color: '#27ae60', fontWeight: 700 }}>Completed</span></div>
+                <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>Status: <span style={{ color: '#27ae60', fontWeight: 700 }}>Completed</span></div>
               </>
             )}
             {order.status === 'loading' && (
-              <div style={{ color: '#1e3c72', fontWeight: 600, fontSize: 18 }}>Processing…</div>
+              <div style={{ color: 'var(--primary)', fontWeight: 600, fontSize: 18 }}>Processing…</div>
             )}
           </div>
         ))}

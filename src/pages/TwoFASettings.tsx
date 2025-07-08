@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../theme.css';
 
 const API = process.env.REACT_APP_API_BASE_URL;
 
@@ -78,15 +79,17 @@ const TwoFASettings: React.FC = () => {
   })();
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card-bg)', padding: '16px 24px 10px 18px', border: '1.5px solid var(--secondary)', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
+        <span style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text)', letterSpacing: 1, fontFamily: 'serif' }}>
+          2FA SETTINGS
+        </span>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
         <div
+          className="card"
           style={{
-            background: '#fff',
             borderRadius: 0,
-            boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-            border: '1px solid #e3e6ef',
-            padding: '12px 16px',
             minWidth: 200,
             maxWidth: 380,
             width: '100%',
@@ -97,27 +100,29 @@ const TwoFASettings: React.FC = () => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
+            boxShadow: 'var(--card-shadow)',
+            border: '1px solid var(--secondary)',
+            background: 'var(--card-bg)',
+            padding: '24px 16px',
           }}
         >
-          <h2 style={{ fontSize: '1.1rem', marginBottom: 4, fontWeight: 700, color: '#25324B', letterSpacing: 1 }}>Google Authenticator (2FA)</h2>
+          <h2 style={{ fontSize: '1.1rem', marginBottom: 12, fontWeight: 700, color: 'var(--primary)', letterSpacing: 1 }}>Google Authenticator (2FA)</h2>
           {enabled ? (
-            <>
-              <div style={{ color: '#10c98f', marginBottom: 10, fontWeight: 600 }}>2FA is enabled on your account.</div>
-            </>
+            <div style={{ color: '#10c98f', marginBottom: 10, fontWeight: 600, fontSize: 16 }}>2FA is enabled on your account.</div>
           ) : (
             <>
               {qr ? (
                 <>
-                  <div style={{ marginBottom: 12 }}>
-                    <img src={qr} alt="2FA QR Code" style={{ width: 180, height: 180, margin: '0 auto', display: 'block' }} />
-                    <div style={{ fontSize: 13, color: '#888', marginTop: 8 }}>Scan with Google Authenticator app</div>
+                  <div style={{ marginBottom: 18 }}>
+                    <img src={qr} alt="2FA QR Code" style={{ width: '100%', maxWidth: 180, height: 'auto', margin: '0 auto', display: 'block', borderRadius: 8, boxShadow: '0 2px 8px rgba(30,60,114,0.10)', maxHeight: 180 }} />
+                    <div style={{ fontSize: 14, color: 'var(--secondary)', marginTop: 10 }}>Scan with Google Authenticator app</div>
                     {secret && (
-                      <div style={{ marginTop: 10, background: '#f6f9fe', padding: 10, borderRadius: 6, wordBreak: 'break-all' }}>
-                        <div style={{ fontSize: 13, color: '#25324B', marginBottom: 4 }}>Or enter this setup key:</div>
-                        <div style={{ fontWeight: 600, fontSize: 15, letterSpacing: 1, marginBottom: 4 }}>
-                          {secret}
+                      <div style={{ marginTop: 14, background: 'var(--bg)', padding: 12, borderRadius: 8, wordBreak: 'break-all', border: '1px solid var(--secondary)' }}>
+                        <div style={{ fontSize: 13, color: 'var(--primary)', marginBottom: 4 }}>Or enter this setup key:</div>
+                        <div style={{ fontWeight: 600, fontSize: 16, letterSpacing: 1, marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
+                          <span>{secret}</span>
                           <button
-                            style={{ marginLeft: 8, fontSize: 12, padding: '2px 8px', borderRadius: 4, border: 'none', background: '#eaf1fb', cursor: 'pointer' }}
+                            style={{ marginLeft: 10, fontSize: 12, padding: '2px 10px', borderRadius: 4, border: 'none', background: 'var(--card-bg)', color: 'var(--primary)', cursor: 'pointer', boxShadow: '0 1px 4px rgba(30,60,114,0.06)' }}
                             onClick={() => {
                               navigator.clipboard.writeText(secret);
                               setCopied(true);
@@ -128,29 +133,30 @@ const TwoFASettings: React.FC = () => {
                             Copy
                           </button>
                           {copied && (
-                            <span style={{ color: '#10c98f', fontSize: 12, marginLeft: 6, fontWeight: 500 }}>Copied</span>
+                            <span style={{ color: '#10c98f', fontSize: 12, marginLeft: 8, fontWeight: 500 }}>Copied</span>
                           )}
                         </div>
-                        <div style={{ fontSize: 12, color: '#888' }}>You can manually enter this key in your authenticator app.</div>
+                        <div style={{ fontSize: 12, color: 'var(--secondary)' }}>You can manually enter this key in your authenticator app.</div>
                       </div>
                     )}
                   </div>
-                  <input type="text" placeholder="Enter 6-digit code" value={token} onChange={e => setToken(e.target.value)} style={{ padding: 8, width: '100%', marginBottom: 8, borderRadius: 6, border: '1px solid #e3e6ef' }} />
-                  <button onClick={verify2FA} disabled={loading} style={{ background: '#888', color: '#fff', padding: '8px 18px', border: 'none', borderRadius: 6, fontWeight: 600, cursor: 'pointer', boxShadow: '0 1px 4px rgba(30,60,114,0.10)' }}>Verify & Enable</button>
+                  <input type="text" placeholder="Enter 6-digit code" value={token} onChange={e => setToken(e.target.value)} style={{ padding: 10, width: '95%', marginBottom: 12, borderRadius: 6, border: '1px solid var(--secondary)', fontSize: 15, outline: 'none', background: 'var(--card-bg)', color: 'var(--primary)' }} />
+                  <button onClick={verify2FA} disabled={loading} className="button" style={{ padding: '10px 0', width: '100%', borderRadius: 6, fontWeight: 600, fontSize: '1rem', marginBottom: 2 }}>
+                    Verify & Enable
+                  </button>
                 </>
               ) : (
                 <button
                   onClick={!enabled && !loading ? fetch2FASetup : undefined}
                   disabled={enabled || loading}
+                  className="button"
                   style={{
-                    background: enabled ? '#10c98f' : '#888',
-                    color: '#fff',
-                    padding: '10px 24px',
-                    border: 'none',
+                    width: '100%',
+                    padding: '12px 0',
                     borderRadius: 6,
                     fontWeight: 600,
-                    cursor: enabled ? 'not-allowed' : 'pointer',
-                    boxShadow: '0 1px 4px rgba(30,60,114,0.10)'
+                    fontSize: '1rem',
+                    marginTop: 8,
                   }}
                 >
                   {enabled ? '2FA Enabled' : 'Setup 2FA'}
@@ -158,8 +164,8 @@ const TwoFASettings: React.FC = () => {
               )}
             </>
           )}
-          {message && <div style={{ color: '#10c98f', marginTop: 12 }}>{message}</div>}
-          {error && <div style={{ color: '#e74c3c', marginTop: 12 }}>{error}</div>}
+          {message && <div style={{ color: '#10c98f', marginTop: 16, fontWeight: 600 }}>{message}</div>}
+          {error && <div style={{ color: '#e74c3c', marginTop: 16, fontWeight: 600 }}>{error}</div>}
         </div>
         <style>
           {`
@@ -171,7 +177,13 @@ const TwoFASettings: React.FC = () => {
                 margin-left: 5vw !important;
                 margin-right: 5vw !important;
                 padding: 10px 2vw !important;
-                height: 90px !important;
+                min-height: 90px !important;
+              }
+              img[alt="2FA QR Code"] {
+                max-width: 40vw !important;
+                height: auto !important;
+                min-width: 120px !important;
+                max-height: 120px !important;
               }
             }
           `}

@@ -93,19 +93,19 @@ const UserChat: React.FC = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
       {/* Header fixed at top */}
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10, background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10, background: 'var(--card-bg)', padding: '16px 24px 10px 18px', border: '1.5px solid var(--secondary)', borderTop: 0, borderLeft: 0, borderRight: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text)', letterSpacing: 1, fontFamily: 'serif' }}>
           USER SUPPORT
         </span>
       </div>
       {/* Chat area scrollable, between header and input */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', maxWidth: 600, width: '100%', margin: '0 auto', paddingTop: 70, paddingBottom: 70, height: '100vh', boxSizing: 'border-box' }}>
-        <div style={{ flex: 1, overflowY: 'auto', background: '#f7f8fa', padding: 16, borderRadius: 0, minHeight: 200 }}>
+        <div style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)', padding: 16, borderRadius: 0, minHeight: 200 }}>
           {loading ? <div>Loading...</div> :
             error ? <div style={{ color: 'red' }}>{error}</div> :
-              messages.length === 0 ? <div style={{ color: '#888' }}>No messages yet. Start the conversation!</div> :
+              messages.length === 0 ? <div style={{ color: 'var(--secondary)' }}>No messages yet. Start the conversation!</div> :
                 messages.map((msg, i) => (
                   <div key={i} style={{
                     display: 'flex',
@@ -113,24 +113,24 @@ const UserChat: React.FC = () => {
                     marginBottom: 10
                   }}>
                     <div style={{
-                      background: msg.fromAdmin ? '#2a5298' : '#10c98f',
-                      color: '#fff',
+                      background: msg.fromAdmin ? 'var(--primary)' : '#10c98f',
+                      color: 'var(--button-text)',
                       borderRadius: 16,
                       padding: '8px 16px',
                       maxWidth: 280,
                       fontSize: 15,
-                      boxShadow: '0 1px 4px #e3e6ef',
+                      boxShadow: 'var(--card-shadow)',
                     }}>
                       {msg.content}
                       {/* Show send failed notice for failed optimistic messages */}
                       {msg._failed && (
-                        <span style={{ color: 'red', fontSize: 12, marginTop: 4, display: 'block' }}>
+                        <span style={{ color: '#e74c3c', fontSize: 12, marginTop: 4, display: 'block' }}>
                           Send failed
                           <button onClick={() => retrySend(msg)} style={{ marginLeft: 8, color: '#fff', background: '#e74c3c', border: 'none', borderRadius: 3, padding: '2px 8px', fontSize: 12, cursor: 'pointer' }}>Retry</button>
                         </span>
                       )}
                     </div>
-                    <div style={{ fontSize: 11, color: '#888', margin: msg.fromAdmin ? '0 0 0 8px' : '0 8px 0 0', alignSelf: 'flex-end' }}>{new Date(msg.timestamp).toLocaleString()}</div>
+                    <div style={{ fontSize: 11, color: 'var(--secondary)', margin: msg.fromAdmin ? '0 0 0 8px' : '0 8px 0 0', alignSelf: 'flex-end' }}>{new Date(msg.timestamp).toLocaleString()}</div>
                   </div>
                 ))
           }
@@ -140,9 +140,9 @@ const UserChat: React.FC = () => {
       {/* Input fixed at bottom, now with card style */}
       <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, background: 'transparent', padding: 12, display: 'flex', justifyContent: 'center', zIndex: 10 }}>
         <div style={{
-          background: '#fff',
-          boxShadow: '0 4px 16px 0 rgba(30,60,114,0.18), 0 1.5px 6px 0 rgba(30,60,114,0.10)',
-          border: '1px solid #e3e6ef',
+          background: 'var(--card-bg)',
+          boxShadow: 'var(--card-shadow)',
+          border: '1px solid var(--secondary)',
           borderRadius: 12,
           display: 'flex',
           width: '100%',
@@ -155,7 +155,7 @@ const UserChat: React.FC = () => {
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') sendMessage(); }}
             placeholder="Type your message..."
-            style={{ flex: 1, border: 'none', outline: 'none', fontSize: 16, padding: 8, borderRadius: 6, background: '#f7f8fa' }}
+            style={{ flex: 1, border: 'none', outline: 'none', fontSize: 16, padding: 8, borderRadius: 6, background: 'var(--bg)', color: 'var(--text)' }}
           />
           <button onClick={sendMessage} style={{ marginLeft: 8, background: '#10c98f', color: '#fff', border: 'none', borderRadius: 3, padding: '8px 10px', fontWeight: 600, fontSize: 16, cursor: 'pointer' }}>Send</button>
         </div>

@@ -1,0 +1,46 @@
+:root {
+  --bg: #f3f7fd;
+  --text: #1f2b40;
+  --card-bg: #ffffff;
+  --card-shadow: 0 10px 40px rgba(101, 99, 99, 0.82), 0 4px 10px rgba(0, 0, 0, 0.04);
+  --primary: #0d1b3d;
+  --secondary: #6c6c6c;
+  --button-text: #fff; /* force white text on buttons in light theme */
+}
+
+body[data-theme='dark'] {
+  --bg: #000000f3; /* full black background */
+  --text: #eaf1fb;
+  --card-bg: #1f1f20;
+  --card-shadow: 0 0 16px 2px #313335, 0 0 0 1px #282829;
+  --primary: #b8d1ff;
+  --secondary: #414142;
+  --button-text: #eaf1fb; /* still white-ish in dark */
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Example usage for cards and buttons */
+.card {
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+  border-radius: 10px;
+  padding: 16px;
+}
+.button {
+  background: var(--secondary);
+  color: #fff; /* force white text on buttons always */
+  border: none;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.button:hover {
+  background: var(--accent);
+  color: #fff;
+}

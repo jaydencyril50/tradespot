@@ -1,25 +1,23 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../theme.css';
 
 const Settings: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
-        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#232b36', letterSpacing: 1, fontFamily: 'serif' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card-bg)', padding: '16px 24px 10px 18px', border: '1.5px solid var(--secondary)', borderTop: 0, borderLeft: 0, borderRight: 0, opacity: 0.5 }}>
+        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)', letterSpacing: 1, fontFamily: 'serif' }}>
           SETTINGS
         </span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
         {/* Basic Settings Card */}
         <div
+          className="card"
           style={{
-            background: '#fff',
             borderRadius: 0,
-            boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-            border: '1px solid #e3e6ef',
-            padding: '12px 16px',
             minWidth: 200,
             maxWidth: 380,
             width: '100%',
@@ -30,26 +28,29 @@ const Settings: React.FC = () => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
+            boxShadow: 'var(--card-shadow)',
+            border: '1px solid var(--secondary)',
+            background: 'var(--card-bg)',
           }}
         >
-          <h2 style={{ fontSize: '1.1rem', marginBottom: 4, fontWeight: 700, color: '#25324B', letterSpacing: 1 }}>Basic Settings</h2>
-          <div style={{ fontSize: '0.95rem', color: '#555', marginBottom: 8 }}>
+          <h2 style={{ fontSize: '1.1rem', marginBottom: 4, fontWeight: 700, color: 'var(--primary)', letterSpacing: 1 }}>Basic Settings</h2>
+          <div style={{ fontSize: '0.95rem', color: 'var(--secondary)', marginBottom: 8 }}>
             Manage your account and preferences here.
           </div>
           <button
+            className="button"
             style={{
-              border: 'none',
               borderRadius: 6,
               padding: '6px 28px',
               fontWeight: 600,
               fontSize: '1rem',
               cursor: 'pointer',
               marginTop: 4,
-              background: '#888',
-              color: '#fff',
+              alignSelf: 'center',
+              background: 'var(--secondary)',
+              color: 'var(--button-text)',
               boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
               transition: 'background 0.2s',
-              alignSelf: 'center',
             }}
             onClick={() => navigate('/settings/edit-basic')}
           >
@@ -58,12 +59,9 @@ const Settings: React.FC = () => {
         </div>
         {/* Privacy Settings Card */}
         <div
+          className="card"
           style={{
-            background: '#fff',
             borderRadius: 0,
-            boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-            border: '1px solid #e3e6ef',
-            padding: '12px 16px',
             minWidth: 200,
             maxWidth: 380,
             width: '100%',
@@ -74,26 +72,29 @@ const Settings: React.FC = () => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
+            boxShadow: 'var(--card-shadow)',
+            border: '1px solid var(--secondary)',
+            background: 'var(--card-bg)',
           }}
         >
-          <h2 style={{ fontSize: '1.1rem', marginBottom: 4, fontWeight: 700, color: '#25324B', letterSpacing: 1 }}>Privacy Settings</h2>
-          <div style={{ fontSize: '0.95rem', color: '#555', marginBottom: 8 }}>
+          <h2 style={{ fontSize: '1.1rem', marginBottom: 4, fontWeight: 700, color: 'var(--primary)', letterSpacing: 1 }}>Privacy Settings</h2>
+          <div style={{ fontSize: '0.95rem', color: 'var(--secondary)', marginBottom: 8 }}>
             Control your privacy and security options here.
           </div>
           <button
+            className="button"
             style={{
-              border: 'none',
               borderRadius: 6,
               padding: '6px 28px',
               fontWeight: 600,
               fontSize: '1rem',
               cursor: 'pointer',
               marginTop: 4,
-              background: '#888',
-              color: '#fff',
+              alignSelf: 'center',
+              background: 'var(--secondary)',
+              color: 'var(--button-text)',
               boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
               transition: 'background 0.2s',
-              alignSelf: 'center',
             }}
             onClick={() => navigate('/settings/privacy')}
           >
@@ -102,12 +103,9 @@ const Settings: React.FC = () => {
         </div>
         {/* Additional Settings Card */}
         <div
+          className="card"
           style={{
-            background: '#fff',
             borderRadius: 0,
-            boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-            border: '1px solid #e3e6ef',
-            padding: '12px 16px',
             minWidth: 200,
             maxWidth: 380,
             width: '100%',
@@ -118,27 +116,30 @@ const Settings: React.FC = () => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
+            boxShadow: 'var(--card-shadow)',
+            border: '1px solid var(--secondary)',
+            background: 'var(--card-bg)',
           }}
         >
-          <h2 style={{ fontSize: '1.1rem', marginBottom: 4, fontWeight: 700, color: '#25324B', letterSpacing: 1 }}>Additional Settings</h2>
-          <div style={{ fontSize: '0.95rem', color: '#555', marginBottom: 8 }}>
+          <h2 style={{ fontSize: '1.1rem', marginBottom: 4, fontWeight: 700, color: 'var(--primary)', letterSpacing: 1 }}>Additional Settings</h2>
+          <div style={{ fontSize: '0.95rem', color: 'var(--secondary)', marginBottom: 8 }}>
             {/* Placeholder for additional settings content */}
             Configure extra options and features here.
           </div>
           <button
+            className="button"
             style={{
-              border: 'none',
               borderRadius: 6,
               padding: '6px 28px',
               fontWeight: 600,
               fontSize: '1rem',
               cursor: 'pointer',
               marginTop: 4,
-              background: '#888',
-              color: '#fff',
+              alignSelf: 'center',
+              background: 'var(--secondary)',
+              color: 'var(--button-text)',
               boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
               transition: 'background 0.2s',
-              alignSelf: 'center',
             }}
             onClick={() => navigate('/settings/additional')}
           >
