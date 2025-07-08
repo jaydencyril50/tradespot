@@ -212,9 +212,21 @@ const AdminUsers: React.FC = () => {
                   fontSize: 15,
                   display: 'block',
                 }}
-                onClick={() => {
+                onClick={async () => {
                   setSelectedUser(user);
                   setModalOpen(true);
+                  try {
+                    const token = localStorage.getItem('adminToken');
+                    if (!token) throw new Error('Not authenticated');
+                    const res = await axios.get(`${API}/api/validate-user-valid-member/${user._id}`, {
+                      headers: { Authorization: `Bearer ${token}` },
+                    });
+                    if (res.data && typeof res.data.validMember === 'boolean') {
+                      setSelectedUser(prev => prev ? { ...prev, validMember: res.data.validMember } : prev);
+                    }
+                  } catch (e) {
+                    // Optionally handle error
+                  }
                 }}
               >
                 Edit
