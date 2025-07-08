@@ -260,3 +260,12 @@ export const getUserIdByEmail = async (email: string) => {
   });
   return res.data.userId;
 };
+
+export const getCurrentUser = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Not authenticated');
+    const res = await axios.get(`${API}/auth/user/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+};

@@ -1,6 +1,6 @@
 import React, { useState, FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../services/api';
+import { loginUser, getCurrentUser } from '../services/api';
 import GoogleLogo from '../assets/google-logo.png';
 
 // Slide-to-verify Captcha Modal
@@ -182,8 +182,28 @@ const Login: React.FC = () => {
             if (token) {
                 console.log('[Google Login] Token found in URL:', token);
                 localStorage.setItem('token', token);
-                console.log('[Google Login] Token stored in localStorage. Navigating to /dashboard');
-                navigate('/dashboard');
+                // Check if user has 2FA enabled
+                (async () => {
+                    try {
+                        const user = await getCurrentUser();
+                        if (user && user.twoFA && user.twoFA.enabled) {
+                            setTwoFARequired(true);
+                            setError('Two-factor authentication required. Please enter your 2FA code.');
+                            setEmail(user.email || '');
+                            setPassword('');
+                            setLoginToken(token);
+                            // Remove token until 2FA is passed
+                            localStorage.removeItem('token');
+                            // Do not navigate yet
+                            return;
+                        }
+                        // No 2FA, proceed
+                        navigate('/dashboard');
+                    } catch (e) {
+                        // fallback: just navigate
+                        navigate('/dashboard');
+                    }
+                })();
             }
             // Optionally handle Google login errors
             if (error === 'not_registered') {
