@@ -12,3 +12,7 @@ export const calculateInvestmentReturn = (initialInvestment: number, currentValu
 export const isValidCryptoAmount = (amount: number): boolean => {
     return amount > 0;
 };
+
+// Helper for 1:1 conversion (if needed in UI)
+export const convertUsdtToFlex = (usdt: number): number => usdt; // 1:1
+export const convertFlexToUsdt = (flex: number): number => flex; // 1:1

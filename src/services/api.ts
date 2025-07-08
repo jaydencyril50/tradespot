@@ -77,6 +77,7 @@ export const getPortfolio = async () => {
 export const convertBalance = async (amount: number) => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
+    // No need to send/expect a rate, backend is now 1:1
     const res = await axios.post(`${API}/api/convert`, { direction: 'FLEX_TO_USDT', amount }, {
         headers: { Authorization: `Bearer ${token}` },
     });
