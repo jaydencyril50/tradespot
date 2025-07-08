@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 const API = process.env.REACT_APP_API_BASE_URL;
 
 const actions = [
-  { key: 'login', label: 'Login' },
   { key: 'transfer', label: 'Transfer' },
   { key: 'withdraw', label: 'Withdraw' },
   { key: 'convert', label: 'Convert' },
