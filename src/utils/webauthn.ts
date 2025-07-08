@@ -49,7 +49,7 @@ export async function webauthnAuthenticate(email: string): Promise<any> {
   const cred = assertion as PublicKeyCredential;
   // 3. Format assertion for backend
   const assertionResp = {
-    id: cred.id,
+    id: bufferToBase64url(cred.rawId), // Use base64url-encoded rawId for id
     rawId: bufferToBase64url(cred.rawId),
     response: {
       clientDataJSON: bufferToBase64url((cred.response as AuthenticatorAssertionResponse).clientDataJSON),
