@@ -141,10 +141,23 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
     e.preventDefault();
     setPasswordModalError(null);
     try {
-      const verify = await import('../services/verifyPassword');
-      await verify.verifyPassword(passwordInput);
-      setShowPasswordModal(false);
-      navigate('/settings/webauthn');
+      // Call backend route for password verification
+      const token = localStorage.getItem('token');
+      const resp = await fetch(`${API}/api/auth/webauthn-settings/verify-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ password: passwordInput })
+      });
+      if (resp.ok) {
+        setShowPasswordModal(false);
+        navigate('/settings/webauthn');
+      } else {
+        setShowPasswordModal(false);
+        setPasswordInput('');
+      }
     } catch (e: any) {
       setShowPasswordModal(false);
       setPasswordInput('');
