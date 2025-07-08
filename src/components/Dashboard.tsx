@@ -87,6 +87,7 @@ interface ConvertModalProps {
   convertSuccess: string;
   handleConvert: () => void;
   CONVERT_RATE: number;
+  modalCardStyle?: React.CSSProperties;
 }
 
 const ConvertModal: React.FC<ConvertModalProps> = ({
@@ -101,6 +102,7 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
   convertSuccess,
   handleConvert,
   CONVERT_RATE,
+  modalCardStyle,
 }) => {
   // Only FLEX to USDT allowed
   const [inputError, setInputError] = React.useState('');
@@ -122,10 +124,8 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
       position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(30,40,60,0.55)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
       <div style={{
-        background: '#fff',
+        ...(modalCardStyle || {}),
         borderRadius: 0,
-        boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-        border: '1px solid #e3e6ef',
         padding: '12px 16px',
         minWidth: 260,
         maxWidth: 380,
@@ -670,10 +670,24 @@ const Dashboard: React.FC = () => {
 		background: '#10c98f',
 		color: '#fff',
 		border: 'none',
-		boxShadow: '0 1px 4px rgba(16,201,143,0.18)',
+		boxShadow: '0 1px 4px rgba(241, 241, 241, 0.96)',
 		transition: 'background 0.2s',
 		filter: 'none',
 	} : {};
+	// Modal background for dark mode
+	const modalCardStyle = theme === 'dark'
+		? {
+				background: '#232526',
+				color: '#eaf1fb',
+				border: '1px solid #313335',
+				boxShadow: '0 12px 40px 0 #18191a, 0 4px 16px 0 #232526',
+			}
+		: {
+				background: '#fff',
+				color: '#25324B',
+				border: '1px solid #e3e6ef',
+				boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
+			};
 
 	return (
 		<div className='dashboard-gradient-bg dashboard-circles-container'>
@@ -752,111 +766,110 @@ const Dashboard: React.FC = () => {
           convertSuccess={convertSuccess}
           handleConvert={handleConvert}
           CONVERT_RATE={1} // Set your conversion rate here
+          modalCardStyle={modalCardStyle}
         />
       )}
 			{showTransferModal && (
-  <div style={{
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100vw',
-    height: '100vh',
-    background: 'rgba(30,40,60,0.55)',
-    zIndex: 9999,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }}>
-    <div style={{
-      background: '#fff',
-      borderRadius: 0,
-      boxShadow: '0 12px 40px 0 rgba(30,60,114,0.38), 0 4px 16px 0 rgba(30,60,114,0.22)',
-      border: '1px solid #e3e6ef',
-      padding: '12px 16px',
-      minWidth: 260,
-      maxWidth: 380,
-      width: '100%',
-      fontFamily: 'inherit',
-      position: 'relative',
-      textAlign: 'center'
-    }}>
-      <button onClick={() => setShowTransferModal(false)} style={{
-        position: 'absolute',
-        top: 12,
-        right: 16,
-        background: 'none',
-        border: 'none',
-        fontSize: 22,
-        color: '#888',
-        cursor: 'pointer'
-      }}>&times;</button>
-      <h2 style={{
-        fontSize: '1.1rem',
-        marginBottom: 4,
-        fontWeight: 700,
-        color: '#25324B',
-        letterSpacing: 1,
-        fontFamily: 'serif'
-      }}>Transfer FLEX</h2>
-      <div style={{ fontSize: '0.95rem', color: '#555', marginBottom: 8 }}>
-        Send FLEX to another user instantly.
-      </div>
-      <div style={{ marginBottom: 12, fontWeight: 600, color: '#1e3c72' }}>
-        Your FLEX Balance: <span style={{ color: '#2a5298' }}>{flexBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-      </div>
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ fontWeight: 500, color: '#25324B', marginRight: 10 }}>Recipient Email:</label>
-        <input
-          type="email"
-          value={transferEmail}
-          onChange={e => setTransferEmail(e.target.value)}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid #ccc',
-            fontSize: 16,
-            width: 220
-          }}
-        />
-        {transferEmail && (
-          <div style={{ fontSize: 13, marginTop: 2, minHeight: 18 }}>
-            {checkingEmail ? (
-              <span style={{ color: '#888' }}>Checking...</span>
-            ) : recipientEmailValid === true ? (
-              <span style={{ color: '#10c98f' }}>Verified✓</span>
-            ) : recipientEmailValid === false ? (
-              <span style={{ color: '#e74c3c' }}>Invalid✕</span>
-            ) : null}
-          </div>
-        )}
-      </div>
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ fontWeight: 500, color: '#25324B', marginRight: 10 }}>Amount:</label>
-        <input
-          type="number"
-          min="0"
-          step="any"
-          value={transferAmount}
-          onChange={e => {
-            setTransferAmount(e.target.value);
-            setTransferError('');
-            setTransferSuccess('');
-            if (e.target.value && !isNaN(Number(e.target.value)) && Number(e.target.value) > flexBalance) {
-              setTransferError('Insufficient funds.');
-            }
-          }}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid #ccc',
-            fontSize: 16,
-            width: 120
-          }}
-        />
-        {transferAmount && Number(transferAmount) > flexBalance && (
-          <div style={{ color: '#e74c3c', fontWeight: 600, marginTop: 4, fontSize: 14 }}>Insufficient funds.</div>
-        )}
-      </div>
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(30,40,60,0.55)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <div style={{
+            ...modalCardStyle,
+            borderRadius: 0,
+            padding: '12px 16px',
+            minWidth: 260,
+            maxWidth: 380,
+            width: '100%',
+            fontFamily: 'inherit',
+            position: 'relative',
+            textAlign: 'center'
+          }}>
+            <button onClick={() => setShowTransferModal(false)} style={{
+              position: 'absolute',
+              top: 12,
+              right: 16,
+              background: 'none',
+              border: 'none',
+              fontSize: 22,
+              color: '#888',
+              cursor: 'pointer'
+            }}>&times;</button>
+            <h2 style={{
+              fontSize: '1.1rem',
+              marginBottom: 4,
+              fontWeight: 700,
+              color: '#25324B',
+              letterSpacing: 1,
+              fontFamily: 'serif'
+            }}>Transfer FLEX</h2>
+            <div style={{ fontSize: '0.95rem', color: '#555', marginBottom: 8 }}>
+              Send FLEX to another user instantly.
+            </div>
+            <div style={{ marginBottom: 12, fontWeight: 600, color: '#1e3c72' }}>
+              Your FLEX Balance: <span style={{ color: '#2a5298' }}>{flexBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+            </div>
+            <div style={{ marginBottom: 12 }}>
+              <label style={{ fontWeight: 500, color: '#25324B', marginRight: 10 }}>Recipient Email:</label>
+              <input
+                type="email"
+                value={transferEmail}
+                onChange={e => setTransferEmail(e.target.value)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: 6,
+                  border: '1px solid #ccc',
+                  fontSize: 16,
+                  width: 220
+                }}
+              />
+              {transferEmail && (
+                <div style={{ fontSize: 13, marginTop: 2, minHeight: 18 }}>
+                  {checkingEmail ? (
+                    <span style={{ color: '#888' }}>Checking...</span>
+                  ) : recipientEmailValid === true ? (
+                    <span style={{ color: '#10c98f' }}>Verified✓</span>
+                  ) : recipientEmailValid === false ? (
+                    <span style={{ color: '#e74c3c' }}>Invalid✕</span>
+                  ) : null}
+                </div>
+              )}
+            </div>
+            <div style={{ marginBottom: 12 }}>
+              <label style={{ fontWeight: 500, color: '#25324B', marginRight: 10 }}>Amount:</label>
+              <input
+                type="number"
+                min="0"
+                step="any"
+                value={transferAmount}
+                onChange={e => {
+                  setTransferAmount(e.target.value);
+                  setTransferError('');
+                  setTransferSuccess('');
+                  if (e.target.value && !isNaN(Number(e.target.value)) && Number(e.target.value) > flexBalance) {
+                    setTransferError('Insufficient funds.');
+                  }
+                }}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: 6,
+                  border: '1px solid #ccc',
+                  fontSize: 16,
+                  width: 120
+                }}
+              />
+              {transferAmount && Number(transferAmount) > flexBalance && (
+                <div style={{ color: '#e74c3c', fontWeight: 600, marginTop: 4, fontSize: 14 }}>Insufficient funds.</div>
+              )}
+            </div>
 	  {/* Set biometricEnabled to false if not implemented */}
 	  {!isWebauthnTransferEnabledState && (
         <div style={{ marginBottom: 12 }}>
