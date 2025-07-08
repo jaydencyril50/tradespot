@@ -9,7 +9,7 @@ const EditBasicSettings: React.FC = () => {
   const [newEmail, setNewEmail] = useState('');
   const [newWallet, setNewWallet] = useState('');
   const [code, setCode] = useState('');
-  const [spotid, setSpotid] = useState('');
+  const [password, setPassword] = useState('');
   const [twoFAToken, setTwoFAToken] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -36,7 +36,7 @@ const EditBasicSettings: React.FC = () => {
     setError('');
     setSuccess('');
     setNewEmail('');
-    setSpotid('');
+    setPassword('');
     setLoading(false);
   };
 
@@ -46,6 +46,8 @@ const EditBasicSettings: React.FC = () => {
     setSuccess('');
     setNewWallet('');
     setCode('');
+    setPassword('');
+    setTwoFAToken('');
     setLoading(true);
     try {
       await sendWalletVerificationCode();
@@ -77,7 +79,7 @@ const EditBasicSettings: React.FC = () => {
     setError('');
     setSuccess('');
     try {
-      await changeEmail(newEmail, spotid);
+      await changeEmail(newEmail, password);
       setSuccess('Email changed successfully!');
       setEditing('none');
     } catch (err: any) {
@@ -92,7 +94,7 @@ const EditBasicSettings: React.FC = () => {
     setError('');
     setSuccess('');
     try {
-      await changeWallet(newWallet, code, spotid, twoFAToken);
+      await changeWallet(newWallet, code, password, twoFAToken);
       setSuccess('Wallet changed successfully!');
       setEditing('none');
     } catch (err: any) {
@@ -244,10 +246,10 @@ const EditBasicSettings: React.FC = () => {
               style={{ width: '100%', marginBottom: 8, padding: 8, borderRadius: 4, border: '1px solid #ccc', fontSize: 15 }}
             />
             <input
-              type="text"
-              placeholder="Your Spot ID"
-              value={spotid}
-              onChange={e => setSpotid(e.target.value)}
+              type="password"
+              placeholder="Your Password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
               required
               style={{ width: '100%', marginBottom: 8, padding: 8, borderRadius: 4, border: '1px solid #ccc', fontSize: 15 }}
             />
@@ -291,10 +293,10 @@ const EditBasicSettings: React.FC = () => {
               style={{ width: '100%', marginBottom: 8, padding: 8, borderRadius: 4, border: '1px solid #ccc', fontSize: 15 }}
             />
             <input
-              type="text"
-              placeholder="Your Spot ID"
-              value={spotid}
-              onChange={e => setSpotid(e.target.value)}
+              type="password"
+              placeholder="Your Password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
               required
               style={{ width: '100%', marginBottom: 8, padding: 8, borderRadius: 4, border: '1px solid #ccc', fontSize: 15 }}
             />
