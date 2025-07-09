@@ -179,7 +179,7 @@ const TwoFAModal: React.FC<{
             pattern="[0-9]{6}"
             inputMode="numeric"
             autoFocus
-            style={{ width: '100%', fontSize: 18, padding: 10, border: '1px solid #e3e6ef', borderRadius: 4, marginBottom: 12 }}
+            style={{ width: '95%', fontSize: 18, padding: 10, border: '1px solid #e3e6ef', borderRadius: 4, marginBottom: 12 }}
             placeholder="2FA Code"
             required
           />
