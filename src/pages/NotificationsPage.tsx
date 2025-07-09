@@ -8,14 +8,6 @@ const NotificationsPage: React.FC = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Set dark theme for this page
-    document.body.setAttribute('data-theme', 'dark');
-    return () => {
-      document.body.removeAttribute('data-theme');
-    };
-  }, []);
-
-  useEffect(() => {
     const fetchNotifications = async () => {
       setLoading(true);
       setError('');

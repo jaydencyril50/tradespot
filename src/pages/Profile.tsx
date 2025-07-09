@@ -32,7 +32,6 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.body.setAttribute('data-theme', 'dark');
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -62,7 +61,6 @@ const Profile: React.FC = () => {
     const interval = setInterval(fetchProfile, 5000);
     return () => {
       clearInterval(interval);
-      document.body.removeAttribute('data-theme');
     };
   }, [navigate]);
 

@@ -163,13 +163,6 @@ const OrderPage: React.FC = () => {
   // Filtered orders based on filter state
   const filteredOrders = filter === 'all' ? orders : orders.filter((o: any) => o.status === filter);
 
-  useEffect(() => {
-    document.body.setAttribute('data-theme', 'dark');
-    return () => {
-      document.body.removeAttribute('data-theme');
-    };
-  }, []);
-
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       <div style={{

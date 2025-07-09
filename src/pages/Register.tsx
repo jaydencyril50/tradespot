@@ -23,10 +23,8 @@ const Register: React.FC = () => {
         const params = new URLSearchParams(window.location.search);
         const ref = params.get('ref') || '';
         setReferredBy(ref);
-        // Set dark theme for this page
-        document.body.setAttribute('data-theme', 'dark');
         return () => {
-            document.body.removeAttribute('data-theme');
+            // Cleanup if needed
         };
     }, []);
 
