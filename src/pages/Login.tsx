@@ -213,35 +213,26 @@ const Login: React.FC = () => {
             const params = new URLSearchParams(window.location.search);
             const token = params.get('token');
             const error = params.get('error');
+            const twoFAEnabled = params.get('twoFAEnabled');
             console.log('[Google Login] useEffect triggered. URL params:', {
                 token,
                 error,
+                twoFAEnabled,
                 search: window.location.search
             });
             if (token) {
                 console.log('[Google Login] Token found in URL:', token);
                 localStorage.setItem('token', token);
-                // Check if user has 2FA enabled
-                (async () => {
-                    try {
-                        const user = await getCurrentUser();
-                        if (user && user.twoFA && user.twoFA.enabled) {
-                            setShow2FAModal(true);
-                            setEmail(user.email || '');
-                            setPassword('');
-                            setLoginToken(token);
-                            localStorage.removeItem('token');
-                            return;
-                        }
-                        // No 2FA, proceed
-                        localStorage.setItem('token', token);
-                        navigate('/dashboard');
-                    } catch (e) {
-                        // fallback: just navigate
-                        localStorage.setItem('token', token);
-                        navigate('/dashboard');
-                    }
-                })();
+                if (twoFAEnabled === 'true') {
+                    // Show 2FA modal before navigating
+                    setShow2FAModal(true);
+                    setLoginToken(token);
+                    localStorage.removeItem('token');
+                    return;
+                }
+                // No 2FA, proceed
+                localStorage.setItem('token', token);
+                navigate('/dashboard');
             }
             // Optionally handle Google login errors
             if (error === 'not_registered') {
