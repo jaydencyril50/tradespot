@@ -2,6 +2,7 @@ import React, { useState, FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser, getCurrentUser } from '../services/api';
 import GoogleLogo from '../assets/google-logo.png';
+import axios from 'axios';
 
 // Slide-to-verify Captcha Modal
 const CaptchaModal: React.FC<{ onSuccess: () => void; onClose: () => void }> = ({ onSuccess, onClose }) => {
@@ -193,6 +194,13 @@ const TwoFAModal: React.FC<{
 
 const GOOGLE_AUTH_URL = "https://api.tradespot.online/auth/google"; // Updated to match backend
 
+// Helper for Google 2FA verification
+const verifyGoogle2FA = async (token: string, code: string) => {
+    const API = process.env.REACT_APP_API_URL || 'https://api.tradespot.online';
+    const response = await axios.post(`${API}/api/auth/google/2fa`, { token, code });
+    return response.data;
+};
+
 const Login: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -328,9 +336,10 @@ const Login: React.FC = () => {
     const handleGoogle2FASubmit = async (code: string) => {
         setGoogle2FAError('');
         try {
-            // Use loginUser with email, empty password, and 2FA code, plus loginToken
-            const res = await loginUser(email, '', code);
-            if (loginToken) localStorage.setItem('token', loginToken);
+            if (!loginToken) throw new Error('Missing login token');
+            // Call the new backend endpoint for Google 2FA
+            const res = await verifyGoogle2FA(loginToken, code);
+            if (res.token) localStorage.setItem('token', res.token);
             setShow2FAModal(false);
             setGoogle2FAError('');
             navigate('/dashboard');
