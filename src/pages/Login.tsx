@@ -154,6 +154,43 @@ const CaptchaModal: React.FC<{ onSuccess: () => void; onClose: () => void }> = (
     );
 };
 
+// 2FA Modal for Google login
+const TwoFAModal: React.FC<{
+  open: boolean;
+  onSubmit: (code: string) => void;
+  onClose: () => void;
+  error?: string;
+}> = ({ open, onSubmit, onClose, error }) => {
+  const [code, setCode] = useState('');
+  if (!open) return null;
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(30,44,80,0.18)', zIndex: 5000, display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <div style={{ background: '#fff', borderRadius: 8, boxShadow: '0 8px 32px 0 rgba(30,60,114,0.18)', padding: 24, minWidth: 320, maxWidth: '90vw', position: 'relative' }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: '#888' }} aria-label="Close">×</button>
+        <h2 style={{ marginBottom: 16, fontSize: '1.1rem', fontWeight: 700, color: '#25324B', letterSpacing: 1 }}>Enter 2FA Code</h2>
+        <form onSubmit={e => { e.preventDefault(); onSubmit(code); }}>
+          <input
+            type="text"
+            value={code}
+            onChange={e => setCode(e.target.value)}
+            maxLength={6}
+            pattern="[0-9]{6}"
+            inputMode="numeric"
+            autoFocus
+            style={{ width: '100%', fontSize: 18, padding: 10, border: '1px solid #e3e6ef', borderRadius: 4, marginBottom: 12 }}
+            placeholder="2FA Code"
+            required
+          />
+          {error && <div style={{ color: '#d32f2f', marginBottom: 8 }}>{error}</div>}
+          <button type="submit" style={{ width: '100%', background: '#1e3c72', color: '#fff', padding: 12, border: 'none', borderRadius: 4, fontWeight: 600, fontSize: '1rem' }}>Verify</button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 const GOOGLE_AUTH_URL = "https://api.tradespot.online/auth/google"; // Updated to match backend
 
 const Login: React.FC = () => {
@@ -166,6 +203,8 @@ const Login: React.FC = () => {
     const [loginToken, setLoginToken] = useState<string | null>(null);
     const [twoFARequired, setTwoFARequired] = useState(false);
     const [twoFACode, setTwoFACode] = useState('');
+    const [show2FAModal, setShow2FAModal] = useState(false);
+    const [google2FAError, setGoogle2FAError] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -187,20 +226,19 @@ const Login: React.FC = () => {
                     try {
                         const user = await getCurrentUser();
                         if (user && user.twoFA && user.twoFA.enabled) {
-                            setTwoFARequired(true);
-                            setError('Two-factor authentication required. Please enter your 2FA code.');
+                            setShow2FAModal(true);
                             setEmail(user.email || '');
                             setPassword('');
                             setLoginToken(token);
-                            // Remove token until 2FA is passed
                             localStorage.removeItem('token');
-                            // Do not navigate yet
                             return;
                         }
                         // No 2FA, proceed
+                        localStorage.setItem('token', token);
                         navigate('/dashboard');
                     } catch (e) {
                         // fallback: just navigate
+                        localStorage.setItem('token', token);
                         navigate('/dashboard');
                     }
                 })();
@@ -295,11 +333,27 @@ const Login: React.FC = () => {
         window.location.href = GOOGLE_AUTH_URL;
     };
 
+    // Handle 2FA submit for Google login
+    const handleGoogle2FASubmit = async (code: string) => {
+        setGoogle2FAError('');
+        try {
+            // Use loginUser with email, empty password, and 2FA code, plus loginToken
+            const res = await loginUser(email, '', code);
+            if (loginToken) localStorage.setItem('token', loginToken);
+            setShow2FAModal(false);
+            setGoogle2FAError('');
+            navigate('/dashboard');
+        } catch (err: any) {
+            setGoogle2FAError(err.message || 'Invalid 2FA code');
+        }
+    };
+
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {showCaptcha && (
                 <CaptchaModal onSuccess={handleCaptchaSuccess} onClose={() => setShowCaptcha(false)} />
             )}
+            <TwoFAModal open={show2FAModal} onSubmit={handleGoogle2FASubmit} onClose={() => setShow2FAModal(false)} error={google2FAError} />
             <form onSubmit={twoFARequired ? handle2FASubmit : handleSubmit} style={{
                 background: 'var(--card-bg)',
                 borderRadius: 0,
