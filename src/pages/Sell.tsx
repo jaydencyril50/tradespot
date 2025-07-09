@@ -41,7 +41,6 @@ const SellSpotPage: React.FC = () => {
   const [usdtAmount, setUsdtAmount] = useState(0);
   const [inputError, setInputError] = useState('');
   const [dailyLimitWarning, setDailyLimitWarning] = useState('');
-  const [flexActivated, setFlexActivated] = useState(() => localStorage.getItem('flexActivate') === 'true');
   const navigate = useNavigate();
 
   const fetchBuyers = async () => {
@@ -167,10 +166,6 @@ const SellSpotPage: React.FC = () => {
 
   // --- Place Sell Order ---
   const handleSell = async () => {
-    if (!flexActivated) {
-      setInputError('You must activate FLEX Profit in the Market page before selling.');
-      return;
-    }
     if (!selectedBuyer || !spotAmount || !!inputError) return;
     try {
       const token = localStorage.getItem('token');
@@ -426,8 +421,8 @@ const SellSpotPage: React.FC = () => {
                   borderRadius: 4,
                   padding: '10px 0',
                   fontWeight: 600,
-                  cursor: inputError || !spotAmount || !flexActivated ? 'not-allowed' : 'pointer',
-                  opacity: inputError || !spotAmount || !flexActivated ? 0.6 : 1,
+                  cursor: inputError || !spotAmount ? 'not-allowed' : 'pointer',
+                  opacity: inputError || !spotAmount ? 0.6 : 1,
                   marginTop: 12,
                   width: 220,
                   display: 'block',
@@ -436,16 +431,11 @@ const SellSpotPage: React.FC = () => {
                   fontSize: 17,
                   letterSpacing: 1
                 }}
-                disabled={!!inputError || !spotAmount || !flexActivated}
+                disabled={!!inputError || !spotAmount}
                 onClick={handleSell}
               >
                 Sell Spot
               </button>
-              {!flexActivated && (
-                <div style={{ color: '#e67e22', marginTop: 8, textAlign: 'center', fontWeight: 500 }}>
-                  You must activate FLEX Profit in the Market page before selling.
-                </div>
-              )}
             </div>
           </Modal>
         )}
