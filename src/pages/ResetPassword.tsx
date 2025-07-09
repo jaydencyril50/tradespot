@@ -17,7 +17,7 @@ const ResetPassword: React.FC = () => {
     if (t) {
       setToken(t);
       // Validate token on mount
-      fetch(`${API}/auth/validate-reset-token?token=${t}`)
+      fetch(`${API}/api/auth/validate-reset-token?token=${t}`)
         .then(res => res.json())
         .then(data => {
           if (data.valid) {
