@@ -667,10 +667,10 @@ const Dashboard: React.FC = () => {
 
 	// Green for dark mode, default for light
 	const mainButtonStyle = theme === 'dark' ? {
-		background: '#10c98f',
+		background: '#232526', // dark neutral background
 		color: '#fff',
 		border: 'none',
-		boxShadow: '0 1px 4px rgba(241, 241, 241, 0.96)',
+		boxShadow: '0 1px 4px rgba(241, 241, 241, 0.10)',
 		transition: 'background 0.2s',
 		filter: 'none',
 	} : {};
@@ -703,7 +703,7 @@ const Dashboard: React.FC = () => {
 				<span style={{
 					fontWeight: 700,
 					fontSize: 24,
-					color: '#25324B',
+					color: theme === 'dark' ? '#fff' : '#25324B', // White in dark mode, brand color in light
 					letterSpacing: 0.5,
 					fontFamily: 'inherit',
 				}}>
@@ -940,7 +940,7 @@ const Dashboard: React.FC = () => {
 							}
 						>
 							<span className='dashboard-circle-icon' style={theme === 'dark' ? { color: '#fff' } : {}}>{item.icon}</span>
-							<span className='dashboard-circle-label' style={theme === 'dark' ? { color: '#fff' } : {}}>{item.label}</span>
+							<span className='dashboard-circle-label' style={theme === 'dark' ? { color: '#10c98f', fontWeight: 700 } : {}}>{item.label}</span>
 						</button>
 					))}
 				</div>
@@ -1003,7 +1003,7 @@ const Dashboard: React.FC = () => {
 					</table>
 				</div>
 				<div style={{
-					background: '#fff',
+					background: theme === 'dark' ? '#232526' : '#fff',
 					boxShadow: '0 2px 16px rgba(30,60,114,0.10)',
 					borderRadius: 0,
 					padding: '18px 0',
@@ -1013,7 +1013,7 @@ const Dashboard: React.FC = () => {
 					justifyContent: 'center',
 					alignItems: 'center',
 				}}>
-					<span style={{ fontWeight: 600, fontSize: 18, color: '#25324B', letterSpacing: 0.5 }}>
+					<span style={{ fontWeight: 600, fontSize: 18, color: theme === 'dark' ? '#fff' : '#25324B', letterSpacing: 0.5 }}>
 						T.S Time: <LiveClock utc />
 					</span>
 				</div>
@@ -1032,7 +1032,7 @@ const Dashboard: React.FC = () => {
 						style={{
 							width: 48,
 							height: 48,
-							background: '#fff',
+							background: theme === 'dark' ? '#232526' : '#fff',
 							border: 'none',
 							borderRadius: 12,
 							display: 'flex',
@@ -1046,14 +1046,14 @@ const Dashboard: React.FC = () => {
 						title="Telegram"
 						onClick={() => window.open('https://t.me/tradespotglobal', '_blank')}
 					>
-						<FaTelegramPlane size={28} color="#229ED9" />
+						<FaTelegramPlane size={28} color={theme === 'dark' ? '#fff' : '#229ED9'} />
 					</button>
 					{/* Email (Gmail) */}
 					<button
 						style={{
 							width: 48,
 							height: 48,
-							background: '#fff',
+							background: theme === 'dark' ? '#232526' : '#fff',
 							border: 'none',
 							borderRadius: 12,
 							display: 'flex',
@@ -1067,14 +1067,14 @@ const Dashboard: React.FC = () => {
 						title="Email"
 						onClick={() => window.open('mailto:support@tradespot.online')}
 					>
-						<MdEmail size={28} color="#EA4335" />
+						<MdEmail size={28} color={theme === 'dark' ? '#fff' : '#EA4335'} />
 					</button>
 					{/* WhatsApp */}
 					<button
 						style={{
 							width: 48,
 							height: 48,
-							background: '#fff',
+							background: theme === 'dark' ? '#232526' : '#fff',
 							border: 'none',
 							borderRadius: 12,
 							display: 'flex',
@@ -1088,14 +1088,14 @@ const Dashboard: React.FC = () => {
 						title="WhatsApp"
 						onClick={() => window.open('', '_blank')}
 					>
-						<FaWhatsapp size={28} color="#25D366" />
+						<FaWhatsapp size={28} color={theme === 'dark' ? '#fff' : '#25D366'} />
 					</button>
 					{/* Chat Icon */}
 					<button
 				style={{
 					width: 48,
 					height: 48,
-					background: '#fff',
+					background: theme === 'dark' ? '#232526' : '#fff',
 					border: 'none',
 					borderRadius: 12,
 					display: 'flex',
@@ -1109,7 +1109,7 @@ const Dashboard: React.FC = () => {
 				title="Chat"
 				onClick={() => navigate('/chat')}
 			>
-				<ChatIcon size={28} color="#25324B" />
+				<ChatIcon size={28} color={theme === 'dark' ? '#fff' : '#25324B'} />
 			</button>
 				</div>
 				{/* End social/contact buttons row */}

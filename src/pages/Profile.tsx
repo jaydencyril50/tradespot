@@ -75,13 +75,13 @@ const Profile: React.FC = () => {
           PROFILE
         </span>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20, paddingBottom: 40 }}>
         {/* Profile Info Card */}
         <div style={{
           background: 'var(--card-bg)',
           borderRadius: 0,
           boxShadow: 'var(--card-shadow)',
-          border: '1px solid #282829',
+          border: 'none',
           padding: '12px 16px',
           minWidth: 200,
           maxWidth: 380,
@@ -206,7 +206,7 @@ const Profile: React.FC = () => {
           background: 'var(--card-bg)',
           borderRadius: 0,
           boxShadow: 'var(--card-shadow)',
-          border: '1px solid #282829',
+          border: 'none',
           padding: '12px 16px',
           minWidth: 200,
           maxWidth: 380,
@@ -247,7 +247,7 @@ const Profile: React.FC = () => {
           background: 'var(--card-bg)',
           borderRadius: 0,
           boxShadow: 'var(--card-shadow)',
-          border: '1px solid #282829',
+          border: 'none',
           padding: '12px 16px',
           minWidth: 200,
           maxWidth: 380,
@@ -289,7 +289,7 @@ const Profile: React.FC = () => {
           background: 'var(--card-bg)',
           borderRadius: 0,
           boxShadow: 'var(--card-shadow)',
-          border: '1px solid #282829',
+          border: 'none',
           padding: '12px 16px',
           minWidth: 200,
           maxWidth: 380,
@@ -369,7 +369,7 @@ const Profile: React.FC = () => {
           background: 'var(--card-bg)',
           borderRadius: 0,
           boxShadow: 'var(--card-shadow)',
-          border: '1px solid #282829',
+          border: 'none',
           padding: '12px 16px',
           minWidth: 200,
           maxWidth: 380,
