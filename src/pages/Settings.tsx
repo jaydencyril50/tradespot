@@ -1,13 +1,15 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../ThemeContext';
 import '../theme.css';
 
 const Settings: React.FC = () => {
   const navigate = useNavigate();
+  const { theme } = useTheme ? useTheme() : { theme: 'light' };
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card-bg)', padding: '16px 24px 10px 18px', border: '1.5px solid var(--secondary)', borderTop: 0, borderLeft: 0, borderRight: 0, opacity: 0.5 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card-bg)', padding: '16px 24px 10px 18px', border: '1.5px solid var(--secondary)', borderTop: 0, borderLeft: 0, borderRight: 0}}>
         <span style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)', letterSpacing: 1, fontFamily: 'serif' }}>
           SETTINGS
         </span>
@@ -29,12 +31,11 @@ const Settings: React.FC = () => {
             flexDirection: 'column',
             justifyContent: 'center',
             boxShadow: 'var(--card-shadow)',
-            border: '1px solid var(--secondary)',
             background: 'var(--card-bg)',
           }}
         >
           <h2 style={{ fontSize: '1.1rem', marginBottom: 4, fontWeight: 700, color: 'var(--primary)', letterSpacing: 1 }}>Basic Settings</h2>
-          <div style={{ fontSize: '0.95rem', color: 'var(--secondary)', marginBottom: 8 }}>
+          <div style={{ fontSize: '0.95rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)', marginBottom: 8 }}>
             Manage your account and preferences here.
           </div>
           <button
@@ -73,12 +74,11 @@ const Settings: React.FC = () => {
             flexDirection: 'column',
             justifyContent: 'center',
             boxShadow: 'var(--card-shadow)',
-            border: '1px solid var(--secondary)',
             background: 'var(--card-bg)',
           }}
         >
           <h2 style={{ fontSize: '1.1rem', marginBottom: 4, fontWeight: 700, color: 'var(--primary)', letterSpacing: 1 }}>Privacy Settings</h2>
-          <div style={{ fontSize: '0.95rem', color: 'var(--secondary)', marginBottom: 8 }}>
+          <div style={{ fontSize: '0.95rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)', marginBottom: 8 }}>
             Control your privacy and security options here.
           </div>
           <button
@@ -117,12 +117,11 @@ const Settings: React.FC = () => {
             flexDirection: 'column',
             justifyContent: 'center',
             boxShadow: 'var(--card-shadow)',
-            border: '1px solid var(--secondary)',
             background: 'var(--card-bg)',
           }}
         >
           <h2 style={{ fontSize: '1.1rem', marginBottom: 4, fontWeight: 700, color: 'var(--primary)', letterSpacing: 1 }}>Additional Settings</h2>
-          <div style={{ fontSize: '0.95rem', color: 'var(--secondary)', marginBottom: 8 }}>
+          <div style={{ fontSize: '0.95rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)', marginBottom: 8 }}>
             {/* Placeholder for additional settings content */}
             Configure extra options and features here.
           </div>

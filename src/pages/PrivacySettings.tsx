@@ -175,7 +175,7 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
         </div>
       )}
       <div className="privacy-settings-title">Privacy Settings</div>
-      <div className="privacy-settings-desc">
+      <div className="privacy-settings-desc" style={{ color: theme === 'dark' ? '#fff' : undefined }}>
         Control your privacy and security options here.
       </div>
       {!showUpdatePassword && (
@@ -310,7 +310,7 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
       )}
       {showFundsPrivacyModal && (
         <div className="privacy-settings-modal-overlay">
-          <div className="privacy-settings-modal-card" style={{ padding: '22px 18px 18px 18px' }}>
+          <div className="privacy-settings-modal-card" style={{ padding: '22px 18px 18px 18px', maxWidth: 480, minWidth: 340, width: '100%' }}>
             <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#25324B', marginBottom: 6, letterSpacing: 1 }}>Funds Privacy Verification</div>
             <div style={{ fontSize: '0.95rem', color: '#555', marginBottom: 10 }}>
               Enter the details below to proceed.
@@ -371,7 +371,7 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
       {/* Password Modal for WebAuthn Security */}
       {showPasswordModal && (
         <div className="privacy-settings-modal-overlay">
-          <div className="privacy-settings-modal-card">
+          <div className="privacy-settings-modal-card" style={{ maxWidth: 480, minWidth: 340, width: '100%' }}>
             <div className="privacy-settings-modal-title">Enter Password</div>
             <form style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }} onSubmit={handlePasswordModalSubmit}>
               <input
@@ -383,15 +383,17 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
                 required
                 autoFocus
               />
-              <div className="privacy-settings-modal-btn-row">
+              <div className="privacy-settings-modal-btn-row" style={{ width: '100%', display: 'flex', gap: 8 }}>
                 <button
                   type="button"
                   onClick={() => setShowPasswordModal(false)}
                   className="privacy-settings-modal-btn cancel"
+                  style={{ flex: 1, minWidth: 0 }}
                 >Cancel</button>
                 <button
                   type="submit"
                   className="privacy-settings-modal-btn continue"
+                  style={{ background: '#102c5a', color: '#fff', flex: 1, minWidth: 0 }}
                 >Continue</button>
               </div>
               {passwordModalError && <div className="privacy-settings-error" style={{ marginTop: 4 }}>{passwordModalError}</div>}

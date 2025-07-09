@@ -79,13 +79,13 @@ const TwoFASettings: React.FC = () => {
   })();
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card-bg)', padding: '16px 24px 10px 18px', border: '1.5px solid var(--secondary)', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card-bg)', padding: '16px 24px 10px 18px', borderBottom: '1.5px solid var(--secondary)', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
         <span style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text)', letterSpacing: 1, fontFamily: 'serif' }}>
           2FA SETTINGS
         </span>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
         <div
           className="card"
           style={{
@@ -101,7 +101,7 @@ const TwoFASettings: React.FC = () => {
             flexDirection: 'column',
             justifyContent: 'center',
             boxShadow: 'var(--card-shadow)',
-            border: '1px solid var(--secondary)',
+            // border: '1px solid var(--secondary)', // Removed border
             background: 'var(--card-bg)',
             padding: '24px 16px',
           }}
