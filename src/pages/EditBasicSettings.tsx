@@ -47,6 +47,14 @@ const EditBasicSettings: React.FC = () => {
     setSuccess('');
     setNewEmail('');
     setPassword('');
+    setCode('');
+    setLoading(true);
+    try {
+      await sendEmailVerificationCode();
+      setSuccess('Verification code sent to your email.');
+    } catch (err: any) {
+      setError(err.message || 'Failed to send verification code.');
+    }
     setLoading(false);
   };
 
@@ -89,7 +97,7 @@ const EditBasicSettings: React.FC = () => {
     setError('');
     setSuccess('');
     try {
-      await changeEmail(newEmail, password);
+      await changeEmail(newEmail, password, code); // Pass code to backend
       setSuccess('Email changed successfully!');
       setEditing('none');
     } catch (err: any) {
@@ -260,6 +268,14 @@ const EditBasicSettings: React.FC = () => {
               placeholder="Your Password"
               value={password}
               onChange={e => setPassword(e.target.value)}
+              required
+              style={{ width: '95%', marginBottom: 8, padding: 8, borderRadius: 1, border: '1px solid #ccc', fontSize: 15 }}
+            />
+            <input
+              type="text"
+              placeholder="Current Email Verification Code"
+              value={code}
+              onChange={e => setCode(e.target.value)}
               required
               style={{ width: '95%', marginBottom: 8, padding: 8, borderRadius: 1, border: '1px solid #ccc', fontSize: 15 }}
             />

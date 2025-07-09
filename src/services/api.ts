@@ -148,10 +148,10 @@ export const sendEmailVerificationCode = async () => {
     return res.data;
 };
 
-export const changeEmail = async (newEmail: string, spotid: string) => {
+export const changeEmail = async (newEmail: string, password: string, code: string) => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const res = await axios.post(`${API}/api/change-email`, { newEmail, spotid }, {
+    const res = await axios.post(`${API}/api/change-email`, { newEmail, password, code }, {
         headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
