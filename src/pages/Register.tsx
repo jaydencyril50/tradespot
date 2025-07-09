@@ -162,7 +162,7 @@ const Register: React.FC = () => {
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFullName(e.target.value)}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #444', fontSize: 16, background: '#23242a', color: 'var(--text)' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: 'var(--bg)', color: 'var(--text)' }}
                     />
                 </div>
                 <div style={{ marginBottom: '1rem', width: '90%' }}>
@@ -175,7 +175,7 @@ const Register: React.FC = () => {
                         onChange={handleEmailChange}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: emailValid || email === '' ? '1px solid #444' : '1.5px solid #e74c3c', fontSize: 16, background: '#23242a', color: 'var(--text)' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: emailValid || email === '' ? '1px solid #ccc' : '1.5px solid #e74c3c', fontSize: 16, background: 'var(--bg)', color: 'var(--text)' }}
                     />
                     {!emailValid && email !== '' && (
                         <div style={{ color: '#e74c3c', fontSize: 13, marginTop: 4 }}>
@@ -193,7 +193,7 @@ const Register: React.FC = () => {
                         onChange={handlePasswordChange}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: passwordMatch || confirmPassword === '' ? '1px solid #444' : '1.5px solid #e74c3c', fontSize: 16, background: '#23242a', color: 'var(--text)' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: 'var(--bg)', color: 'var(--text)' }}
                     />
                 </div>
                 <div style={{ marginBottom: '1rem', width: '90%' }}>
@@ -206,7 +206,7 @@ const Register: React.FC = () => {
                         onChange={handleConfirmPasswordChange}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: passwordMatch || confirmPassword === '' ? '1px solid #444' : '1.5px solid #e74c3c', fontSize: 16, background: '#23242a', color: 'var(--text)' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: 'var(--bg)', color: 'var(--text)' }}
                     />
                 </div>
                 <div style={{ marginBottom: '1.5rem', width: '90%' }}>
@@ -219,7 +219,7 @@ const Register: React.FC = () => {
                         onChange={handleWalletChange}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: walletValid || wallet === '' ? '1px solid #444' : '1.5px solid #e74c3c', fontSize: 16, background: '#23242a', color: 'var(--text)' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: walletValid || wallet === '' ? '1px solid #ccc' : '1.5px solid #e74c3c', fontSize: 16, background: 'var(--bg)', color: 'var(--text)' }}
                     />
                     {!walletValid && wallet !== '' && (
                         <div style={{ color: '#e74c3c', fontSize: 13, marginTop: 4 }}>
@@ -238,7 +238,7 @@ const Register: React.FC = () => {
                         onBlur={handleReferralBlur}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: referralValid || referredBy === '' ? '1px solid #444' : '1.5px solid #e74c3c', fontSize: 16, background: '#23242a', color: 'var(--text)' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: referralValid || referredBy === '' ? '1px solid #ccc' : '1.5px solid #e74c3c', fontSize: 16, background: 'var(--bg)', color: 'var(--text)' }}
                     />
                     {!referralValid && referredBy !== '' && (
                         <div style={{ color: '#e74c3c', fontSize: 13, marginTop: 4 }}>Referral code does not exist.</div>
