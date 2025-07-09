@@ -88,6 +88,7 @@ interface ConvertModalProps {
   handleConvert: () => void;
   CONVERT_RATE: number;
   modalCardStyle?: React.CSSProperties;
+  theme: 'light' | 'dark'; // Add theme prop
 }
 
 const ConvertModal: React.FC<ConvertModalProps> = ({
@@ -103,6 +104,7 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
   handleConvert,
   CONVERT_RATE,
   modalCardStyle,
+  theme, // Receive theme prop
 }) => {
   // Only FLEX to USDT allowed
   const [inputError, setInputError] = React.useState('');
@@ -148,21 +150,21 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
           fontSize: '1.1rem',
           marginBottom: 4,
           fontWeight: 700,
-          color: '#25324B',
+          color: theme === 'dark' ? '#fff' : '#25324B',
           letterSpacing: 1,
           fontFamily: 'serif'
         }}>Convert Balance</h2>
-        <div style={{ fontSize: '0.95rem', color: '#555', marginBottom: 8 }}>
+        <div style={{ fontSize: '0.95rem', color: theme === 'dark' ? '#fff' : '#555', marginBottom: 8 }}>
           Instantly convert FLEX to USDT.
         </div>
-        <div style={{ marginBottom: 12, fontWeight: 600, color: '#1e3c72' }}>
+        <div style={{ marginBottom: 12, fontWeight: 600, color: theme === 'dark' ? '#fff' : '#1e3c72' }}>
           USDT Balance: <span style={{ color: '#10c98f' }}>{loadingBalances ? 'Loading...' : usdtBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
         </div>
-        <div style={{ marginBottom: 12, fontWeight: 600, color: '#1e3c72' }}>
+        <div style={{ marginBottom: 12, fontWeight: 600, color: theme === 'dark' ? '#fff' : '#1e3c72' }}>
           FLEX Balance: <span style={{ color: '#2a5298' }}>{loadingBalances ? 'Loading...' : flexBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
         </div>
         <div style={{ marginBottom: 12 }}>
-          <label style={{ fontWeight: 500, color: '#25324B', marginRight: 10 }}>Convert:</label>
+          <label style={{ fontWeight: 500, color: theme === 'dark' ? '#fff' : '#25324B', marginRight: 10 }}>Convert:</label>
           <select value={'FLEX_TO_USDT'} onChange={() => {}} style={{
             padding: '6px 12px',
             borderRadius: 6,
@@ -173,7 +175,7 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
           </select>
         </div>
         <div style={{ marginBottom: 12 }}>
-          <label style={{ fontWeight: 500, color: '#25324B', marginRight: 10 }}>Amount:</label>
+          <label style={{ fontWeight: 500, color: theme === 'dark' ? '#fff' : '#25324B', marginRight: 10 }}>Amount:</label>
           <input
             type="number"
             min="0"
@@ -187,7 +189,9 @@ const ConvertModal: React.FC<ConvertModalProps> = ({
               borderRadius: 6,
               border: '1px solid #ccc',
               fontSize: 16,
-              width: 120
+              width: 120,
+              color: theme === 'dark' ? '#fff' : undefined,
+              background: theme === 'dark' ? '#232526' : undefined
             }}
           />
         </div>
@@ -248,6 +252,7 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const chartRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme ? useTheme() : { theme: 'light' };
+  const themeValue: 'light' | 'dark' = theme === 'dark' ? 'dark' : 'light';
   const [marketData, setMarketData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -767,6 +772,7 @@ const Dashboard: React.FC = () => {
           handleConvert={handleConvert}
           CONVERT_RATE={1} // Set your conversion rate here
           modalCardStyle={modalCardStyle}
+          theme={themeValue} // Pass theme as 'light' | 'dark'
         />
       )}
 			{showTransferModal && (
@@ -807,18 +813,18 @@ const Dashboard: React.FC = () => {
               fontSize: '1.1rem',
               marginBottom: 4,
               fontWeight: 700,
-              color: '#25324B',
+              color: theme === 'dark' ? '#fff' : '#25324B',
               letterSpacing: 1,
               fontFamily: 'serif'
             }}>Transfer FLEX</h2>
-            <div style={{ fontSize: '0.95rem', color: '#555', marginBottom: 8 }}>
+            <div style={{ fontSize: '0.95rem', color: theme === 'dark' ? '#fff' : '#555', marginBottom: 8 }}>
               Send FLEX to another user instantly.
             </div>
-            <div style={{ marginBottom: 12, fontWeight: 600, color: '#1e3c72' }}>
+            <div style={{ marginBottom: 12, fontWeight: 600, color: theme === 'dark' ? '#fff' : '#1e3c72' }}>
               Your FLEX Balance: <span style={{ color: '#2a5298' }}>{flexBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
             </div>
             <div style={{ marginBottom: 12 }}>
-              <label style={{ fontWeight: 500, color: '#25324B', marginRight: 10 }}>Recipient Email:</label>
+              <label style={{ fontWeight: 500, color: theme === 'dark' ? '#fff' : '#25324B', marginRight: 10 }}>Recipient Email:</label>
               <input
                 type="email"
                 value={transferEmail}
@@ -828,11 +834,13 @@ const Dashboard: React.FC = () => {
                   borderRadius: 6,
                   border: '1px solid #ccc',
                   fontSize: 16,
-                  width: 220
+                  width: 220,
+                  color: theme === 'dark' ? '#fff' : undefined,
+                  background: theme === 'dark' ? '#232526' : undefined
                 }}
               />
               {transferEmail && (
-                <div style={{ fontSize: 13, marginTop: 2, minHeight: 18 }}>
+                <div style={{ fontSize: 13, marginTop: 2, minHeight: 18, color: theme === 'dark' ? '#fff' : undefined }}>
                   {checkingEmail ? (
                     <span style={{ color: '#888' }}>Checking...</span>
                   ) : recipientEmailValid === true ? (
@@ -844,7 +852,7 @@ const Dashboard: React.FC = () => {
               )}
             </div>
             <div style={{ marginBottom: 12 }}>
-              <label style={{ fontWeight: 500, color: '#25324B', marginRight: 10 }}>Amount:</label>
+              <label style={{ fontWeight: 500, color: theme === 'dark' ? '#fff' : '#25324B', marginRight: 10 }}>Amount:</label>
               <input
                 type="number"
                 min="0"
@@ -863,17 +871,19 @@ const Dashboard: React.FC = () => {
                   borderRadius: 6,
                   border: '1px solid #ccc',
                   fontSize: 16,
-                  width: 120
+                  width: 120,
+                  color: theme === 'dark' ? '#fff' : undefined,
+                  background: theme === 'dark' ? '#232526' : undefined
                 }}
               />
               {transferAmount && Number(transferAmount) > flexBalance && (
                 <div style={{ color: '#e74c3c', fontWeight: 600, marginTop: 4, fontSize: 14 }}>Insufficient funds.</div>
               )}
             </div>
-	  {/* Set biometricEnabled to false if not implemented */}
-	  {!isWebauthnTransferEnabledState && (
+      {/* Set biometricEnabled to false if not implemented */}
+      {!isWebauthnTransferEnabledState && (
         <div style={{ marginBottom: 12 }}>
-          <label style={{ fontWeight: 500, color: '#25324B', marginRight: 10 }}>2FA Code:</label>
+          <label style={{ fontWeight: 500, color: theme === 'dark' ? '#fff' : '#25324B', marginRight: 10 }}>2FA Code:</label>
           <input
             type="text"
             value={transferTwoFA}
@@ -883,7 +893,9 @@ const Dashboard: React.FC = () => {
               borderRadius: 6,
               border: '1px solid #ccc',
               fontSize: 16,
-              width: 120
+              width: 120,
+              color: theme === 'dark' ? '#fff' : undefined,
+              background: theme === 'dark' ? '#232526' : undefined
             }}
             maxLength={6}
             pattern="[0-9]{6}"
@@ -892,7 +904,7 @@ const Dashboard: React.FC = () => {
         </div>
       )}
       {isWebauthnTransferEnabledState && (
-        <div style={{ color: '#888', fontSize: 14, marginBottom: 12 }}>
+        <div style={{ color: theme === 'dark' ? '#fff' : '#888', fontSize: 14, marginBottom: 12 }}>
           2FA not required when WebAuthn is enabled.
         </div>
       )}
