@@ -164,21 +164,8 @@ const BuySpotPage: React.FC = () => {
     return n.toString();
   };
 
-  // Check flex activation
-  const [flexActivated, setFlexActivated] = useState(() => localStorage.getItem('flexActivate') === 'true');
-
-  useEffect(() => {
-    const onStorage = () => setFlexActivated(localStorage.getItem('flexActivate') === 'true');
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
-
   // Place buy logic here
   const handleBuySpot = async () => {
-    if (!flexActivated) {
-      setInputError('You must activate FLEX Profit in the Market page before buying.');
-      return;
-    }
     if (!selectedBuyer || !spotAmount || !!inputError) return;
     try {
       const token = localStorage.getItem('token');
@@ -425,8 +412,8 @@ const BuySpotPage: React.FC = () => {
                   borderRadius: 4,
                   padding: '10px 0',
                   fontWeight: 600,
-                  cursor: inputError || !spotAmount || !flexActivated ? 'not-allowed' : 'pointer',
-                  opacity: inputError || !spotAmount || !flexActivated ? 0.6 : 1,
+                  cursor: inputError || !spotAmount ? 'not-allowed' : 'pointer',
+                  opacity: inputError || !spotAmount ? 0.6 : 1,
                   marginTop: 12,
                   width: 220,
                   display: 'block',
@@ -435,16 +422,11 @@ const BuySpotPage: React.FC = () => {
                   fontSize: 17,
                   letterSpacing: 1
                 }}
-                disabled={!!inputError || !spotAmount || !flexActivated}
+                disabled={!!inputError || !spotAmount}
                 onClick={handleBuySpot}
               >
                 Buy Spot
               </button>
-              {!flexActivated && (
-                <div style={{ color: '#e67e22', marginTop: 8, textAlign: 'center', fontWeight: 500 }}>
-                  You must activate FLEX Profit in the Market page before buying.
-                </div>
-              )}
             </div>
           </Modal>
         )}

@@ -53,11 +53,7 @@ const SimulatedMarketChart = () => {
   const [latestClose, setLatestClose] = useState<number | null>(null);
 
   // --- FLEX Profit Activation State ---
-  const [flexActivate, setFlexActivate] = useState(() => {
-    // Initialize from localStorage if present
-    const stored = localStorage.getItem('flexActivate');
-    return stored === 'true';
-  });
+  const [flexActivate, setFlexActivate] = useState(false);
   const [usdtRecord, setUsdtRecord] = useState<number | null>(null);
   const [flexButtonDisabled, setFlexButtonDisabled] = useState(false);
   const [flexProfit, setFlexProfit] = useState(0);
