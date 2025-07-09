@@ -94,9 +94,8 @@ export const getTeamInfo = async () => {
     return res.data;
 };
 
-// Add a function to the API service to validate if a referral code exists in the backend.
 export const validateReferralCode = async (code: string) => {
-    const res = await axios.get(`${API}/api/validate-referral/${code}`);
+    const res = await axios.get(`${API}/api/team/validate-referral/${code}`);
     return res.data.valid;
 };
 
