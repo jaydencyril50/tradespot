@@ -15,6 +15,7 @@ interface User {
   faceStatus?: 'not_verified' | 'pending' | 'verified';
   faceImage?: string;
   validMember?: boolean;
+  banned?: boolean; // Added banned status
 }
 
 const AdminUsers: React.FC = () => {
@@ -24,6 +25,7 @@ const AdminUsers: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [banLoading, setBanLoading] = useState(false); // Added ban loading state
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -124,6 +126,30 @@ const AdminUsers: React.FC = () => {
       setError(e?.response?.data?.error || e.message || 'Failed to toggle valid member.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Restrict (ban/unban) user
+  const handleRestrictUser = async (user: User) => {
+    setBanLoading(true);
+    setError('');
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) throw new Error('Not authenticated');
+      await axios.post(
+        `${API}/api/auth/admin/ban`,
+        { email: user.email, ban: !user.banned },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // Update user banned status in UI
+      setUsers(users.map(u => u._id === user._id ? { ...u, banned: !user.banned } : u));
+      if (selectedUser && selectedUser._id === user._id) {
+        setSelectedUser({ ...selectedUser, banned: !user.banned });
+      }
+    } catch (e: any) {
+      setError(e?.response?.data?.error || e.message || 'Failed to restrict user.');
+    } finally {
+      setBanLoading(false);
     }
   };
 
@@ -361,21 +387,21 @@ const AdminUsers: React.FC = () => {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   marginTop: 16,
-                  gap: 12
+                  gap: 8 // reduced gap for compactness
                 }}>
                   <button
                     type="button"
                     onClick={() => handleDeleteUser(selectedUser._id)}
                     style={{
-                      padding: '6px 24px',
+                      padding: '4px 10px', // smaller padding
                       background: '#e74c3c',
                       color: '#fff',
                       border: 'none',
                       borderRadius: 0,
                       cursor: 'pointer',
                       fontWeight: 600,
-                      fontSize: 16,
-                      minWidth: 90
+                      fontSize: 13, // smaller font
+                      minWidth: 60 // smaller min width
                     }}
                     disabled={loading}
                   >
@@ -385,15 +411,15 @@ const AdminUsers: React.FC = () => {
                     type="button"
                     onClick={() => { setModalOpen(false); setSelectedUser(null); }}
                     style={{
-                      padding: '6px 24px',
+                      padding: '4px 10px',
                       background: '#eee',
                       color: '#232b36',
                       border: 'none',
                       borderRadius: 0,
                       cursor: 'pointer',
                       fontWeight: 500,
-                      fontSize: 16,
-                      minWidth: 90
+                      fontSize: 13,
+                      minWidth: 60
                     }}
                   >
                     Cancel
@@ -401,19 +427,37 @@ const AdminUsers: React.FC = () => {
                   <button
                     type="submit"
                     style={{
-                      padding: '6px 24px',
+                      padding: '4px 10px',
                       background: '#1e3c72',
                       color: '#fff',
                       border: 'none',
                       borderRadius: 0,
                       cursor: 'pointer',
                       fontWeight: 600,
-                      fontSize: 16,
-                      minWidth: 90
+                      fontSize: 13,
+                      minWidth: 60
                     }}
                     disabled={loading}
                   >
                     {loading ? 'Saving...' : 'Save'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRestrictUser(selectedUser)}
+                    style={{
+                      padding: '4px 10px',
+                      background: selectedUser.banned ? '#27ae60' : '#e67e22',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: 0,
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      fontSize: 13,
+                      minWidth: 60
+                    }}
+                    disabled={banLoading}
+                  >
+                    {banLoading ? (selectedUser.banned ? 'Unrestricting...' : 'Restricting...') : (selectedUser.banned ? 'Unrestrict' : 'Restrict')}
                   </button>
                 </div>
               </form>
