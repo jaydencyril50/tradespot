@@ -17,7 +17,7 @@ const FlexDropClaim: React.FC = () => {
       }
       setStatus('loading');
       try {
-        const res = await axios.post(`/api/flex-drop/claim/${linkId}`, {}, {
+        const res = await axios.post(`https://api.tradespot.online/api/flex-drop/claim/${linkId}`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setAmount(res.data.amount);
