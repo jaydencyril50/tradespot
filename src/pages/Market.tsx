@@ -3,6 +3,7 @@ import { createChart, CrosshairMode } from 'lightweight-charts';
 import { getPortfolio } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import '../components/Market.css';
+import ChartFullscreenWrapper from '../components/ChartFullscreenWrapper';
 
 const API = process.env.REACT_APP_API_BASE_URL;
 
@@ -351,6 +352,29 @@ const SimulatedMarketChart = () => {
     return () => { if (interval) clearInterval(interval); };
   }, [profileModalOpen]);
 
+  // Dynamically set fullscreen chart height for mobile browsers
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const chartDiv = chartContainerRef.current;
+    if (!chartDiv) return;
+
+    // Handler to set height to window.innerHeight (true viewport height)
+    const setFullscreenHeight = () => {
+      chartDiv.style.height = window.innerHeight + 'px';
+      chartDiv.style.width = window.innerWidth + 'px';
+    };
+    setFullscreenHeight();
+    window.addEventListener('resize', setFullscreenHeight);
+    window.addEventListener('orientationchange', setFullscreenHeight);
+    return () => {
+      window.removeEventListener('resize', setFullscreenHeight);
+      window.removeEventListener('orientationchange', setFullscreenHeight);
+      // Reset style on exit
+      chartDiv.style.height = '';
+      chartDiv.style.width = '';
+    };
+  }, [isFullscreen]);
+
   return (
     <div className="market-root" style={{ background: 'var(--bg)', minHeight: '100vh' }}>
       {/* Header Bar */}
@@ -391,66 +415,29 @@ const SimulatedMarketChart = () => {
               )}
             </span>
           </div>
-          {/* Chart Container */}
-          <div
-            ref={chartContainerRef}
-            className="market-chart-container"
-            style={isFullscreen ? {
-              width: '100vw',
-              maxWidth: '100vw',
-              height: '100vh',
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              zIndex: 9999,
-              borderRadius: 0,
-              boxShadow: '0 0 0 9999px rgba(0,0,0,0.85)',
-              margin: 0,
-              background: 'var(--bg)'
-            } : { background: 'var(--bg)' }}
-          >
-            {isFullscreen && (
-              <button
-                onClick={() => setIsFullscreen(false)}
+          {/* Chart Container with Fullscreen Wrapper */}
+          <ChartFullscreenWrapper isFullscreen={isFullscreen} onExit={() => setIsFullscreen(false)}>
+            <div
+              ref={chartContainerRef}
+              className="market-chart-container"
+              style={!isFullscreen ? { background: 'var(--bg)' } : undefined}
+            >
+              <div
+                ref={tooltipRef}
                 style={{
                   position: 'absolute',
-                  top: 16,
-                  right: 24,
-                  zIndex: 10001,
-                  background: 'rgba(30,30,30,0.7)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: 36,
-                  height: 36,
-                  fontSize: 22,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  color: 'white',
+                  background: 'rgba(0,0,0,0.7)',
+                  padding: '4px 8px',
+                  borderRadius: 4,
+                  pointerEvents: 'none',
+                  display: 'none',
+                  fontSize: '12px',
+                  zIndex: 1000,
                 }}
-                aria-label="Exit Fullscreen"
-              >
-                &#10005;
-              </button>
-            )}
-            <div
-              ref={tooltipRef}
-              style={{
-                position: 'absolute',
-                color: 'white',
-                background: 'rgba(0,0,0,0.7)',
-                padding: '4px 8px',
-                borderRadius: 4,
-                pointerEvents: 'none',
-                display: 'none',
-                fontSize: '12px',
-                zIndex: 1000,
-              }}
-            />
-          </div>
+              />
+            </div>
+          </ChartFullscreenWrapper>
         </div>
         {/* Buy/Sell/Order Buttons Section */}
         <div className="market-buy-sell-order market-buy-sell-order-vertical">
