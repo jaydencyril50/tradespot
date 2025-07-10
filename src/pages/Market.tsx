@@ -622,9 +622,26 @@ const SimulatedMarketChart = () => {
             {/* Reset button to allow new activation */}
             {flexButtonDisabled && (
               <button
-                onClick={() => {
-                  setFlexButtonDisabled(false);
-                  setFlexProfit(0);
+                onClick={async () => {
+                  // Call backend to cancel/deactivate FLEX profit activation
+                  try {
+                    const res = await fetch(`${API}/api/portfolio/flex-profit-cancel`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                      },
+                    });
+                    if (res.ok) {
+                      setFlexButtonDisabled(false);
+                      setFlexProfit(0);
+                    } else {
+                      const err = await res.json();
+                      alert(err.error || 'Failed to reset activation');
+                    }
+                  } catch (e) {
+                    alert('Network error');
+                  }
                 }}
                 style={{
                   marginTop: 8,
