@@ -72,35 +72,24 @@ const AdminChat: React.FC = () => {
 
   // Socket.io setup
   useEffect(() => {
-    if (!selectedUser) return;
     if (!socketRef.current) {
       socketRef.current = io(SOCKET_URL, {
         transports: ['websocket'],
         auth: { token: localStorage.getItem('adminToken') },
       });
+      // Join a global admin room
+      socketRef.current.emit('join', 'admin');
     }
     const socket = socketRef.current;
-    socket.emit('admin-join', { userId: selectedUser._id });
-    socket.on('user-message', (msg: any) => {
-      setMessages((prev) => [...prev, msg]);
-    });
-    socket.on('admin-message', (msg: any) => {
-      setMessages((prev) => [...prev, msg]);
-    });
-    // Listen for new_message event (for live user messages)
+    // Listen for all new_message events
     socket.on('new_message', (msg: any) => {
-      // Add if message is between admin and selected user (either direction)
-      if (
-        (msg.sender === selectedUser._id && msg.to === socket.id) || // user sent to admin
-        (msg.sender === socket.id && msg.to === selectedUser._id)    // admin sent to user
-        || (msg.sender === selectedUser._id) // fallback: user sent
-      ) {
+      // If the message is for the currently selected user, add to chat
+      if (selectedUser && (msg.sender === selectedUser._id || msg.recipient === selectedUser._id)) {
         setMessages((prev) => [...prev, msg]);
       }
+      // Optionally, you could add notification logic here for other users
     });
     return () => {
-      socket.off('user-message');
-      socket.off('admin-message');
       socket.off('new_message');
     };
   }, [selectedUser]);
