@@ -40,6 +40,8 @@ import AdminChat from './pages/AdminChat';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import WebauthnManagement from './pages/WebauthnManagement';
+import AdminFlexDrop from './pages/AdminFlexDrop';
+import FlexDropClaim from './pages/FlexDropClaim';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Root container missing in index.html');
@@ -160,6 +162,8 @@ root.render(
                 <WebauthnManagement />
               </ProtectedRoute>
             } />
+            <Route path="/admin/flex-drop" element={<AdminFlexDrop />} />
+            <Route path="/flex-drop/:linkId" element={<FlexDropClaim />} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>

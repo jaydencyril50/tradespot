@@ -12,9 +12,10 @@ const adminButtons = [
   { label: 'SOCIALS', icon: '🌐' },
   { label: 'TRASH', icon: '🗑️' },
   { label: 'TEAM', icon: '👥' },
-  { label: 'MESSAGE', icon: '✉️' }, // Added MESSAGE button
+  { label: 'MESSAGE', icon: '✉️' },
+  { label: 'FLEX DROP', icon: '🎁' },
   { label: 'LOGOUT', icon: '🚪' },
-  { label: 'STAKING', icon: '📈' }, // Added STAKING button
+  { label: 'STAKING', icon: '📈' },
 ];
 
 const userDetails = [
@@ -84,7 +85,9 @@ const AdminDashboard: React.FC = () => {
               } else if (btn.label === 'TEAM') {
                 navigate('/admin/team');
               } else if (btn.label === 'MESSAGE') {
-                navigate('/admin/chat'); // Redirect to AdminChat page
+                navigate('/admin/chat');
+              } else if (btn.label === 'FLEX DROP') {
+                navigate('/admin/flex-drop'); // New route
               } else if (btn.label === 'STAKING') {
                 navigate('/admin/staking');
               } else if (btn.label === 'LOGOUT') {
