@@ -18,7 +18,7 @@ const AdminFlexDrop: React.FC = () => {
     setError('');
     setLink('');
     try {
-      const token = localStorage.getItem('token');
+     const token = localStorage.getItem('adminToken');
       const res = await axios.post(
         '/api/flex-drop/create',
         { minAmount: Number(minAmount), maxAmount: Number(maxAmount), expiresAt },
