@@ -50,21 +50,10 @@ const ChartFullscreenWrapper: React.FC<ChartFullscreenWrapperProps> = ({
   return (
     <div
       ref={containerRef}
-      className="market-chart-container"
+      className={`market-chart-container${isFullscreen ? ' fullscreen' : ''}`}
       style={isFullscreen ? {
         width: '100vw',
         height: '100vh',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        zIndex: 9999,
-        background: 'var(--bg)',
-        borderRadius: 0,
-        boxShadow: '0 0 0 9999px rgba(0,0,0,0.85)',
-        margin: 0,
-        padding: 0,
-        maxWidth: '100vw',
-        overflow: 'hidden'
       } : undefined}
     >
       {isFullscreen && (

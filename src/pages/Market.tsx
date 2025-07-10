@@ -376,7 +376,7 @@ const SimulatedMarketChart = () => {
   }, [isFullscreen]);
 
   return (
-    <div className="market-root" style={{ background: 'var(--bg)', minHeight: '100vh' }}>
+    <div className={`market-root${isFullscreen ? ' fullscreen' : ''}`} style={{ background: 'var(--bg)', minHeight: '100vh' }}>
       {/* Header Bar */}
       <div className="market-header" style={{ background: 'var(--card-bg)', borderBottom: '1.5px solid var(--primary)' }}>
         <span className="market-header-title" style={{ color: 'var(--primary)' }}>
@@ -393,8 +393,12 @@ const SimulatedMarketChart = () => {
       <div className="market-main">
         {/* Chart Card */}
         <div
-          className="market-chart-card"
-          style={Object.assign({}, isFullscreen ? { padding: 0, height: '100vh' } : {}, { background: 'var(--card-bg)', boxShadow: 'var(--card-shadow)', border: '1px solid var(--card-bg)' })}
+          className={`market-chart-card${isFullscreen ? ' fullscreen' : ''}`}
+          style={Object.assign({}, isFullscreen ? {
+            // Only set width/height for JS-driven chart sizing, all other styles handled by .fullscreen CSS
+            width: '100vw',
+            height: '100vh',
+          } : {})}
         >
           {/* Chart Controls */}
           <div className="market-chart-controls" style={{ color: 'var(--text)' }}>

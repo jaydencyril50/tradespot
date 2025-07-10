@@ -5,6 +5,11 @@
   background: #fff;
 }
 
+.market-root.fullscreen {
+  background: transparent !important;
+  overflow: hidden !important;
+}
+
 .market-header {
   display: flex;
   align-items: center;
@@ -68,6 +73,26 @@
   flex: 1;
 }
 
+.market-chart-card.fullscreen {
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 9998 !important;
+  overflow: hidden !important;
+}
+
 .market-chart-controls {
   display: flex;
   align-items: center;
@@ -87,6 +112,13 @@
   padding: 0;
   transition: all 0.3s;
   overflow: hidden;
+}
+
+.market-chart-container.fullscreen,
+.market-chart-container.fullscreen * {
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 .market-buy-sell-order {
