@@ -50,17 +50,25 @@ const ResetPassword: React.FC = () => {
     }
     setLoading(true);
     try {
+      console.log('Reset password token being sent:', token); // Debug log
       const res = await fetch(`${API}/api/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, password }),
       });
       const data = await res.json();
+      console.log('Reset password response:', data); // Debug log
       if (res.ok) {
         setSuccess(true);
         setTokenValid(false); // Immediately expire the token in UI
       } else {
-        setError(data.error || 'Reset failed.');
+        // Show a more specific error if token is invalid/expired
+        if (data.error && data.error.toLowerCase().includes('token')) {
+          setTokenValid(false);
+          setError('Invalid or expired token. Please request a new password reset link.');
+        } else {
+          setError(data.error || 'Reset failed.');
+        }
       }
     } catch (err) {
       setError('Something went wrong. Please try again.');
