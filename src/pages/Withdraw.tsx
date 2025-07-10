@@ -110,7 +110,7 @@ const Withdraw: React.FC = () => {
             setError('Enter the email verification code.');
             return;
         }
-        if (!twoFACode) {
+        if (!isWebauthnEnabled && !twoFACode) {
             setError('Enter your 2FA code.');
             return;
         }

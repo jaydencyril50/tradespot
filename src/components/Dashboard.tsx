@@ -575,7 +575,7 @@ const Dashboard: React.FC = () => {
 	const handleTransfer = async () => {
 		setTransferError('');
 		setTransferSuccess('');
-		if (!transferEmail || !transferAmount || isNaN(Number(transferAmount)) || Number(transferAmount) <= 0 || (!transferTwoFA)) {
+		if (!transferEmail || !transferAmount || isNaN(Number(transferAmount)) || Number(transferAmount) <= 0 || (!isWebauthnTransferEnabledState && !transferTwoFA)) {
 			setTransferError('Enter a valid email, amount, and authentication.');
 			return;
 		}
