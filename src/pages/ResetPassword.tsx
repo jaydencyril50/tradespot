@@ -58,7 +58,7 @@ const ResetPassword: React.FC = () => {
       });
       const data = await res.json();
       console.log('Reset password response:', data); // Debug log
-      if (res.ok) {
+      if (res.ok || (data.message && data.message.toLowerCase().includes('success'))) {
         setSuccess(true);
         setTokenValid(false); // Immediately expire the token in UI
       } else {
