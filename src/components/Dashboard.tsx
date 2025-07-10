@@ -460,7 +460,7 @@ const Dashboard: React.FC = () => {
 	  try {
 	    const token = localStorage.getItem('token');
 	    if (!token) return false;
-	    const res = await axios.get(`${API}/api/auth/webauthn-settings/settings`, {
+	    const res = await axios.get(`${API}/api/webauthn-settings/settings`, {
 	      headers: { Authorization: `Bearer ${token}` },
 	      withCredentials: true
 	    });
@@ -551,7 +551,7 @@ const Dashboard: React.FC = () => {
 	  try {
 	    const token = localStorage.getItem('token');
 	    if (!token) return false;
-	    const res = await axios.get(`${API}/api/auth/webauthn-settings/settings`, {
+	    const res = await axios.get(`${API}/api/webauthn-settings/settings`, {
 	      headers: { Authorization: `Bearer ${token}` },
 	      withCredentials: true
 	    });
