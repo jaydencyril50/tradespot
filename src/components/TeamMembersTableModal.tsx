@@ -8,6 +8,10 @@ interface TeamMembersTableModalProps {
 
 const TeamMembersTableModal: React.FC<TeamMembersTableModalProps> = ({ open, onClose, members }) => {
   if (!open) return null;
+
+  // Filter out incomplete/null members before rendering
+  const filteredMembers = (members || []).filter(m => m && m.spotid);
+
   return (
     <div style={{
       position: 'fixed',
@@ -59,10 +63,10 @@ const TeamMembersTableModal: React.FC<TeamMembersTableModalProps> = ({ open, onC
               </tr>
             </thead>
             <tbody>
-              {members.length === 0 ? (
+              {filteredMembers.length === 0 ? (
                 <tr><td colSpan={2} style={{ textAlign: 'center', color: '#888', padding: 20 }}>No team members found.</td></tr>
               ) : (
-                members.map((m, idx) => (
+                filteredMembers.map((m, idx) => (
                   <tr key={m.spotid + idx}>
                     <td style={{ padding: 12, border: '1px solid #e3e6ef', textAlign: 'center', wordBreak: 'break-all' }}>{m.spotid}</td>
                     <td style={{ padding: 12, border: '1px solid #e3e6ef', textAlign: 'center', wordBreak: 'break-all' }}>{m.email || '-'}</td>
