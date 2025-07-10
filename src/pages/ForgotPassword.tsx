@@ -30,13 +30,13 @@ const ForgotPassword: React.FC = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card-bg)', padding: '16px 24px 10px 18px', border: '1.5px solid var(--primary)', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
         <span style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)', letterSpacing: 1, fontFamily: 'serif' }}>
           FORGOT PASSWORD
         </span>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20, minHeight: 0 }}>
         {submitted ? (
           <div style={{ color: 'var(--primary)', fontWeight: 500, fontSize: 18, textAlign: 'center', background: 'var(--card-bg)', padding: 16, borderRadius: 0, border: '1px solid var(--card-bg)', maxWidth: 380 }}>
             If the provided details are correct, a reset link has been sent.
@@ -46,7 +46,7 @@ const ForgotPassword: React.FC = () => {
             background: 'var(--card-bg)',
             borderRadius: 0,
             boxShadow: 'var(--card-shadow)',
-            border: '1px solid var(--card-bg)', // Make border less visible
+            border: '1px solid var(--card-bg)',
             padding: '12px 16px',
             minWidth: 200,
             maxWidth: 380,

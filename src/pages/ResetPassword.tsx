@@ -83,17 +83,19 @@ const ResetPassword: React.FC = () => {
   const passwordsMatch = password === confirm;
 
   if (tokenValid === false) {
-    return <div style={{ color: 'var(--text)', fontWeight: 500, fontSize: 18, textAlign: 'center', background: 'var(--card-bg)', padding: 16, borderRadius: 0, border: '1px solid #e3e6ef', maxWidth: 380, margin: '40px auto' }}>{error || 'Invalid or expired token.'}</div>;
+    return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
+      <div style={{ color: 'var(--text)', fontWeight: 500, fontSize: 18, textAlign: 'center', background: 'var(--card-bg)', padding: 16, borderRadius: 0, border: '1px solid #e3e6ef', maxWidth: 380, margin: '0 auto' }}>{error || 'Invalid or expired token.'}</div>
+    </div>;
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card-bg)', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
         <span style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text)', letterSpacing: 1, fontFamily: 'serif' }}>
           RESET PASSWORD
         </span>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20, minHeight: 0 }}>
         {success ? (
           <div style={{ color: '#27ae60', fontWeight: 500, fontSize: 18, textAlign: 'center', background: 'var(--card-bg)', padding: 16, borderRadius: 0, border: '1px solid #e3e6ef', maxWidth: 380 }}>
             Password has been reset! You may now <a href="/login" style={{ color: '#1e3c72', fontWeight: 600 }}>log in</a>.
