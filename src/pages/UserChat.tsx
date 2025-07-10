@@ -113,7 +113,7 @@ const UserChat: React.FC = () => {
                     marginBottom: 10
                   }}>
                     <div style={{
-                      background: msg.fromAdmin ? 'var(--primary)' : '#10c98f',
+                      background: msg.fromAdmin ? '#222' : '#10c98f', // Use dark gray for admin in both modes
                       color: 'var(--button-text)',
                       borderRadius: 16,
                       padding: '8px 16px',
