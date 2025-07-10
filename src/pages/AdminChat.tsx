@@ -239,7 +239,8 @@ const AdminChat: React.FC = () => {
         {/* Chat main area, full screen on mobile if user selected */}
         {selectedUser && !showUserList && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: '#f7f8fa', minHeight: 400, position: 'absolute', left: 0, top: 0, width: '100vw', height: '100%', zIndex: 30, transition: 'all 0.3s' }}>
-            <div style={{ flex: 1, overflowY: 'auto', padding: '0 18px 0 18px', marginBottom: 8 }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 18px 0 18px', marginBottom: 8, paddingBottom: 90 }}>
+              {/* ↑↑↑ paddingBottom: 90 ensures last message is visible above input */}
               {loadingMessages ? (
                 <div>Loading messages...</div>
               ) : (
