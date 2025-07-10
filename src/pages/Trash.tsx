@@ -66,6 +66,27 @@ const Trash: React.FC = () => {
     }
   };
 
+  // Delete a trash item
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Delete this trash item?')) return;
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) throw new Error('Not authenticated');
+      await axios.delete(`${API}/api/admin/trash/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setSuccess('Deleted!');
+      setItems(items.filter(item => item._id !== id));
+    } catch (e: any) {
+      setError(e?.response?.data?.error || e.message || 'Failed to delete item');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f6f9fe', padding: '16px 24px 10px 18px', border: '1.5px solid #232b36', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
@@ -122,6 +143,7 @@ const Trash: React.FC = () => {
           }}>
             <div style={{ fontWeight: 600, color: '#25324B', fontSize: 16 }}>{item.text}</div>
             <div style={{ fontSize: 12, color: '#888' }}>{new Date(item.createdAt).toLocaleString()}</div>
+            <button onClick={() => handleDelete(item._id)} style={{ marginTop: 4, background: '#e74c3c', color: '#fff', border: 'none', borderRadius: 4, padding: '4px 12px', fontWeight: 600, fontSize: 13, cursor: 'pointer', alignSelf: 'flex-end' }}>Delete</button>
           </div>
         ))}
         <style>
