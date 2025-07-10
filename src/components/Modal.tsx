@@ -27,9 +27,6 @@ const Modal: React.FC<ModalProps> = ({ onClose, children }) => {
           width: 'auto',
           maxWidth: '98vw',
           margin: '0 auto',
-          background: 'var(--card-bg)',
-          color: 'var(--text)',
-          border: '1.5px solid var(--primary)', // Add border lines on modal edges
         }}
         onClick={e => e.stopPropagation()}
       >
