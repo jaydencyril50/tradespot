@@ -33,16 +33,86 @@ const FlexDropClaim: React.FC = () => {
   }, [linkId]);
 
   return (
-    <div className="flex-drop-claim-page" style={{ maxWidth: 400, margin: '40px auto', textAlign: 'center' }}>
-      <h2>Flex Drop</h2>
-      {status === 'loading' && <p>Claiming your flex...</p>}
-      {status === 'success' && <>
-        <p style={{ fontSize: 22, color: 'green' }}>You received <b>{amount}</b> FLEX! 🎉</p>
-      </>}
-      {status === 'already' && <p style={{ color: 'orange' }}>You have already claimed this flex drop.</p>}
-      {status === 'expired' && <p style={{ color: 'red' }}>This flex drop link has expired.</p>}
-      {status === 'notoken' && <p style={{ color: 'red' }}>You must be logged in to claim this flex drop.</p>}
-      {status === 'error' && <p style={{ color: 'red' }}>{error}</p>}
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #f6f9fc, #e0eafc)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: 'Segoe UI, sans-serif',
+      padding: '20px'
+    }}>
+      <div style={{
+        maxWidth: 420,
+        width: '100%',
+        background: '#fff',
+        borderRadius: 12,
+        boxShadow: '0 8px 30px rgba(0,0,0,0.1)',
+        padding: '30px 20px',
+        textAlign: 'center',
+        transition: 'all 0.3s ease-in-out',
+      }}>
+        <h2 style={{ marginBottom: 16, fontWeight: 700, color: '#2c3e50', fontSize: '1.6rem' }}>🎁 Flex Drop</h2>
+
+        {status === 'loading' && (
+          <>
+            <div className="loader" style={{
+              margin: '30px auto',
+              border: '4px solid #f3f3f3',
+              borderTop: '4px solid #3498db',
+              borderRadius: '50%',
+              width: 40,
+              height: 40,
+              animation: 'spin 1s linear infinite'
+            }} />
+            <p style={{ marginTop: 12, color: '#555' }}>Claiming your flex...</p>
+          </>
+        )}
+
+        {status === 'success' && (
+          <div style={{ color: 'green', fontSize: 22 }}>
+            <p>You received</p>
+            <p style={{ fontSize: 32, fontWeight: 'bold' }}>{amount} FLEX! 🎉</p>
+          </div>
+        )}
+
+        {status === 'already' && (
+          <p style={{ color: 'orange', fontWeight: 500 }}>
+            You have already claimed this flex drop.
+          </p>
+        )}
+
+        {status === 'expired' && (
+          <p style={{ color: 'red', fontWeight: 500 }}>
+            This flex drop link has expired.
+          </p>
+        )}
+
+        {status === 'notoken' && (
+          <p style={{ color: 'red', fontWeight: 500 }}>
+            You must be logged in to claim this flex drop.
+          </p>
+        )}
+
+        {status === 'error' && (
+          <p style={{ color: 'red', fontWeight: 500 }}>{error}</p>
+        )}
+      </div>
+
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+
+          @media (max-width: 500px) {
+            div {
+              font-size: 90%;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };
