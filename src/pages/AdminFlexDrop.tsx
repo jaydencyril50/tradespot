@@ -8,6 +8,7 @@ const AdminFlexDrop: React.FC = () => {
   const [maxAmount, setMaxAmount] = useState('');
   const [expiresAt, setExpiresAt] = useState('');
   const [link, setLink] = useState('');
+  const [maxClaims, setMaxClaims] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { theme } = useTheme ? useTheme() : { theme: 'light' };
@@ -21,7 +22,7 @@ const AdminFlexDrop: React.FC = () => {
      const token = localStorage.getItem('adminToken');
       const res = await axios.post(
         'https://api.tradespot.online/api/flex-drop/create',
-        { minAmount: Number(minAmount), maxAmount: Number(maxAmount), expiresAt },
+        { minAmount: Number(minAmount), maxAmount: Number(maxAmount), expiresAt, maxClaims: Number(maxClaims) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setLink(`${window.location.origin}/flex-drop/${res.data.linkId}`);
@@ -71,6 +72,10 @@ const AdminFlexDrop: React.FC = () => {
             <div style={{ width: '90%' }}>
               <label style={{ fontWeight: 600 }}>Expires At:</label>
               <input type="datetime-local" value={expiresAt} onChange={e => setExpiresAt(e.target.value)} required style={{ width: '100%', padding: 6, borderRadius: 4, border: '1px solid #ccc', marginTop: 2 }} />
+            </div>
+            <div style={{ width: '90%' }}>
+              <label style={{ fontWeight: 600 }}>Max Claims:</label>
+              <input type="number" value={maxClaims} onChange={e => setMaxClaims(e.target.value)} required min={1} style={{ width: '100%', padding: 6, borderRadius: 4, border: '1px solid #ccc', marginTop: 2 }} />
             </div>
             <button
               type="submit"
