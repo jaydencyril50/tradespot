@@ -502,7 +502,8 @@ const Dashboard: React.FC = () => {
 	      ...(assertionResp ? { assertionResp } : {})
 	    }, { headers: { Authorization: `Bearer ${token}` } });
 	    setConvertSuccess('Converted successfully!');
-	    fetchBalances();
+	    setConvertAmount(''); // Clear input on success
+    fetchBalances();
 	  } catch (err: any) {
 	    setConvertError(err?.response?.data?.error || err.message || 'Conversion failed');
 	  }
