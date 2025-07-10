@@ -59,6 +59,9 @@ const SimulatedMarketChart = () => {
   const [flexProfit, setFlexProfit] = useState(0);
   const [flexStatus, setFlexStatus] = useState<{ active: boolean, usdtRecord: number }>({ active: false, usdtRecord: 0 });
 
+  // Modal state for SPOT balance warning
+  const [showSpotWarning, setShowSpotWarning] = useState(false);
+
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
@@ -571,6 +574,11 @@ const SimulatedMarketChart = () => {
             <button
               onClick={async () => {
                 if (flexButtonDisabled) return;
+                // Check SPOT balance before activating FLEX profit
+                if (userSpotBalance !== null && userSpotBalance >= 0.02) {
+                  setShowSpotWarning(true);
+                  return;
+                }
                 // Call backend to activate
                 try {
                   console.log('[FLEX] Attempting activation:', `${API}/api/portfolio/flex-profit-activate`, localStorage.getItem('token'));
@@ -659,6 +667,51 @@ const SimulatedMarketChart = () => {
                 Reset
               </button>
             )}
+          </div>
+        </div>
+      )}
+      {/* SPOT balance warning modal */}
+      {showSpotWarning && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0,0,0,0.35)',
+          zIndex: 3000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <div style={{
+            background: 'var(--card-bg)',
+            color: 'var(--text)',
+            padding: '28px 32px',
+            borderRadius: 8,
+            boxShadow: '0 2px 16px rgba(0,0,0,0.18)',
+            minWidth: 280,
+            textAlign: 'center',
+            fontSize: 17,
+            fontWeight: 500,
+          }}>
+            SPOT balance must be below 0.02 to activate FLEX profit.<br /><br />
+            <button
+              onClick={() => setShowSpotWarning(false)}
+              style={{
+                marginTop: 10,
+                background: '#10c98f',
+                color: '#fff',
+                border: 'none',
+                padding: '7px 24px',
+                fontWeight: 600,
+                fontSize: 15,
+                borderRadius: 4,
+                cursor: 'pointer',
+              }}
+            >
+              OK
+            </button>
           </div>
         </div>
       )}
