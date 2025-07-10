@@ -15,7 +15,7 @@ const adminButtons = [
   { label: 'MESSAGE', icon: '✉️' },
   { label: 'FLEX DROP', icon: '🎁' },
   { label: 'LOGOUT', icon: '🚪' },
-  { label: 'STAKING', icon: '📈' },
+  { label: 'STATISTICS', icon: '📊' },
 ];
 
 const userDetails = [
@@ -88,8 +88,8 @@ const AdminDashboard: React.FC = () => {
                 navigate('/admin/chat');
               } else if (btn.label === 'FLEX DROP') {
                 navigate('/admin/flex-drop'); // New route
-              } else if (btn.label === 'STAKING') {
-                navigate('/admin/staking');
+              } else if (btn.label === 'STATISTICS') {
+                navigate('/admin/platform-stats');
               } else if (btn.label === 'LOGOUT') {
                 handleLogout();
               }

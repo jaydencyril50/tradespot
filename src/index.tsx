@@ -31,7 +31,6 @@ import AdminDeposit from './pages/AdminDeposit';
 import AdminTeam from './pages/AdminTeam';
 import Trash from './pages/Trash';
 import { NetworkStatusProvider } from './NetworkStatusProvider';
-import AdminStaking from './pages/AdminStaking';
 import BuySpotPage from './pages/Buy';
 import SellSpotPage from './pages/Sell';
 import OrderPage from './pages/Order';
@@ -42,6 +41,7 @@ import ResetPassword from './pages/ResetPassword';
 import WebauthnManagement from './pages/WebauthnManagement';
 import AdminFlexDrop from './pages/AdminFlexDrop';
 import FlexDropClaim from './pages/FlexDropClaim';
+import AdminPlatformStats from './pages/AdminPlatformStats';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Root container missing in index.html');
@@ -135,7 +135,7 @@ root.render(
             <Route path="/admin/deposit" element={<AdminDeposit />} />
             <Route path="/admin/team" element={<AdminTeam />} />
             <Route path="/admin/trash" element={<Trash />} />
-            <Route path="/admin/staking" element={<AdminStaking />} />
+            <Route path="/admin/platform-stats" element={<AdminPlatformStats />} />
             <Route path="/buy" element={
               <ProtectedRoute>
                 <BuySpotPage />
