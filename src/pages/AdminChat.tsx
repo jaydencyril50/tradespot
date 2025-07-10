@@ -79,15 +79,24 @@ const AdminChat: React.FC = () => {
       });
       // Join a global admin room
       socketRef.current.emit('join', 'admin');
+      // Join admin's own user ID room for direct messages
+      const token = localStorage.getItem('adminToken');
+      if (token) {
+        // Decode JWT to get adminId (without external libs)
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          if (payload && payload.userId) {
+            socketRef.current.emit('join', payload.userId);
+          }
+        } catch (e) { /* ignore */ }
+      }
     }
     const socket = socketRef.current;
     // Listen for all new_message events
     socket.on('new_message', (msg: any) => {
-      // If the message is for the currently selected user, add to chat
       if (selectedUser && (msg.sender === selectedUser._id || msg.recipient === selectedUser._id)) {
         setMessages((prev) => [...prev, msg]);
       }
-      // Optionally, you could add notification logic here for other users
     });
     return () => {
       socket.off('new_message');
