@@ -60,7 +60,10 @@ const ResetPassword: React.FC = () => {
       console.log('Reset password response:', data); // Debug log
       if (res.ok) {
         setSuccess(true);
-        setTokenValid(false); // Immediately expire the token in UI
+        // Delay invalidating the token to allow the success message to show
+        setTimeout(() => {
+          setTokenValid(false); // Invalidate token after showing success
+        }, 2000); // Show success for 2 seconds
       } else {
         // Show a more specific error if token is invalid/expired
         if (data.error && data.error.toLowerCase().includes('token')) {
