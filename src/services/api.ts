@@ -50,10 +50,16 @@ export const loginUser = async (email: string, password: string, twoFAToken?: st
     }
 };
 
-// Update registerUser to throw backend error message if available
+// Update registerUser to send a persistent device ID for one-signup-per-device enforcement
 export const registerUser = async (fullName: string, email: string, password: string, wallet: string, referredBy?: string) => {
+    // Generate a device ID (persisted in localStorage)
+    let device = localStorage.getItem('signupDevice');
+    if (!device) {
+        device = Math.random().toString(36).substring(2) + Date.now().toString(36);
+        localStorage.setItem('signupDevice', device);
+    }
     try {
-        const response = await axios.post(`${API}/api/auth/register`, { fullName, email, password, wallet, referredBy });
+        const response = await axios.post(`${API}/api/auth/register`, { fullName, email, password, wallet, referredBy, device });
         return response.data;
     } catch (error: any) {
         if (error.response && error.response.data && error.response.data.error) {
