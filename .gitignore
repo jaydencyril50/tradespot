@@ -1,2 +1,55 @@
-"node_modules/" 
-node_modules/ 
+# 🔁 Node
+node_modules/
+.env
+.env.*
+
+# 🧠 IDE & OS trash
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# 🔧 Build outputs
+/build/
+android/.gradle/
+android/build/
+android/app/build/
+android/.externalNativeBuild/
+android/captures/
+
+# 🤖 Gradle wrapper junk
+android/gradle/
+android/gradle-wrapper.jar
+android/gradle-wrapper.properties
+android/gradlew
+android/gradlew.bat
+
+# 🚫 Release builds
+android/app/release/
+*.apk
+*.aab
+*.ap_
+
+# 🔐 Signing & secrets
+*.jks
+*.keystore
+*.pem
+*.key
+*.properties
+android/local.properties
+android/gradle.properties
+android/app/google-services.json
+fabric.properties
+
+# 🖼️ Auto-generated assets
+android/app/src/main/res/mipmap-*/ic_launcher*.png
+android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+android/app/src/main/res/drawable*/splash.png
+
+# 🧪 Test artifacts
+android/app/src/androidTest/
+android/app/src/test/
+
+# 💼 Misc
+client/public/*.apk
+capacitor.config.ts
