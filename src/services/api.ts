@@ -274,3 +274,15 @@ export const getCurrentUser = async () => {
     });
     return res.data;
 };
+
+// Create Flex Drop Link (Admin)
+export const createFlexDropLink = async (minAmount: number, maxAmount: number, expiresAt: string) => {
+    const adminToken = localStorage.getItem('adminToken');
+    if (!adminToken) throw new Error('Not authenticated as admin');
+    const res = await axios.post(
+        `${API}/api/flex-drop/create`,
+        { minAmount, maxAmount, expiresAt },
+        { headers: { Authorization: `Bearer ${adminToken}` } }
+    );
+    return res.data;
+};

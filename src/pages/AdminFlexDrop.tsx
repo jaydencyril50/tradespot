@@ -20,7 +20,7 @@ const AdminFlexDrop: React.FC = () => {
     try {
      const token = localStorage.getItem('adminToken');
       const res = await axios.post(
-        '/api/flex-drop/create',
+        'https://api.tradespot.online/api/flex-drop/create',
         { minAmount: Number(minAmount), maxAmount: Number(maxAmount), expiresAt },
         { headers: { Authorization: `Bearer ${token}` } }
       );
