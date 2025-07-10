@@ -58,7 +58,7 @@ const NotificationsPage: React.FC = () => {
                 background: 'var(--card-bg)',
                 borderRadius: 0,
                 boxShadow: 'var(--card-shadow)',
-                border: '1px solid #282829',
+                border: 'none',
                 padding: '12px 16px',
                 minWidth: 200,
                 maxWidth: 380,
