@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
+import { formatTradeSpotTime } from '../utils/tradeSpotTime';
 
 // --- FIXED SOCKET_URL: Use a safe fallback and correct protocol ---
 const API = process.env.REACT_APP_API_BASE_URL || 'https://api.tradespot.online';
@@ -130,7 +131,7 @@ const UserChat: React.FC = () => {
                         </span>
                       )}
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--secondary)', margin: msg.fromAdmin ? '0 0 0 8px' : '0 8px 0 0', alignSelf: 'flex-end' }}>{new Date(msg.timestamp).toLocaleString()}</div>
+                    <div style={{ fontSize: 11, color: 'var(--secondary)', margin: msg.fromAdmin ? '0 0 0 8px' : '0 8px 0 0', alignSelf: 'flex-end' }}>{formatTradeSpotTime(msg.timestamp)}</div>
                   </div>
                 ))
           }

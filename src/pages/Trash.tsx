@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { formatTradeSpotTime } from '../utils/tradeSpotTime';
 
 const API = process.env.REACT_APP_API_BASE_URL;
 
@@ -142,7 +143,7 @@ const Trash: React.FC = () => {
             gap: 4,
           }}>
             <div style={{ fontWeight: 600, color: '#25324B', fontSize: 16 }}>{item.text}</div>
-            <div style={{ fontSize: 12, color: '#888' }}>{new Date(item.createdAt).toLocaleString()}</div>
+            <div style={{ fontSize: 12, color: '#888' }}>{formatTradeSpotTime(item.createdAt)}</div>
             <button onClick={() => handleDelete(item._id)} style={{ marginTop: 4, background: '#e74c3c', color: '#fff', border: 'none', borderRadius: 4, padding: '4px 12px', fontWeight: 600, fontSize: 13, cursor: 'pointer', alignSelf: 'flex-end' }}>Delete</button>
           </div>
         ))}

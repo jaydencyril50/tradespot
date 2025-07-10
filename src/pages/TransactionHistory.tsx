@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { formatTradeSpotTime } from '../utils/tradeSpotTime';
 
 const API = process.env.REACT_APP_API_BASE_URL;
 
@@ -86,7 +87,7 @@ const TransactionHistory: React.FC = () => {
                   {isIncrease ? '+' : isDecrease ? '-' : ''}{tx.amount} {tx.currency}
                 </div>
                 <div style={{ fontSize: '0.95rem', color: 'var(--secondary)', marginBottom: 2 }}>
-                  {new Date(tx.date).toLocaleString()}
+                  {formatTradeSpotTime(tx.date)}
                 </div>
               </div>
             );

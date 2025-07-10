@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getTeamInfo } from '../services/api';
 import { QRCodeCanvas } from 'qrcode.react';
 import { motion } from 'framer-motion';
+import { formatTradeSpotDate } from '../utils/tradeSpotTime';
 
 const Team: React.FC = () => {
   const [referralLink, setReferralLink] = useState('');
@@ -267,7 +268,7 @@ const Team: React.FC = () => {
               <div
                 style={{ color: '#888', fontSize: '0.93rem', marginBottom: 2 }}
               >
-                Joined: {new Date(member.joinedAt).toLocaleDateString()}
+                Joined: {formatTradeSpotDate(member.joinedAt)}
               </div>
               <div style={{ fontSize: 13, marginTop: 2, color: 'var(--text)' }}>
                 TradeSpoter: {member.validMember ? '✅' : '❌'}

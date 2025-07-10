@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 import axios from 'axios';
 import { FaTimes } from 'react-icons/fa';
 import './AdminChat.css';
+import { formatTradeSpotTime } from '../utils/tradeSpotTime';
 
 // --- FIXED SOCKET_URL: Use a safe fallback and correct protocol ---
 const API = process.env.REACT_APP_API_BASE_URL || 'https://api.tradespot.online';
@@ -297,7 +298,7 @@ const AdminChat: React.FC = () => {
                               const dateVal = msg.createdAt || msg.timestamp;
                               if (!dateVal) return '-';
                               const d = new Date(dateVal);
-                              return isNaN(d.getTime()) ? '-' : d.toLocaleString();
+                              return isNaN(d.getTime()) ? '-' : formatTradeSpotTime(d);
                             })()
                           }
                         </div>
