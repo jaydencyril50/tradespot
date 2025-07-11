@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useTheme } from '../ThemeContext';
 import '../theme.css';
+import { expireFlexDropLink } from '../services/api';
 
 const AdminFlexDrop: React.FC = () => {
   const [minAmount, setMinAmount] = useState('');
@@ -13,7 +14,32 @@ const AdminFlexDrop: React.FC = () => {
   const [error, setError] = useState('');
   const [expireLoading, setExpireLoading] = useState(false);
   const [expireSuccess, setExpireSuccess] = useState('');
+  const [links, setLinks] = useState<any[]>([]);
+  const [linksLoading, setLinksLoading] = useState(false);
+  const [linksError, setLinksError] = useState('');
   const { theme } = useTheme ? useTheme() : { theme: 'light' };
+
+  // Fetch all non-expired links on mount
+  React.useEffect(() => {
+    const fetchLinks = async () => {
+      setLinksLoading(true);
+      setLinksError('');
+      try {
+        const adminToken = localStorage.getItem('adminToken');
+        if (!adminToken) throw new Error('Not authenticated as admin');
+        const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/flex-drop/admin-links`, {
+          headers: { Authorization: `Bearer ${adminToken}` },
+        });
+        // Only show links not expired
+        setLinks(res.data.links.filter((l: any) => new Date(l.expiresAt) > new Date()));
+      } catch (e: any) {
+        setLinksError(e.response?.data?.message || e.message || 'Failed to fetch links');
+      } finally {
+        setLinksLoading(false);
+      }
+    };
+    fetchLinks();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +76,17 @@ const AdminFlexDrop: React.FC = () => {
       setError(err.response?.data?.message || err.message || 'Error expiring flex drop link');
     } finally {
       setExpireLoading(false);
+    }
+  };
+
+  const handleExpire = async (linkId: string) => {
+    setLinks(links => links.map(l => l.linkId === linkId ? { ...l, expiring: true } : l));
+    try {
+      await expireFlexDropLink(linkId);
+      setLinks(links => links.filter(l => l.linkId !== linkId));
+    } catch (e: any) {
+      setLinksError(e.message || 'Failed to expire link');
+      setLinks(links => links.map(l => l.linkId === linkId ? { ...l, expiring: false } : l));
     }
   };
 
@@ -132,6 +169,50 @@ const AdminFlexDrop: React.FC = () => {
           )}
           {expireSuccess && <div style={{ color: 'green', marginTop: 10 }}>{expireSuccess}</div>}
           {error && <div style={{ color: 'red', marginTop: 10 }}>{error}</div>}
+        </div>
+        <div style={{ marginTop: 32 }}>
+          <h2 style={{ fontSize: '1.1rem', marginBottom: 8, fontWeight: 700, color: 'var(--primary)' }}>Active Flex Drop Links</h2>
+          {linksLoading && <div>Loading links...</div>}
+          {linksError && <div style={{ color: 'red' }}>{linksError}</div>}
+          {!linksLoading && links.length === 0 && <div style={{ color: '#888' }}>No active links.</div>}
+          {!linksLoading && links.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+              {links.map(link => (
+                <div key={link.linkId} className="card" style={{
+                  background: 'var(--card-bg)',
+                  border: '1.5px solid var(--secondary)',
+                  borderRadius: 8,
+                  boxShadow: 'var(--card-shadow)',
+                  padding: '18px 20px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  justifyContent: 'center',
+                  maxWidth: 420,
+                  minWidth: 220,
+                  margin: '0 auto',
+                  fontFamily: 'inherit',
+                  position: 'relative',
+                }}>
+                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                    <span style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--primary)' }}>
+                      <a href={`/flex-drop/${link.linkId}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', textDecoration: 'underline' }}>{window.location.origin}/flex-drop/{link.linkId}</a>
+                    </span>
+                    <button
+                      onClick={() => handleExpire(link.linkId)}
+                      disabled={!!link.expiring}
+                      style={{ marginLeft: 12, padding: '4px 16px', borderRadius: 4, background: 'var(--secondary)', color: 'var(--button-text)', fontWeight: 600, border: 'none', cursor: link.expiring ? 'not-allowed' : 'pointer' }}
+                    >
+                      {link.expiring ? 'Expiring...' : 'Expire'}
+                    </button>
+                  </div>
+                  <div style={{ marginTop: 8, color: '#888', fontSize: 13 }}>
+                    Expires: {new Date(link.expiresAt).toLocaleString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       <style>
