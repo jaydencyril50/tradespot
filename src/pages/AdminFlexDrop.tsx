@@ -156,19 +156,20 @@ const AdminFlexDrop: React.FC = () => {
             </button>
           </form>
           {link && (
-            <div style={{ marginTop: 20 }}>
-              <strong>Flex Drop Link:</strong> <a href={link} target="_blank" rel="noopener noreferrer">{link}</a>
+            <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+              <strong style={{ textAlign: 'center', width: '100%' }}>Flex Drop Link:</strong>
+              <a href={link} target="_blank" rel="noopener noreferrer" style={{ textAlign: 'center', display: 'block', margin: '10px 0', wordBreak: 'break-all', color: 'var(--primary)', textDecoration: 'underline', fontWeight: 600 }}>{link}</a>
               <button
                 onClick={handleExpireLink}
                 disabled={expireLoading}
-                style={{ marginLeft: 12, padding: '4px 16px', borderRadius: 4, background: 'var(--secondary)', color: 'var(--button-text)', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+                style={{ marginLeft: 0, marginTop: 8, padding: '4px 16px', borderRadius: 4, background: 'var(--secondary)', color: 'var(--button-text)', fontWeight: 600, border: 'none', cursor: 'pointer', alignSelf: 'center' }}
               >
                 {expireLoading ? 'Expiring...' : 'Expire Link'}
               </button>
             </div>
           )}
-          {expireSuccess && <div style={{ color: 'green', marginTop: 10 }}>{expireSuccess}</div>}
-          {error && <div style={{ color: 'red', marginTop: 10 }}>{error}</div>}
+          {expireSuccess && <div style={{ color: 'green', marginTop: 10, textAlign: 'center' }}>{expireSuccess}</div>}
+          {error && <div style={{ color: 'red', marginTop: 10, textAlign: 'center' }}>{error}</div>}
         </div>
         <div style={{ marginTop: 32 }}>
           <h2 style={{ fontSize: '1.1rem', marginBottom: 8, fontWeight: 700, color: 'var(--primary)' }}>Active Flex Drop Links</h2>
