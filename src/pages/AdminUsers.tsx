@@ -182,24 +182,24 @@ const AdminUsers: React.FC = () => {
         {loading && <div style={{ color: '#1e3c72', fontWeight: 500 }}>Loading...</div>}
         {error && <div style={{ color: '#e74c3c', marginBottom: 16, fontWeight: 500 }}>{error}</div>}
         {!loading && users.filter(user =>
-          user.fullName.toLowerCase().includes(search.toLowerCase()) ||
-          user.email.toLowerCase().includes(search.toLowerCase()) ||
-          user.spotid.toLowerCase().includes(search.toLowerCase()) ||
-          user.wallet.toLowerCase().includes(search.toLowerCase())
+          (user.fullName || '').toLowerCase().includes(search.toLowerCase()) ||
+          (user.email || '').toLowerCase().includes(search.toLowerCase()) ||
+          (user.spotid || '').toLowerCase().includes(search.toLowerCase()) ||
+          (user.wallet || '').toLowerCase().includes(search.toLowerCase())
         ).length === 0 && (
           <div style={{ color: '#888', fontSize: 16, textAlign: 'center', margin: '40px 0' }}>No users found.</div>
         )}
         {!loading && users.filter(user =>
-          user.fullName.toLowerCase().includes(search.toLowerCase()) ||
-          user.email.toLowerCase().includes(search.toLowerCase()) ||
-          user.spotid.toLowerCase().includes(search.toLowerCase()) ||
-          user.wallet.toLowerCase().includes(search.toLowerCase())
+          (user.fullName || '').toLowerCase().includes(search.toLowerCase()) ||
+          (user.email || '').toLowerCase().includes(search.toLowerCase()) ||
+          (user.spotid || '').toLowerCase().includes(search.toLowerCase()) ||
+          (user.wallet || '').toLowerCase().includes(search.toLowerCase())
         ).length > 0 && (
           users.filter(user =>
-            user.fullName.toLowerCase().includes(search.toLowerCase()) ||
-            user.email.toLowerCase().includes(search.toLowerCase()) ||
-            user.spotid.toLowerCase().includes(search.toLowerCase()) ||
-            user.wallet.toLowerCase().includes(search.toLowerCase())
+            (user.fullName || '').toLowerCase().includes(search.toLowerCase()) ||
+            (user.email || '').toLowerCase().includes(search.toLowerCase()) ||
+            (user.spotid || '').toLowerCase().includes(search.toLowerCase()) ||
+            (user.wallet || '').toLowerCase().includes(search.toLowerCase())
           ).map((user, idx, arr) => (
             <div
               key={user._id}
