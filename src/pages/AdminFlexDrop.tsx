@@ -99,7 +99,7 @@ const AdminFlexDrop: React.FC = () => {
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
         <div
-          className="card"
+          className="card flex-card"
           style={{
             borderRadius: 0,
             minWidth: 200,
@@ -179,7 +179,7 @@ const AdminFlexDrop: React.FC = () => {
           {!linksLoading && links.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
               {links.map(link => (
-                <div key={link.linkId} className="card" style={{
+                <div key={link.linkId} className="card flex-card" style={{
                   background: 'var(--card-bg)',
                   border: '1.5px solid var(--secondary)',
                   borderRadius: 8,
@@ -219,13 +219,10 @@ const AdminFlexDrop: React.FC = () => {
       <style>
         {`
           @media (max-width: 600px) {
-            div[style*="box-shadow"] {
-              max-width: 90vw !important;
-              min-width: 0 !important;
+            .flex-card {
               width: 90vw !important;
-              margin-left: 5vw !important;
-              margin-right: 5vw !important;
-              padding: 10px 2vw !important;
+              margin: 0 auto !important;
+              padding: 12px 5vw !important;
               min-height: 180px !important;
             }
           }
