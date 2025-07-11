@@ -223,7 +223,7 @@ const AdminFlexDrop: React.FC = () => {
               width: 90vw !important;
               margin: 0 auto !important;
               padding: 12px 5vw !important;
-              min-height: 140px !important;
+              min-height: 120px !important;
               height: auto !important;
             }
           }
