@@ -92,14 +92,14 @@ const BuySpotPage: React.FC = () => {
   // Live calculation and validation
   useEffect(() => {
     if (!selectedBuyer) return;
-    const spot = parseFloat(spotAmount);
-    if (isNaN(spot) || spot <= 0) {
-      setUsdtAmount(0);
+    const usdt = parseFloat(usdtAmount as any);
+    if (isNaN(usdt) || usdt <= 0) {
+      setSpotAmount('');
       setInputError('');
       return;
     }
-    const usdt = spot * (selectedBuyer.price || 500); // Use per-user price
-    setUsdtAmount(usdt);
+    const spot = usdt / (selectedBuyer.price || 500); // Calculate spot from USDT
+    setSpotAmount(spot.toFixed(6));
     let error = '';
     if (usdt < selectedBuyer.minLimit) {
       error = `Minimum trade is ${selectedBuyer.minLimit} USDT (${(selectedBuyer.minLimit/(selectedBuyer.price || 500)).toFixed(2)} spot)`;
@@ -109,7 +109,7 @@ const BuySpotPage: React.FC = () => {
       error = `You do not have enough USDT. Your balance: ${userUSDTBalance} USDT`;
     }
     setInputError(error);
-  }, [spotAmount, selectedBuyer, userUSDTBalance]);
+  }, [usdtAmount, selectedBuyer, userUSDTBalance]);
 
   // --- Status randomizer for buyers ---
   useEffect(() => {
@@ -166,7 +166,7 @@ const BuySpotPage: React.FC = () => {
 
   // Place buy logic here
   const handleBuySpot = async () => {
-    if (!selectedBuyer || !spotAmount || !!inputError) return;
+    if (!selectedBuyer || !usdtAmount || !!inputError) return;
     try {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('Not authenticated');
@@ -177,7 +177,7 @@ const BuySpotPage: React.FC = () => {
           buyerUsername: selectedBuyer.username,
           price: selectedBuyer.price,
           spotAmount: parseFloat(spotAmount),
-          usdtAmount: usdtAmount,
+          usdtAmount: parseFloat(usdtAmount as any),
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -389,19 +389,19 @@ const BuySpotPage: React.FC = () => {
                 <strong>Trader's Trade Limit:</strong> {formatNumber(selectedBuyer.minLimit)} – {formatNumber(selectedBuyer.maxLimit)} USDT
               </div>
               <div style={{ marginBottom: 8 }}>
-                <strong>Enter Spot Amount:</strong>
+                <strong>Enter USDT Amount:</strong>
                 <input
                   type="number"
                   min="0"
                   step="0.01"
-                  value={spotAmount}
-                  onChange={e => setSpotAmount(e.target.value)}
+                  value={usdtAmount}
+                  onChange={e => setUsdtAmount(e.target.value as any)}
                   style={{ marginLeft: 8, padding: 6, borderRadius: 4, border: '1px solid rgba(120,140,180,0.45)', width: 160, background: 'var(--bg)', color: 'var(--text)' }}
-                  placeholder="Spot amount"
+                  placeholder="USDT amount"
                 />
               </div>
               <div style={{ marginBottom: 8 }}>
-                <strong>USDT You Will Pay:</strong> {usdtAmount}
+                <strong>SPOT You Will Get:</strong> {spotAmount}
               </div>
               {inputError && <div style={{ color: '#e74c3c', marginBottom: 8, textAlign: 'center', fontSize: 15 }}>{inputError}</div>}
               <button
@@ -412,8 +412,8 @@ const BuySpotPage: React.FC = () => {
                   borderRadius: 4,
                   padding: '10px 0',
                   fontWeight: 600,
-                  cursor: inputError || !spotAmount ? 'not-allowed' : 'pointer',
-                  opacity: inputError || !spotAmount ? 0.6 : 1,
+                  cursor: inputError || !usdtAmount ? 'not-allowed' : 'pointer',
+                  opacity: inputError || !usdtAmount ? 0.6 : 1,
                   marginTop: 12,
                   width: 220,
                   display: 'block',
@@ -422,7 +422,7 @@ const BuySpotPage: React.FC = () => {
                   fontSize: 17,
                   letterSpacing: 1
                 }}
-                disabled={!!inputError || !spotAmount}
+                disabled={!!inputError || !usdtAmount}
                 onClick={handleBuySpot}
               >
                 Buy Spot
