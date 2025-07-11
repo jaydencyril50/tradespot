@@ -23,12 +23,16 @@ const Profile: React.FC = () => {
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState(false);
   const [showAllTransactions, setShowAllTransactions] = useState(false);
-  const [hideName, setHideName] = useState(false);
-  const [hideEmail, setHideEmail] = useState(false);
-  const [hideWallet, setHideWallet] = useState(false);
-  const [hideUSDT, setHideUSDT] = useState(false);
-  const [hideSPOT, setHideSPOT] = useState(false);
-  const [hideFLEX, setHideFLEX] = useState(false);
+  const getPersisted = (key: string, def: boolean) => {
+    const val = localStorage.getItem(key);
+    return val === null ? def : val === 'true';
+  };
+  const [hideName, setHideName] = useState(() => getPersisted('hideName', false));
+  const [hideEmail, setHideEmail] = useState(() => getPersisted('hideEmail', false));
+  const [hideWallet, setHideWallet] = useState(() => getPersisted('hideWallet', false));
+  const [hideUSDT, setHideUSDT] = useState(() => getPersisted('hideUSDT', false));
+  const [hideSPOT, setHideSPOT] = useState(() => getPersisted('hideSPOT', false));
+  const [hideFLEX, setHideFLEX] = useState(() => getPersisted('hideFLEX', false));
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -187,14 +191,14 @@ const Profile: React.FC = () => {
           }}>
             <div
               style={{ fontSize: 22, fontWeight: 700, color: 'var(--primary)', marginBottom: 4, cursor: 'pointer', userSelect: 'none' }}
-              onClick={() => setHideName((v) => !v)}
+              onClick={() => { setHideName(v => { localStorage.setItem('hideName', (!v).toString()); return !v; }); }}
               title="Click to hide/show name"
             >
               {hideName ? '****' : user.fullName}
             </div>
             <div
               style={{ color: '#888', fontSize: 15, cursor: 'pointer', userSelect: 'none' }}
-              onClick={() => setHideEmail((v) => !v)}
+              onClick={() => { setHideEmail(v => { localStorage.setItem('hideEmail', (!v).toString()); return !v; }); }}
               title="Click to hide/show email"
             >
               {hideEmail ? '****' : user.email}
@@ -222,21 +226,21 @@ const Profile: React.FC = () => {
         }}>
           <div
             style={{ fontWeight: 600, color: 'var(--primary)', fontSize: 16, cursor: 'pointer', userSelect: 'none' }}
-            onClick={() => setHideUSDT(v => !v)}
+            onClick={() => { setHideUSDT(v => { localStorage.setItem('hideUSDT', (!v).toString()); return !v; }); }}
             title="Click to hide/show USDT balance"
           >
             USDT Balance: <span style={{ color: '#10c98f', fontWeight: 700 }}>{hideUSDT ? '****' : user.usdtBalance?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
           <div
             style={{ fontWeight: 600, color: 'var(--primary)', fontSize: 16, cursor: 'pointer', userSelect: 'none' }}
-            onClick={() => setHideSPOT(v => !v)}
+            onClick={() => { setHideSPOT(v => { localStorage.setItem('hideSPOT', (!v).toString()); return !v; }); }}
             title="Click to hide/show SPOT balance"
           >
             SPOT Balance: <span style={{ color: '#2a5298', fontWeight: 700 }}>{hideSPOT ? '****' : user.spotBalance?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
           <div
             style={{ fontWeight: 600, color: 'var(--primary)', fontSize: 16, marginTop: 1, cursor: 'pointer', userSelect: 'none' }}
-            onClick={() => setHideFLEX(v => !v)}
+            onClick={() => { setHideFLEX(v => { localStorage.setItem('hideFLEX', (!v).toString()); return !v; }); }}
             title="Click to hide/show FLEX balance"
           >
             FLEX Balance: <span style={{ color: '#e67e22', fontWeight: 700 }}>{hideFLEX ? '****' : user.flexBalance?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
@@ -277,7 +281,7 @@ const Profile: React.FC = () => {
                 cursor: 'pointer',
                 userSelect: 'none',
               }}
-              onClick={() => setHideWallet((v) => !v)}
+              onClick={() => { setHideWallet(v => { localStorage.setItem('hideWallet', (!v).toString()); return !v; }); }}
               title="Click to hide/show wallet address"
             >
               {hideWallet ? '****' : user.wallet}
