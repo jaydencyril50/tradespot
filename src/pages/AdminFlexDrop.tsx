@@ -171,8 +171,8 @@ const AdminFlexDrop: React.FC = () => {
           {expireSuccess && <div style={{ color: 'green', marginTop: 10, textAlign: 'center' }}>{expireSuccess}</div>}
           {error && <div style={{ color: 'red', marginTop: 10, textAlign: 'center' }}>{error}</div>}
         </div>
-        <div style={{ marginTop: 32 }}>
-          <h2 style={{ fontSize: '1.1rem', marginBottom: 8, fontWeight: 700, color: 'var(--primary)' }}>Active Flex Drop Links</h2>
+        <div style={{ marginTop: 32, textAlign: 'center' }}>
+          <h2 style={{ fontSize: '1.1rem', marginBottom: 8, fontWeight: 700, color: 'var(--primary)', textAlign: 'center' }}>Active Flex Drop Links</h2>
           {linksLoading && <div>Loading links...</div>}
           {linksError && <div style={{ color: 'red' }}>{linksError}</div>}
           {!linksLoading && links.length === 0 && <div style={{ color: '#888' }}>No active links.</div>}
