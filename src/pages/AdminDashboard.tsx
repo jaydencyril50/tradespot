@@ -9,7 +9,7 @@ const adminButtons = [
   { label: 'DEPOSIT', icon: '💰' },
   { label: 'NOTICE', icon: '📢' },
   { label: 'RECENTS', icon: '🕒' },
-  { label: 'SOCIALS', icon: '🌐' },
+  { label: 'SEND FUNDS', icon: '🌐' },
   { label: 'TRASH', icon: '🗑️' },
   { label: 'TEAM', icon: '👥' },
   { label: 'MESSAGE', icon: '✉️' },
@@ -76,6 +76,8 @@ const AdminDashboard: React.FC = () => {
                 navigate('/admin/withdrawals');
               } else if (btn.label === 'DEPOSIT') {
                 navigate('/admin/deposit');
+              } else if (btn.label === 'SEND FUNDS') {
+                navigate('/admin/send-funds');
               } else if (btn.label === 'NOTICE') {
                 navigate('/admin/notice');
               } else if (btn.label === 'RECENTS') {
