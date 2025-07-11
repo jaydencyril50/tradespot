@@ -87,7 +87,7 @@ const AdditionalSettings: React.FC = () => {
             width: '100%'
           }}
           onClick={() => {
-            window.open('/apk/tradespot-latest.apk', '_blank');
+            window.open('/apk/TradeSpot.apk', '_blank');
           }}
         >
          Download APK
