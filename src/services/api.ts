@@ -286,3 +286,15 @@ export const createFlexDropLink = async (minAmount: number, maxAmount: number, e
     );
     return res.data;
 };
+
+// Expire Flex Drop Link (Admin)
+export const expireFlexDropLink = async (linkId: string) => {
+    const adminToken = localStorage.getItem('adminToken');
+    if (!adminToken) throw new Error('Not authenticated as admin');
+    const res = await axios.post(
+        `${API}/api/flex-drop/expire/${linkId}`,
+        {},
+        { headers: { Authorization: `Bearer ${adminToken}` } }
+    );
+    return res.data;
+};

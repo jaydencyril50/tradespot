@@ -11,6 +11,8 @@ const AdminFlexDrop: React.FC = () => {
   const [maxClaims, setMaxClaims] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [expireLoading, setExpireLoading] = useState(false);
+  const [expireSuccess, setExpireSuccess] = useState('');
   const { theme } = useTheme ? useTheme() : { theme: 'light' };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,6 +32,24 @@ const AdminFlexDrop: React.FC = () => {
       setError(err.response?.data?.message || 'Error creating flex drop link');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExpireLink = async () => {
+    if (!link) return;
+    setExpireLoading(true);
+    setExpireSuccess('');
+    setError('');
+    try {
+      const linkId = link.split('/').pop();
+      // @ts-ignore
+      const res = await import('../services/api').then(api => api.expireFlexDropLink(linkId));
+      setExpireSuccess('Flex Drop link expired successfully.');
+      setLink('');
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.message || 'Error expiring flex drop link');
+    } finally {
+      setExpireLoading(false);
     }
   };
 
@@ -101,8 +121,16 @@ const AdminFlexDrop: React.FC = () => {
           {link && (
             <div style={{ marginTop: 20 }}>
               <strong>Flex Drop Link:</strong> <a href={link} target="_blank" rel="noopener noreferrer">{link}</a>
+              <button
+                onClick={handleExpireLink}
+                disabled={expireLoading}
+                style={{ marginLeft: 12, padding: '4px 16px', borderRadius: 4, background: 'var(--secondary)', color: 'var(--button-text)', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+              >
+                {expireLoading ? 'Expiring...' : 'Expire Link'}
+              </button>
             </div>
           )}
+          {expireSuccess && <div style={{ color: 'green', marginTop: 10 }}>{expireSuccess}</div>}
           {error && <div style={{ color: 'red', marginTop: 10 }}>{error}</div>}
         </div>
       </div>
