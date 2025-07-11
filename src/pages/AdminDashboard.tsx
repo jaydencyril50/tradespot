@@ -9,7 +9,7 @@ const adminButtons = [
   { label: 'DEPOSIT', icon: '💰' },
   { label: 'NOTICE', icon: '📢' },
   { label: 'RECENTS', icon: '🕒' },
-  { label: 'SEND FUNDS', icon: '🌐' },
+  { label: 'SEND FUNDS', icon: '🏧' },
   { label: 'TRASH', icon: '🗑️' },
   { label: 'TEAM', icon: '👥' },
   { label: 'MESSAGE', icon: '✉️' },
