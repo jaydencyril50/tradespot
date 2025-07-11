@@ -87,7 +87,12 @@ const AdditionalSettings: React.FC = () => {
             width: '100%'
           }}
           onClick={() => {
-            window.open('/apk/TradeSpot.apk', '_blank');
+            const link = document.createElement('a');
+            link.href = '/apk/TradeSpot.apk';
+            link.download = 'TradeSpot.apk';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
           }}
         >
          Download APK
