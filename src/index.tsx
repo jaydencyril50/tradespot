@@ -31,6 +31,7 @@ import AdminDeposit from './pages/AdminDeposit';
 import AdminTeam from './pages/AdminTeam';
 import Trash from './pages/Trash';
 import { NetworkStatusProvider } from './NetworkStatusProvider';
+import PreventBackNavigation from './components/PreventBackNavigation';
 import BuySpotPage from './pages/Buy';
 import SellSpotPage from './pages/Sell';
 import OrderPage from './pages/Order';
@@ -45,23 +46,13 @@ import AdminPlatformStats from './pages/AdminPlatformStats';
 import AdminSendFunds from './pages/AdminSendFunds';
 
 const container = document.getElementById('root');
-// Prevent device back navigation globally
-React.useEffect(() => {
-  const handleBack = (e: PopStateEvent) => {
-    window.history.pushState(null, '', window.location.href);
-  };
-  window.history.pushState(null, '', window.location.href);
-  window.addEventListener('popstate', handleBack);
-  return () => {
-    window.removeEventListener('popstate', handleBack);
-  };
-}, []);
 if (!container) throw new Error('Root container missing in index.html');
 const root = ReactDOM.createRoot(container);
 root.render(
   <React.StrictMode>
     <NetworkStatusProvider>
       <ThemeProvider>
+        <PreventBackNavigation />
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <Routes>
             {/* Public routes */}
