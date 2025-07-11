@@ -7,7 +7,7 @@ const AdditionalSettings: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const [showThemeModal, setShowThemeModal] = useState(false);
 
-  return (
+    return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{
         background: 'var(--card-bg)',

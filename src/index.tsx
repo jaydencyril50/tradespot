@@ -45,6 +45,17 @@ import AdminPlatformStats from './pages/AdminPlatformStats';
 import AdminSendFunds from './pages/AdminSendFunds';
 
 const container = document.getElementById('root');
+// Prevent device back navigation globally
+React.useEffect(() => {
+  const handleBack = (e: PopStateEvent) => {
+    window.history.pushState(null, '', window.location.href);
+  };
+  window.history.pushState(null, '', window.location.href);
+  window.addEventListener('popstate', handleBack);
+  return () => {
+    window.removeEventListener('popstate', handleBack);
+  };
+}, []);
 if (!container) throw new Error('Root container missing in index.html');
 const root = ReactDOM.createRoot(container);
 root.render(
