@@ -31,7 +31,6 @@ import AdminDeposit from './pages/AdminDeposit';
 import AdminTeam from './pages/AdminTeam';
 import Trash from './pages/Trash';
 import { NetworkStatusProvider } from './NetworkStatusProvider';
-import PreventBackNavigation from './components/PreventBackNavigation';
 import BuySpotPage from './pages/Buy';
 import SellSpotPage from './pages/Sell';
 import OrderPage from './pages/Order';
@@ -52,7 +51,6 @@ root.render(
   <React.StrictMode>
     <NetworkStatusProvider>
       <ThemeProvider>
-        <PreventBackNavigation />
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <Routes>
             {/* Public routes */}
