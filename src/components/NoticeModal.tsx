@@ -122,10 +122,9 @@ const NoticeModal: React.FC = () => {
               max-width: 92vw !important;
               min-width: 0 !important;
               width: 92vw !important;
-              margin-left: 4vw !important;
-              margin-right: 6vw !important;
+              margin: 0 auto !important;
               padding: 0 !important;
-              /* Remove position, top, left, transform to allow parent modal to center */
+              /* Ensure no position, top, left, or transform that would break centering */
             }
             .notice-modal-content {
               padding: 12px 3vw 8px 3vw !important;
