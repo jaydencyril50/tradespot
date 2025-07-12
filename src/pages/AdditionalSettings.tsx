@@ -88,7 +88,7 @@ const AdditionalSettings: React.FC = () => {
           }}
           onClick={() => {
             const link = document.createElement('a');
-            link.href = '/apk/TradeSpot.apk';
+            link.href = '/TradeSpot.apk';
             link.download = 'TradeSpot.apk';
             document.body.appendChild(link);
             link.click();
