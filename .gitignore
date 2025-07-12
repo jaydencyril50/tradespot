@@ -11,21 +11,10 @@ node_modules/
 
 # 🔧 Build outputs
 /build/
-android/.gradle/
-android/build/
-android/app/build/
-android/.externalNativeBuild/
-android/captures/
 
 # 🤖 Gradle wrapper junk
-android/gradle/
-android/gradle-wrapper.jar
-android/gradle-wrapper.properties
-android/gradlew
-android/gradlew.bat
 
 # 🚫 Release builds
-android/app/release/
 *.apk
 *.aab
 *.ap_
@@ -36,8 +25,6 @@ android/app/release/
 *.pem
 *.key
 *.properties
-android/local.properties
-android/gradle.properties
 android/app/google-services.json
 fabric.properties
 
