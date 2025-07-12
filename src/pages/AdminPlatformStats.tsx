@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const API = process.env.REACT_APP_API_BASE_URL || 'https://api.tradespot.online';
+
 const AdminPlatformStats: React.FC = () => {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -12,7 +14,7 @@ const AdminPlatformStats: React.FC = () => {
       setError('');
       try {
         const token = localStorage.getItem('adminToken');
-        const res = await axios.get('/api/admin/platform-stats', {
+        const res = await axios.get(`${API}/api/admin/platform-stats`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setStats(res.data);
