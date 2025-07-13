@@ -153,12 +153,12 @@ const InvitationCompetition: React.FC = () => {
       {/* Hidden audio elements for sequential playback */}
       <audio
         ref={audio1Ref}
-        src={process.env.PUBLIC_URL + '/djkings/Hallman - Always Be [Bo1hRXhRtnA].mp3'}
+        src={process.env.PUBLIC_URL + '/djkings/TS1.mp3'}
         style={{ display: 'none' }}
       />
       <audio
         ref={audio2Ref}
-        src={process.env.PUBLIC_URL + '/djkings/Hallman - Dancing on a Memory [V52GfJ4yN_E].mp3'}
+        src={process.env.PUBLIC_URL + '/djkings/TS2.mp3'}
         style={{ display: 'none' }}
       />
       <div className="party-bg">
