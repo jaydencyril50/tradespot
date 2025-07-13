@@ -116,8 +116,8 @@ const InvitationCompetition: React.FC = () => {
       title: 'Group Managers Awards',
       columns: ['Rank', 'Manager', 'Performance'],
       data: [
-        { rank: 1, name: 'Alice', value: 'Outstanding' },
-        { rank: 2, name: 'Bob', value: 'Excellent' },
+        { rank: 1, name: 'Alice', value: 'Excellent' },
+        { rank: 2, name: 'Bob', value: 'Amazing' },
         { rank: 3, name: 'Charlie', value: 'Great' },
       ],
     },
