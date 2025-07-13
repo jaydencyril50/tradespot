@@ -202,7 +202,7 @@ const InvitationCompetition: React.FC = () => {
           justifyContent: 'center',
           flexDirection: 'column',
         }}>
-          <h2 style={{ color: '#fff', marginBottom: '2rem', fontWeight: 700, fontSize: '2.2rem', letterSpacing: '2px', textShadow: '0 2px 12px #000' }}>Welcome to the Room</h2>
+          <h2 style={{ color: '#fff', marginBottom: '2rem', fontWeight: 700, fontSize: '2.2rem', letterSpacing: '2px', textShadow: '0 2px 12px #000' }}>Welcome to VIP club</h2>
           <button
             style={{
               padding: '1rem 2.5rem',
