@@ -45,6 +45,32 @@ const InvitationCompetition: React.FC = () => {
   const audio1Ref = useRef<HTMLAudioElement>(null);
   const audio2Ref = useRef<HTMLAudioElement>(null);
 
+  // Save and restore audio position
+  useEffect(() => {
+    const savedTime = localStorage.getItem('audio1Time');
+    if (audio1Ref.current && savedTime) {
+      audio1Ref.current.currentTime = parseFloat(savedTime);
+    }
+    // Save time on pause, timeupdate, and beforeunload
+    const saveTime = () => {
+      if (audio1Ref.current) {
+        localStorage.setItem('audio1Time', audio1Ref.current.currentTime.toString());
+      }
+    };
+    if (audio1Ref.current) {
+      audio1Ref.current.addEventListener('timeupdate', saveTime);
+      audio1Ref.current.addEventListener('pause', saveTime);
+    }
+    window.addEventListener('beforeunload', saveTime);
+    return () => {
+      if (audio1Ref.current) {
+        audio1Ref.current.removeEventListener('timeupdate', saveTime);
+        audio1Ref.current.removeEventListener('pause', saveTime);
+      }
+      window.removeEventListener('beforeunload', saveTime);
+    };
+  }, []);
+
   useEffect(() => {
     // Play first audio on mount
     if (audio1Ref.current) {
@@ -56,6 +82,7 @@ const InvitationCompetition: React.FC = () => {
       };
     }
   }, []);
+  const [showModal, setShowModal] = useState(true);
   const [rankings, setRankings] = useState<UserRanking[]>([]);
 
   // Confetti state
@@ -161,6 +188,57 @@ const InvitationCompetition: React.FC = () => {
         src={process.env.PUBLIC_URL + '/djkings/TS2.mp3'}
         style={{ display: 'none' }}
       />
+      {showModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(20, 20, 20, 0.97)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
+        }}>
+          <h2 style={{ color: '#fff', marginBottom: '2rem', fontWeight: 700, fontSize: '2.2rem', letterSpacing: '2px', textShadow: '0 2px 12px #000' }}>Welcome to the Room</h2>
+          <button
+            style={{
+              padding: '1rem 2.5rem',
+              fontSize: '1.3rem',
+              fontWeight: 600,
+              borderRadius: '2rem',
+              background: 'linear-gradient(90deg, #ff00c8 0%, #00e6ff 100%)',
+              color: '#fff',
+              border: 'none',
+              boxShadow: '0 2px 16px #0008',
+              cursor: 'pointer',
+              transition: 'transform 0.2s',
+              outline: 'none',
+              letterSpacing: '1px',
+            }}
+            onClick={() => {
+              if (audio1Ref.current) {
+                // Restore time again in case user refreshed and clicks quickly
+                const savedTime = localStorage.getItem('audio1Time');
+                if (savedTime) {
+                  audio1Ref.current.currentTime = parseFloat(savedTime);
+                }
+                audio1Ref.current.play();
+                audio1Ref.current.onended = () => {
+                  if (audio2Ref.current) {
+                    audio2Ref.current.play();
+                  }
+                };
+              }
+              setShowModal(false);
+            }}
+          >
+            JOIN ROOM
+          </button>
+        </div>
+      )}
       <div className="party-bg">
         {rainDrops}
         {flashLights}
