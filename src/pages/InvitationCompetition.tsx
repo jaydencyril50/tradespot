@@ -1,6 +1,39 @@
 import './InvitationCompetition.css';
 
 import { useEffect, useState } from 'react';
+// Confetti colors
+const confettiColors = [
+  '#FF595E', // red
+  '#FFCA3A', // yellow
+  '#8AC926', // green
+  '#1982C4', // blue
+  '#6A4C93', // purple
+  '#FF61A6', // pink
+  '#FFB5E8', // light pink
+  '#B5FFD9', // mint
+  '#F9F871', // light yellow
+  '#FFD6E0', // pastel pink
+  '#B28DFF', // lavender
+  '#FFB347', // orange
+  '#A0E7E5', // cyan
+  '#FBE7C6', // peach
+  '#F7B801', // gold
+  '#00F2F2', // aqua
+  '#F15BB5', // magenta
+  '#9D4EDD', // deep purple
+  '#43AA8B', // teal
+  '#F72585', // hot pink
+  '#3A86FF', // vivid blue
+  '#FF006E', // neon pink
+  '#8338EC', // violet
+  '#FB5607', // vivid orange
+  '#FFBE0B', // bright yellow
+  '#C0FDFF', // baby blue
+  '#A3F7BF', // light green
+  '#F9C74F', // yellow-orange
+  '#90BE6D', // olive green
+  '#577590', // steel blue
+];
 
 interface UserRanking {
   spotId: string;
@@ -9,6 +42,46 @@ interface UserRanking {
 
 const InvitationCompetition: React.FC = () => {
   const [rankings, setRankings] = useState<UserRanking[]>([]);
+
+  // Confetti state
+  const [confetti, setConfetti] = useState<{
+    id: number,
+    left: number,
+    size: number,
+    color: string,
+    rotate: number,
+    duration: number,
+    delay: number,
+    created: number
+  }[]>([]);
+
+  useEffect(() => {
+    // Function to generate a batch of confetti pieces
+    const generateConfetti = (count = 60) => Array.from({ length: count }).map((_, i) => ({
+      id: Date.now() + Math.random() + i,
+      left: Math.random() * 100, // vw
+      size: 4 + Math.random() * 7, // px (smaller confetti)
+      color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+      rotate: Math.random() * 360,
+      duration: 2.5 + Math.random() * 2.5, // seconds
+      delay: Math.random() * 2, // seconds
+      created: Date.now(),
+    }));
+
+    // Start with an initial batch
+    setConfetti(generateConfetti(180));
+    const interval = setInterval(() => {
+      setConfetti(prev => {
+        // Add new confetti
+        const newConfetti = generateConfetti(60);
+        // Remove confetti older than 5s (max duration + delay)
+        const now = Date.now();
+        const filtered = prev.filter(piece => now - (piece.created || now) < 5000);
+        return [...filtered, ...newConfetti];
+      });
+    }, 800); // Add new confetti every 0.8s
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     // TODO: Replace with real API call
@@ -65,6 +138,24 @@ const InvitationCompetition: React.FC = () => {
       <div className="party-bg">
         {rainDrops}
         {flashLights}
+        {/* Confetti celebration */}
+        <div className="confetti-wrapper">
+          {confetti.map(piece => (
+            <div
+              key={piece.id}
+              className="confetti-piece"
+              style={{
+                left: `${piece.left}vw`,
+                width: `${piece.size}px`,
+                height: `${piece.size * 0.4}px`,
+                background: piece.color,
+                transform: `rotate(${piece.rotate}deg)`,
+                animationDuration: `${piece.duration}s`,
+                animationDelay: `${piece.delay}s`,
+              }}
+            />
+          ))}
+        </div>
       </div>
       <div className="invitation-competition-container">
         <h2>Invitation Competition Rankings (This Week)</h2>
@@ -142,3 +233,4 @@ const InvitationCompetition: React.FC = () => {
 };
 
 export default InvitationCompetition;
+

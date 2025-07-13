@@ -1,3 +1,38 @@
+/* Confetti celebration effect */
+.confetti-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 10;
+  overflow: hidden;
+}
+.confetti-piece {
+  position: absolute;
+  top: -30px;
+  border-radius: 4px;
+  opacity: 0.85;
+  animation: confetti-fall linear forwards;
+  box-shadow: 0 2px 8px #0002;
+}
+@keyframes confetti-fall {
+  0% {
+    top: -30px;
+    opacity: 0.85;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(80vh) rotate(180deg) scale(1.1);
+  }
+  100% {
+    top: 100vh;
+    opacity: 0.2;
+    transform: translateY(100vh) rotate(360deg) scale(0.9);
+  }
+}
 /* Roulette Section Styles */
 .roulette-section {
   margin: 2.5rem auto 0 auto;
