@@ -12,6 +12,8 @@
   "dependencies": {
     "@simplewebauthn/browser": "^13.1.2",
     "@types/axios": "^0.9.36",
+    "ajv": "^6.12.6",
+    "ajv-keywords": "^3.5.2",
     "axios": "^0.21.4",
     "framer-motion": "^12.23.0",
     "i18next-browser-languagedetector": "^8.2.0",
