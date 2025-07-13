@@ -131,6 +131,7 @@
   text-shadow: 0 2px 8px #fff, 0 1px 0 #fff8, 0 0px 2px #000a;
   filter: drop-shadow(0 1px 4px #0008);
   background: none;
+}
 .roulette-slice:nth-child(1) { background: #ff9800 !important; color: #fff !important; }
 .roulette-slice:nth-child(1) { background: #ff9800 !important; color: #fff !important; }
 .roulette-slice:nth-child(2) { background: #00bcd4 !important; color: #fff !important; }
@@ -189,7 +190,7 @@
   border: 8px solid #ffd700;
   box-shadow: 0 4px 24px #ffd70088, 0 0 0 10px #ffd700, 0 1.5px 0 #fffbe6 inset;
 }
-}
+
 .slice1  { transform: rotate(0deg)     translate(75px, -50%) rotate(-11.25deg); }
 .slice2  { transform: rotate(22.5deg)  translate(75px, -50%) rotate(-11.25deg); }
 .slice3  { transform: rotate(45deg)    translate(75px, -50%) rotate(-11.25deg); }
