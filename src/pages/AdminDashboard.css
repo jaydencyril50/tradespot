@@ -1,7 +1,7 @@
 .admin-dashboard-page {
   max-width: 700px;
   margin: 0 auto;
-  background: #fff;
+  background: var(--bg);
   border-radius: 0;
   box-shadow: 0 12px 48px 0 rgba(30,60,114,0.10), 0 4px 32px 0 rgba(30,60,114,0.08);
   padding: 18px 10px;
@@ -33,9 +33,9 @@
 }
 
 .admin-dashboard-card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 0;
-  box-shadow: 0 1px 4px rgba(30,60,114,0.10);
+  box-shadow: var(--card-shadow);
   min-width: 40px;
   max-width: 180px;
   width: 90%;
