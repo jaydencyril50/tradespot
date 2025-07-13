@@ -277,8 +277,8 @@ const InvitationCompetition: React.FC = () => {
       </div>
       <div className="invitation-competition-container">
         <h2>Invitation Competition Rankings (This Week)</h2>
-        <div className="invitation-competition-table-wrapper">
-          <table className="invitation-competition-table">
+      <div className="invitation-competition-table-wrapper">
+        <table className="invitation-competition-table ilum-table">
             <thead>
               <tr>
                 <th>Rank</th>

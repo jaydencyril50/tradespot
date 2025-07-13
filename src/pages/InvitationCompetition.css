@@ -1,3 +1,35 @@
+/* Animated glowing border for ranking table */
+.ilum-table {
+  position: relative;
+  border-radius: 18px;
+  border: 4px solid transparent;
+  box-shadow: 0 0 32px 8px #00e6ff, 0 0 16px 2px #ff00c8;
+  animation: ilumBorderGlow 2.5s linear infinite;
+  overflow: hidden;
+}
+
+@keyframes ilumBorderGlow {
+  0% {
+    box-shadow: 0 0 32px 8px #00e6ff, 0 0 16px 2px #ff00c8;
+    border-color: #ff00c8;
+  }
+  25% {
+    box-shadow: 0 0 40px 12px #ff00c8, 0 0 24px 4px #00e6ff;
+    border-color: #00e6ff;
+  }
+  50% {
+    box-shadow: 0 0 32px 8px #ffd700, 0 0 16px 2px #ff00c8;
+    border-color: #ffd700;
+  }
+  75% {
+    box-shadow: 0 0 40px 12px #00e6ff, 0 0 24px 4px #ffd700;
+    border-color: #00e6ff;
+  }
+  100% {
+    box-shadow: 0 0 32px 8px #00e6ff, 0 0 16px 2px #ff00c8;
+    border-color: #ff00c8;
+  }
+}
 /* Confetti celebration effect */
 .confetti-wrapper {
   position: fixed;
