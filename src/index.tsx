@@ -43,6 +43,7 @@ import AdminFlexDrop from './pages/AdminFlexDrop';
 import FlexDropClaim from './pages/FlexDropClaim';
 import AdminPlatformStats from './pages/AdminPlatformStats';
 import AdminSendFunds from './pages/AdminSendFunds';
+import InvitationCompetition from './pages/InvitationCompetition';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Root container missing in index.html');
@@ -166,6 +167,7 @@ root.render(
             } />
             <Route path="/admin/flex-drop" element={<AdminFlexDrop />} />
             <Route path="/flex-drop/:linkId" element={<FlexDropClaim />} />
+            <Route path="/invitation-competition" element={<InvitationCompetition />} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>
