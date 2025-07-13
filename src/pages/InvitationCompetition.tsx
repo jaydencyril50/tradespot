@@ -47,39 +47,46 @@ const InvitationCompetition: React.FC = () => {
 
   // Save and restore audio position
   useEffect(() => {
-    const savedTime = localStorage.getItem('audio1Time');
-    if (audio1Ref.current && savedTime) {
-      audio1Ref.current.currentTime = parseFloat(savedTime);
+    // Now TS2 is first, so save/restore for audio2
+    const savedTime = localStorage.getItem('audio2Time');
+    if (audio2Ref.current && savedTime) {
+      audio2Ref.current.currentTime = parseFloat(savedTime);
     }
-    // Save time on pause, timeupdate, and beforeunload
     const saveTime = () => {
-      if (audio1Ref.current) {
-        localStorage.setItem('audio1Time', audio1Ref.current.currentTime.toString());
+      if (audio2Ref.current) {
+        localStorage.setItem('audio2Time', audio2Ref.current.currentTime.toString());
       }
     };
-    if (audio1Ref.current) {
-      audio1Ref.current.addEventListener('timeupdate', saveTime);
-      audio1Ref.current.addEventListener('pause', saveTime);
+    if (audio2Ref.current) {
+      audio2Ref.current.addEventListener('timeupdate', saveTime);
+      audio2Ref.current.addEventListener('pause', saveTime);
     }
     window.addEventListener('beforeunload', saveTime);
     return () => {
-      if (audio1Ref.current) {
-        audio1Ref.current.removeEventListener('timeupdate', saveTime);
-        audio1Ref.current.removeEventListener('pause', saveTime);
+      if (audio2Ref.current) {
+        audio2Ref.current.removeEventListener('timeupdate', saveTime);
+        audio2Ref.current.removeEventListener('pause', saveTime);
       }
       window.removeEventListener('beforeunload', saveTime);
     };
   }, []);
 
   useEffect(() => {
-    // Play first audio on mount
-    if (audio1Ref.current) {
-      audio1Ref.current.play().catch(() => {});
-      audio1Ref.current.onended = () => {
+    // Play TS2 first, then TS1, then loop
+    if (audio2Ref.current && audio1Ref.current) {
+      const playTS2 = () => {
         if (audio2Ref.current) {
           audio2Ref.current.play().catch(() => {});
         }
       };
+      const playTS1 = () => {
+        if (audio1Ref.current) {
+          audio1Ref.current.play().catch(() => {});
+        }
+      };
+      audio2Ref.current.onended = playTS1;
+      audio1Ref.current.onended = playTS2;
+      playTS2();
     }
   }, []);
   const [showModal, setShowModal] = useState(true);
@@ -219,18 +226,25 @@ const InvitationCompetition: React.FC = () => {
               letterSpacing: '1px',
             }}
             onClick={() => {
-              if (audio1Ref.current) {
-                // Restore time again in case user refreshed and clicks quickly
-                const savedTime = localStorage.getItem('audio1Time');
+              if (audio2Ref.current && audio1Ref.current) {
+                // Restore time for TS2
+                const savedTime = localStorage.getItem('audio2Time');
                 if (savedTime) {
-                  audio1Ref.current.currentTime = parseFloat(savedTime);
+                  audio2Ref.current.currentTime = parseFloat(savedTime);
                 }
-                audio1Ref.current.play();
-                audio1Ref.current.onended = () => {
+                const playTS2 = () => {
                   if (audio2Ref.current) {
                     audio2Ref.current.play();
                   }
                 };
+                const playTS1 = () => {
+                  if (audio1Ref.current) {
+                    audio1Ref.current.play();
+                  }
+                };
+                audio2Ref.current.onended = playTS1;
+                audio1Ref.current.onended = playTS2;
+                playTS2();
               }
               setShowModal(false);
             }}
