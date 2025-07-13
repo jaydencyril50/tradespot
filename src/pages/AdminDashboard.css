@@ -54,9 +54,4 @@
   font-family: inherit;
 }
 
-.admin-dashboard-card:hover {
-  background: var(--secondary);
-  color: var(--button-text);
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 24px 0 rgba(30,60,114,0.12);
-}
+
