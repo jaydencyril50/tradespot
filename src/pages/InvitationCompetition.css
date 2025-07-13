@@ -14,8 +14,9 @@
   top: -30px;
   border-radius: 4px;
   opacity: 0.85;
-  animation: confetti-fall linear forwards;
+  animation: confetti-fall cubic-bezier(0.23, 1, 0.32, 1) forwards;
   box-shadow: 0 2px 8px #0002;
+  will-change: transform, opacity, top;
 }
 @keyframes confetti-fall {
   0% {
@@ -23,13 +24,13 @@
     opacity: 0.85;
     transform: translateY(0) rotate(0deg) scale(1);
   }
-  80% {
+  90% {
     opacity: 1;
-    transform: translateY(80vh) rotate(180deg) scale(1.1);
+    transform: translateY(90vh) rotate(270deg) scale(1.1);
   }
   100% {
     top: 100vh;
-    opacity: 0.2;
+    opacity: 0.15;
     transform: translateY(100vh) rotate(360deg) scale(0.9);
   }
 }

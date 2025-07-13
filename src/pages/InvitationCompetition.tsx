@@ -63,8 +63,8 @@ const InvitationCompetition: React.FC = () => {
       size: 4 + Math.random() * 7, // px (smaller confetti)
       color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
       rotate: Math.random() * 360,
-      duration: 2.5 + Math.random() * 2.5, // seconds
-      delay: Math.random() * 2, // seconds
+      duration: 4 + Math.random() * 3.5, // seconds (slower, smoother fall)
+      delay: Math.random() * 2.5, // seconds
       created: Date.now(),
     }));
 
@@ -79,7 +79,7 @@ const InvitationCompetition: React.FC = () => {
         const filtered = prev.filter(piece => now - (piece.created || now) < 5000);
         return [...filtered, ...newConfetti];
       });
-    }, 800); // Add new confetti every 0.8s
+    }, 600); // Add new confetti every 0.6s for smoother, more continuous effect
     return () => clearInterval(interval);
   }, []);
 
