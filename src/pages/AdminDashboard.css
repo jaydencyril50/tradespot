@@ -1,20 +1,21 @@
 .admin-dashboard-page {
   max-width: 700px;
-  margin: 0 auto; /* Remove vertical margin */
-  background: var(--market-bg);
+  margin: 0 auto;
+  background: #fff;
   border-radius: 0;
-  box-shadow: 0 12px 48px 0 rgba(30,60,114,0.45), 0 4px 32px 0 rgba(30,60,114,0.30);
+  box-shadow: 0 12px 48px 0 rgba(30,60,114,0.10), 0 4px 32px 0 rgba(30,60,114,0.08);
   padding: 18px 10px;
 }
 
 .admin-dashboard-title {
   text-align: center;
-  color: var(--market-text-main);
-  margin-bottom: 20; /* Remove bottom margin */
-  font-size: 1.2rem;
+  color: var(--primary);
+  margin-bottom: 20px;
+  font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
+  font-family: serif;
 }
 
 .admin-dashboard-cards {
@@ -32,13 +33,13 @@
 }
 
 .admin-dashboard-card {
-  background: var(--market-card-bg);
+  background: #fff;
   border-radius: 0;
-  box-shadow: 0 8px 32px 0 rgba(30,60,114,0.40), 0 2px 16px 0 rgba(30,60,114,0.25);
-  min-width: 40px; /* Reduced from 80px to 40px */
-  max-width: 180px; /* Limit max width */
-  width: 90%;       /* Prevent full width */
-  margin: 0 auto;   /* Center card in grid cell */
+  box-shadow: 0 1px 4px rgba(30,60,114,0.10);
+  min-width: 40px;
+  max-width: 180px;
+  width: 90%;
+  margin: 0 auto;
   min-height: 48px;
   display: flex;
   flex-direction: column;
@@ -47,15 +48,15 @@
   padding: 8px 4px;
   cursor: pointer;
   transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: var(--market-text-main);
-  background: var(--market-card-bg);
+  color: var(--primary);
+  font-family: inherit;
 }
 
 .admin-dashboard-card:hover {
-  background: var(--market-header-bg);
-  color: var(--market-btn-text);
+  background: var(--secondary);
+  color: var(--button-text);
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 16px 64px 0 rgba(30,60,114,0.55), 0 6px 24px 0 rgba(30,60,114,0.35);
+  box-shadow: 0 8px 24px 0 rgba(30,60,114,0.12);
 }
