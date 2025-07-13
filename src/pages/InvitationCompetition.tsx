@@ -1,6 +1,6 @@
 import './InvitationCompetition.css';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 // Confetti colors
 const confettiColors = [
   '#FF595E', // red
@@ -41,6 +41,21 @@ interface UserRanking {
 }
 
 const InvitationCompetition: React.FC = () => {
+  // Audio playback logic
+  const audio1Ref = useRef<HTMLAudioElement>(null);
+  const audio2Ref = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    // Play first audio on mount
+    if (audio1Ref.current) {
+      audio1Ref.current.play().catch(() => {});
+      audio1Ref.current.onended = () => {
+        if (audio2Ref.current) {
+          audio2Ref.current.play().catch(() => {});
+        }
+      };
+    }
+  }, []);
   const [rankings, setRankings] = useState<UserRanking[]>([]);
 
   // Confetti state
@@ -135,6 +150,17 @@ const InvitationCompetition: React.FC = () => {
 
   return (
     <>
+      {/* Hidden audio elements for sequential playback */}
+      <audio
+        ref={audio1Ref}
+        src={process.env.PUBLIC_URL + '/djkings/Hallman - Always Be [Bo1hRXhRtnA].mp3'}
+        style={{ display: 'none' }}
+      />
+      <audio
+        ref={audio2Ref}
+        src={process.env.PUBLIC_URL + '/djkings/Hallman - Dancing on a Memory [V52GfJ4yN_E].mp3'}
+        style={{ display: 'none' }}
+      />
       <div className="party-bg">
         {rainDrops}
         {flashLights}
