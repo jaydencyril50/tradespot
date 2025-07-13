@@ -1,3 +1,55 @@
+/* Smooth fade-in for main header */
+.vip-header {
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 6px;
+  text-align: center;
+  margin: 0 auto;
+  padding: 0.5rem 0;
+  font-family: Impact, Brick, Arial Black, Arial, sans-serif;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(90deg, #b22222 0%, #ff6f00 50%, #b22222 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: moving-gradient 3s linear infinite, fadeInHeader 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+  text-shadow: 2px 2px 0 #8b0000, 4px 4px 0 #ffd700, 0 0 18px #ff6f0088;
+  filter: drop-shadow(0 0 12px #b22222) drop-shadow(0 0 8px #ffd70088);
+}
+
+@keyframes fadeInHeader {
+  from { opacity: 0; transform: translateY(-30px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Smooth fade-in for carousel section */
+.carousel-fade-in {
+  animation: fadeInCarousel 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+@keyframes fadeInCarousel {
+  from { opacity: 0; transform: translateY(40px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Smooth fade-in for modal */
+.vip-modal {
+  animation: fadeInModal 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+@keyframes fadeInModal {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Smooth fade-in for roulette section */
+.roulette-fade-in {
+  animation: fadeInRoulette 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+@keyframes fadeInRoulette {
+  from { opacity: 0; transform: translateY(30px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 /* Animated glowing border for ranking table */
 .ilum-table {
   position: relative;
@@ -68,14 +120,14 @@
 }
 /* Roulette Section Styles */
 .roulette-section {
-  margin: 2.5rem auto 0 auto;
-  padding: 2rem 1rem 2.5rem 1rem;
-   box-sizing: border-box;
-   width: 100%;
-   max-width: 500px;
+  margin: 1.2rem auto 0 auto;
+  padding: 1rem 0.5rem 1.2rem 0.5rem;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 320px;
   background: linear-gradient(120deg, #232526 60%, #414345 100%);
-  border-radius: 24px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.35), 0 1.5px 0 #fffbe6 inset, 0 12px 36px 0 #000a;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.25), 0 1px 0 #fffbe6 inset, 0 6px 18px 0 #000a;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -92,28 +144,28 @@
 
 .roulette-title {
   color: #ffd700;
-  font-size: 1.5rem;
+  font-size: 1.05rem;
   font-weight: 800;
-  margin-bottom: 2.5rem;
+  margin-bottom: 3rem;
   letter-spacing: 1px;
   text-shadow: 0 2px 12px #ffd70055;
 }
 
 .roulette-wheel {
-  width: 240px;
-  height: 240px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   background:
     radial-gradient(circle at 60% 30%, #fffbe6 60%, #ffd700 100%, #bfa100 120%),
     repeating-conic-gradient(from 0deg, #a0522d 0deg 10deg, #8b4513 10deg 20deg);
   box-shadow:
-    0 0 0 10px #7b4a19,
-    0 0 0 18px #e0c97f,
-    0 8px 32px #000a,
-    0 0 0 1.5px #fffbe6 inset;
-  border: 6px solid #a0522d;
+    0 0 0 6px #7b4a19,
+    0 0 0 10px #e0c97f,
+    0 4px 12px #000a,
+    0 0 0 1px #fffbe6 inset;
+  border: 3px solid #a0522d;
   position: relative;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -122,25 +174,25 @@
 }
 
 .roulette-inner {
-  width: 180px;
-  height: 180px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background: radial-gradient(circle at 60% 30%, #fff 60%, #e0c97f 100%, #232526 120%);
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 24px #ffd70088, 0 0 0 10px #ffd700, 0 1.5px 0 #fffbe6 inset;
-  border: 6px solid #e0c97f;
+  box-shadow: 0 2px 8px #ffd70088, 0 0 0 5px #ffd700, 0 1px 0 #fffbe6 inset;
+  border: 3px solid #e0c97f;
   z-index: 2;
 }
 .roulette-inner::before {
   content: '';
   position: absolute;
-  top: 18px;
-  left: 30px;
-  width: 100px;
-  height: 30px;
+  top: 8px;
+  left: 12px;
+  width: 50px;
+  height: 14px;
   border-radius: 50%;
   background: linear-gradient(120deg, #fffbe6cc 40%, #fff0 100%);
   opacity: 0.7;
@@ -153,25 +205,25 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 48px;
-  height: 48px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: radial-gradient(circle, #fffbe6 60%, #ffd700 100%, #bfa100 120%);
-  box-shadow: 0 2px 12px #ffd70099, 0 0 0 6px #bfa100;
-  border: 3px solid #fffbe6;
+  box-shadow: 0 1px 6px #ffd70099, 0 0 0 3px #bfa100;
+  border: 2px solid #fffbe6;
   z-index: 4;
 }
 
 .roulette-marker {
   position: absolute;
-  top: -38px;
+  top: -18px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 2.5rem;
+  font-size: 1.2rem;
   color: #ffd700;
-  text-shadow: 0 6px 24px #ffd700cc, 0 2px 12px #000a, 0 1.5px 0 #fffbe6 inset;
+  text-shadow: 0 3px 12px #ffd700cc, 0 1px 6px #000a, 0 1px 0 #fffbe6 inset;
   z-index: 10;
-  filter: drop-shadow(0 2px 8px #0008);
+  filter: drop-shadow(0 1px 4px #0008);
 }
 
 .roulette-slices {
@@ -237,12 +289,12 @@
 
 .roulette-slice {
   font-family: 'Arial Black', 'Arial Bold', Arial, sans-serif;
-  font-size: 1.25rem;
+  font-size: 0.7rem;
   font-weight: 900;
   letter-spacing: 1px;
-  text-shadow: 0 2px 8px #fffbe6, 0 1px 0 #fff8, 0 0px 2px #000a;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px #ffd70088, 0 0 0 2px #bfa100;
+  text-shadow: 0 1px 4px #fffbe6, 0 1px 0 #fff8, 0 0px 1px #000a;
+  border-radius: 5px;
+  box-shadow: 0 1px 4px #ffd70088, 0 0 0 1px #bfa100;
 }
 
 .roulette-wheel {
@@ -277,15 +329,15 @@
 .slice16 { transform: rotate(337.5deg) translate(75px, -50%) rotate(-11.25deg); }
 
 .roulette-spin-btn {
-  margin-top: 1.2rem;
-  padding: 0.7rem 2.2rem;
-  font-size: 1.1rem;
+  margin-top: 1.1rem;
+  padding: 0.35rem 1.1rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: #fffbe6;
   background: linear-gradient(90deg, #ffd700 60%, #ff512f 100%);
   border: none;
-  border-radius: 24px;
-  box-shadow: 0 4px 24px #ffd70099, 0 1.5px 0 #fffbe6 inset, 0 8px 24px #000a;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px #ffd70099, 0 1px 0 #fffbe6 inset, 0 4px 12px #000a;
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
   letter-spacing: 1px;

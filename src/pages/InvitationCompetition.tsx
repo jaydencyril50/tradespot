@@ -90,7 +90,65 @@ const InvitationCompetition: React.FC = () => {
     }
   }, []);
   const [showModal, setShowModal] = useState(true);
-  const [rankings, setRankings] = useState<UserRanking[]>([]);
+  // Carousel state
+  const [activeSlide, setActiveSlide] = useState(0);
+  // Mock data for each reward section (top 3 only)
+  const rewardSections = [
+    {
+      title: 'Top Newbie Team',
+      columns: ['Rank', 'Team Name', 'New Members'],
+      data: [
+        { rank: 1, name: 'Team Alpha', value: 32 },
+        { rank: 2, name: 'Team Beta', value: 27 },
+        { rank: 3, name: 'Team Gamma', value: 21 },
+      ],
+    },
+    {
+      title: 'Highest Recharge Team',
+      columns: ['Rank', 'Team Name', 'Deposits ($)'],
+      data: [
+        { rank: 1, name: 'Team Delta', value: 12000 },
+        { rank: 2, name: 'Team Omega', value: 9500 },
+        { rank: 3, name: 'Team Sigma', value: 8700 },
+      ],
+    },
+    {
+      title: 'Group Managers Awards',
+      columns: ['Rank', 'Manager', 'Performance'],
+      data: [
+        { rank: 1, name: 'Alice', value: 'Outstanding' },
+        { rank: 2, name: 'Bob', value: 'Excellent' },
+        { rank: 3, name: 'Charlie', value: 'Great' },
+      ],
+    },
+    {
+      title: 'Group Assistant Awards',
+      columns: ['Rank', 'Assistant', 'Performance'],
+      data: [
+        { rank: 1, name: 'Diana', value: 'Outstanding' },
+        { rank: 2, name: 'Eve', value: 'Excellent' },
+        { rank: 3, name: 'Frank', value: 'Great' },
+      ],
+    },
+    {
+      title: 'Highest Individual Orders Awards',
+      columns: ['Rank', 'User', 'Orders'],
+      data: [
+        { rank: 1, name: 'SPOT123', value: 54 },
+        { rank: 2, name: 'SPOT456', value: 47 },
+        { rank: 3, name: 'SPOT789', value: 39 },
+      ],
+    },
+    {
+      title: 'Highest Individual Deposits Awards',
+      columns: ['Rank', 'User', 'Deposits ($)'],
+      data: [
+        { rank: 1, name: 'SPOT321', value: 8000 },
+        { rank: 2, name: 'SPOT654', value: 7200 },
+        { rank: 3, name: 'SPOT987', value: 6900 },
+      ],
+    },
+  ];
 
   // Confetti state
   const [confetti, setConfetti] = useState<{
@@ -132,18 +190,7 @@ const InvitationCompetition: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    // TODO: Replace with real API call
-    // Mock data for now
-    const mockData: UserRanking[] = [
-      { spotId: 'SPOT123', newTeamMembers: 12 },
-      { spotId: 'SPOT456', newTeamMembers: 9 },
-      { spotId: 'SPOT789', newTeamMembers: 7 },
-      { spotId: 'SPOT321', newTeamMembers: 6 },
-      { spotId: 'SPOT654', newTeamMembers: 5 },
-    ];
-    setRankings(mockData);
-  }, []);
+  // ...existing code...
 
   // Generate rain and lights
   const rainDrops = Array.from({ length: 40 }).map((_, i) => {
@@ -184,6 +231,10 @@ const InvitationCompetition: React.FC = () => {
 
   return (
     <>
+      {/* Main illuminated header */}
+      <div style={{ width: '100%', textAlign: 'center', marginTop: '2.2rem', marginBottom: '1.2rem', zIndex: 2, position: 'relative' }}>
+        <h1 className="vip-header">TRADESPOT VIP CLUB</h1>
+      </div>
       {/* Hidden audio elements for sequential playback */}
       <audio
         ref={audio1Ref}
@@ -196,7 +247,7 @@ const InvitationCompetition: React.FC = () => {
         style={{ display: 'none' }}
       />
       {showModal && (
-        <div style={{
+        <div className="vip-modal" style={{
           position: 'fixed',
           top: 0,
           left: 0,
@@ -275,50 +326,109 @@ const InvitationCompetition: React.FC = () => {
           ))}
         </div>
       </div>
-      <div className="invitation-competition-container">
-        <h2>Invitation Competition Rankings (This Week)</h2>
-      <div className="invitation-competition-table-wrapper">
-        <table className="invitation-competition-table ilum-table">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>User SpotID</th>
-                <th>New Team Members (7 days)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rankings.map((user: UserRanking, idx: number) => {
-                let rowClass = '';
-                if (idx === 0) rowClass = 'top-1';
-                else if (idx === 1) rowClass = 'top-2';
-                else if (idx === 2) rowClass = 'top-3';
-                else if (idx === 3) rowClass = 'top-4';
-                else if (idx === 4) rowClass = 'top-5';
-                let icon = null;
-                if (idx === 0) icon = <span title="1st" role="img" aria-label="crown" style={{fontSize:'1.7em', verticalAlign:'middle', animation:'popRank 0.7s'}}>👑</span>;
-                else if (idx === 1) icon = <span title="2nd" role="img" aria-label="trophy" style={{fontSize:'1.5em', verticalAlign:'middle', animation:'popRank 0.7s'}}>🏆</span>;
-                else if (idx === 2) icon = <span title="3rd" role="img" aria-label="diamond" style={{fontSize:'1.3em', verticalAlign:'middle', animation:'popRank 0.7s'}}>💎</span>;
-                else if (idx === 3) icon = <span title="4th" role="img" aria-label="star" style={{fontSize:'1.2em', verticalAlign:'middle', animation:'popRank 0.7s'}}>⭐</span>;
-                else if (idx === 4) icon = <span title="5th" role="img" aria-label="medal" style={{fontSize:'1.1em', verticalAlign:'middle', animation:'popRank 0.7s'}}>🏅</span>;
-                return (
-                  <tr key={user.spotId} className={rowClass}>
-                    <td className="rank-cell">
-                      {icon || (idx + 1)}
-                    </td>
-                    <td>{user.spotId}</td>
-                    <td>{user.newTeamMembers}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+
+      {/* Carousel for reward tables */}
+      <div className="carousel-fade-in" style={{ maxWidth: '950px', margin: '3rem auto 2rem auto', position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.2rem' }}>
+          <button
+            onClick={() => setActiveSlide(s => Math.max(0, s - 1))}
+            disabled={activeSlide === 0}
+            style={{
+              background: 'linear-gradient(90deg, #00e6ff 60%, #ff00c8 100%)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              fontSize: '1.7rem',
+              cursor: activeSlide === 0 ? 'not-allowed' : 'pointer',
+              marginRight: '1rem',
+              boxShadow: '0 2px 12px #00e6ff55',
+              opacity: activeSlide === 0 ? 0.5 : 1,
+              transition: 'opacity 0.2s',
+            }}
+          >
+            ◀
+          </button>
+          <span
+            style={{
+              fontWeight: 700,
+              fontSize: '1.3rem',
+              color: '#ffd700',
+              letterSpacing: '1px',
+              textShadow: '0 2px 12px #ffd70055',
+              flex: 1,
+              textAlign: 'center',
+              display: 'inline-block',
+            }}
+          >
+            {rewardSections[activeSlide].title}
+          </span>
+          <button
+            onClick={() => setActiveSlide(s => Math.min(rewardSections.length - 1, s + 1))}
+            disabled={activeSlide === rewardSections.length - 1}
+            style={{
+              background: 'linear-gradient(90deg, #ff00c8 60%, #00e6ff 100%)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              fontSize: '1.7rem',
+              cursor: activeSlide === rewardSections.length - 1 ? 'not-allowed' : 'pointer',
+              marginLeft: '1rem',
+              boxShadow: '0 2px 12px #ff00c855',
+              opacity: activeSlide === rewardSections.length - 1 ? 0.5 : 1,
+              transition: 'opacity 0.2s',
+            }}
+          >
+            ▶
+          </button>
+        </div>
+        <div style={{ width: '100%', overflow: 'hidden', minHeight: '220px' }}>
+          <div style={{ display: 'flex', transition: 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)', transform: `translateX(-${activeSlide * 100}%)` }}>
+            {rewardSections.map((section, idx) => (
+              <div key={section.title} style={{ minWidth: '100%', boxSizing: 'border-box', padding: '0 1rem' }}>
+                <div className="invitation-competition-table-wrapper">
+                  <table className="invitation-competition-table ilum-table">
+                    <thead>
+                      <tr>
+                        {section.columns.map(col => (
+                          <th key={col}>{col}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {section.data.map((row, idx2) => {
+                        let rowClass = '';
+                        if (idx2 === 0) rowClass = 'top-1';
+                        else if (idx2 === 1) rowClass = 'top-2';
+                        else if (idx2 === 2) rowClass = 'top-3';
+                        let icon = null;
+                        if (idx2 === 0) icon = <span title="1st" role="img" aria-label="crown" style={{fontSize:'1.7em', verticalAlign:'middle', animation:'popRank 0.7s'}}>👑</span>;
+                        else if (idx2 === 1) icon = <span title="2nd" role="img" aria-label="trophy" style={{fontSize:'1.5em', verticalAlign:'middle', animation:'popRank 0.7s'}}>🏆</span>;
+                        else if (idx2 === 2) icon = <span title="3rd" role="img" aria-label="diamond" style={{fontSize:'1.3em', verticalAlign:'middle', animation:'popRank 0.7s'}}>💎</span>;
+                        return (
+                          <tr key={row.name} className={rowClass}>
+                            <td className="rank-cell">{icon || row.rank}</td>
+                            <td>{row.name}</td>
+                            <td>{row.value}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Roulette Section */}
-      <div className="roulette-section">
+      <div className="roulette-section roulette-fade-in">
         <h3 className="roulette-title">Weekly Lucky Roulette</h3>
-        <div className={`roulette-wheel${spinning ? ' roulette-spinning' : ''}`}>
+        <div className={`roulette-wheel${spinning ? ' roulette-spinning' : ''}`}> 
           <div className="roulette-inner">
             <div className="roulette-marker">▼</div>
               <div className="roulette-slices">
