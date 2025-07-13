@@ -73,7 +73,7 @@ const Profile: React.FC = () => {
   if (!user) return <div>No profile data found.</div>;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <div style={{ minHeight: '100vh', background: '#fff' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card-bg)', padding: '16px 24px 10px 18px', border: '1.5px solid #282829', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
         <span style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)', letterSpacing: 1, fontFamily: 'serif' }}>
           PROFILE
