@@ -9,6 +9,7 @@ const DJ_SONGS = [
 const TournamentBracket: React.FC = () => {
   const [currentSong, setCurrentSong] = useState(0);
   const [musicStarted, setMusicStarted] = useState(false);
+  const [curtainOpen, setCurtainOpen] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -26,17 +27,20 @@ const TournamentBracket: React.FC = () => {
   };
 
   const handleStartMusic = () => {
-    setMusicStarted(true);
+    setCurtainOpen(true);
+    setTimeout(() => setMusicStarted(true), 1800); // match curtain animation duration (1.8s)
   };
 
   return (
     <div className="bracket-bg">
       {/* Fullscreen Overlay for Join Button */}
       {!musicStarted && (
-        <div className="join-overlay">
+        <div className={`join-overlay${curtainOpen ? ' curtain-open' : ''}`}>
           <button className="join-club-btn" onClick={handleStartMusic}>
             Join the Club
           </button>
+          <div className="curtain curtain-left" />
+          <div className="curtain curtain-right" />
         </div>
       )}
       {/* Illuminating Header */}

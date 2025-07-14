@@ -1,3 +1,4 @@
+
 .join-overlay {
   position: fixed;
   inset: 0;
@@ -10,6 +11,46 @@
   justify-content: center;
   transition: opacity 0.5s;
   animation: overlay-fade-in 0.7s;
+  overflow: hidden;
+}
+
+.curtain {
+  position: absolute;
+  top: 0;
+  width: 50vw;
+  height: 100vh;
+  background: transparent;
+  z-index: 1;
+  pointer-events: none;
+  transition: transform 1.8s cubic-bezier(0.77,0,0.175,1), background 0.01s;
+}
+.curtain-left {
+  left: 0;
+  border-right: 2px solid #222;
+  box-shadow: 8px 0 24px #000a;
+  transform: translateX(0);
+}
+.curtain-right {
+  right: 0;
+  border-left: 2px solid #222;
+  box-shadow: -8px 0 24px #000a;
+  transform: translateX(0);
+}
+.curtain-open .curtain-left,
+.curtain-open .curtain-right {
+  background: linear-gradient(90deg, #181a2a 80%, #23243a 100%);
+  pointer-events: auto;
+}
+.curtain-open .curtain-left {
+  transform: translateX(-100vw);
+}
+.curtain-open .curtain-right {
+  transform: translateX(100vw);
+}
+.curtain-open {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s 0.8s;
 }
 
 @keyframes overlay-fade-in {
@@ -38,7 +79,7 @@
   letter-spacing: 2px;
   text-transform: uppercase;
   transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
-  z-index: 10;
+  z-index: 1010;
   outline: none;
   animation: join-btn-glow 2s infinite alternate;
   position: relative;
@@ -90,7 +131,7 @@
   font-family: 'Orbitron', sans-serif;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   position: relative;
 }
 .party-lights-bg {
@@ -146,8 +187,8 @@
 .bracket-main {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   flex-wrap: nowrap;
   gap: 10px;
   position: relative;
