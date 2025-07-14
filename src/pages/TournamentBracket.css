@@ -8,6 +8,44 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+}
+.party-lights-bg {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.party-light {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  opacity: 0.55;
+  filter: blur(6px) brightness(1.2);
+  animation: party-float 4s ease-in-out infinite alternate;
+  mix-blend-mode: lighten;
+}
+
+/* Individual light colors */
+.light1 { background: radial-gradient(circle, #ffeb3b 60%, #ff9800 100%); animation-delay: 0s; }
+.light2 { background: radial-gradient(circle, #00e6ff 60%, #3a86ff 100%); animation-delay: 0.5s; }
+.light3 { background: radial-gradient(circle, #ff00c8 60%, #e040fb 100%); animation-delay: 1s; }
+.light4 { background: radial-gradient(circle, #00ff90 60%, #00e676 100%); animation-delay: 1.5s; }
+.light5 { background: radial-gradient(circle, #ffd700 60%, #ff512f 100%); animation-delay: 2s; }
+.light6 { background: radial-gradient(circle, #ff1744 60%, #ff8a65 100%); animation-delay: 2.5s; }
+.light7 { background: radial-gradient(circle, #00e6ff 60%, #00bcd4 100%); animation-delay: 3s; }
+.light8 { background: radial-gradient(circle, #c108a5 60%, #72047c 100%); animation-delay: 3.5s; }
+.light9 { background: radial-gradient(circle, #b2dde1 60%, #535655 100%); animation-delay: 1.2s; }
+
+@keyframes party-float {
+  0% { transform: translateY(0) scale(1); opacity: 0.55; }
+  50% { transform: translateY(-30px) scale(1.08); opacity: 0.7; }
+  100% { transform: translateY(0) scale(1); opacity: 0.55; }
 }
 
 .bracket-title {
@@ -18,6 +56,7 @@
   text-shadow: 0 0 8px #00e6ff, 0 0 20px #ff00c8;
   margin-bottom: 2rem;
   letter-spacing: 4px;
+  z-index: 1;
 }
 
 /* === Main Layout === */
@@ -31,6 +70,7 @@
   position: relative;
   max-width: 1400px;
   min-height: 400px;
+  z-index: 1;
 }
 
 .bracket-side {
@@ -74,14 +114,29 @@
 }
 
 /* === Color Palettes (neon gradients) === */
-.color-purple {
-  background: linear-gradient(90deg, #a020f0, #ff00c8);
-  box-shadow: 0 0 15px #a020f0;
+.color-yellow2 {
+  background: linear-gradient(90deg, #4f6306, #a0a020);
+  box-shadow: 0 0 15px #4a4e08;
 }
 
 .color-pink {
-  background: linear-gradient(90deg, #ff00c8, #ff61a6);
-  box-shadow: 0 0 15px #ff00c8;
+  background: linear-gradient(90deg, #c108a5e0, #72047c);
+  box-shadow: 0 0 15px #300132;
+}
+
+.color-silver {
+  background: linear-gradient(90deg, #b2dde1e0, #535655);
+  box-shadow: 0 0 15px #979c9d;
+}
+
+.color-grass {
+  background: linear-gradient(90deg, #149505e0, #28e71e);
+  box-shadow: 0 0 15px #0d7d03;
+}
+
+.color-green {
+  background: linear-gradient(90deg, #167704, #124401);
+  box-shadow: 0 0 15px #022f08;
 }
 
 .color-orange {
@@ -90,23 +145,33 @@
 }
 
 .color-yellow {
-  background: linear-gradient(90deg, #ffd700, #ffbe0b);
-  box-shadow: 0 0 15px #ffd700;
+  background: linear-gradient(90deg, #e1c10c, #b49902);
+  box-shadow: 0 0 15px #655603;
 }
 
 .color-blue {
-  background: linear-gradient(90deg, #3a86ff, #00e6ff);
+  background: linear-gradient(90deg, #093781, #09aabc);
   box-shadow: 0 0 15px #3a86ff;
 }
 
-.color-cyan {
-  background: linear-gradient(90deg, #00e6ff, #5ef1f2);
-  box-shadow: 0 0 15px #00e6ff;
+.color-navi {
+  background: linear-gradient(90deg, #0c2bc8, #051961);
+  box-shadow: 0 0 15px #1d3fa5;
 }
 
 .color-red {
-  background: linear-gradient(90deg, #e91e63, #ff1744);
-  box-shadow: 0 0 15px #e91e63;
+  background: linear-gradient(90deg, #860933, #ca1d40);
+  box-shadow: 0 0 15px #8e0332;
+}
+
+.color-blood {
+  background: linear-gradient(90deg, #930505, #4e0101);
+  box-shadow: 0 0 15px #510303;
+}
+
+.color-white {
+  background: linear-gradient(90deg, #fcfefe, #a5b1b0);
+  box-shadow: 0 0 15px #525758;
 }
 
 /* === Semifinals & Final === */
@@ -172,6 +237,7 @@
   text-shadow: 0 0 12px #00e6ff;
   letter-spacing: 2px;
   text-align: center;
+  z-index: 1;
 }
 
 /* === Responsive === */
@@ -185,6 +251,7 @@
     text-align: center;
     letter-spacing: 0.5px;
     margin-bottom: 0.2rem;
+    z-index: 1;
   }
 
   .bracket-bg {
@@ -198,6 +265,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
   }
 
   .bracket-main {
@@ -212,6 +280,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    z-index: 1;
   }
 
   .bracket-side {
@@ -257,5 +326,6 @@
     font-size: 1rem;
     margin-top: 1rem;
     letter-spacing: 1px;
+    z-index: 1;
   }
 }
