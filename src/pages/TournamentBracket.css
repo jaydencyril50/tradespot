@@ -205,6 +205,45 @@
   align-items: flex-start;
   position: relative;
 }
+
+/* === Edge Lighting Effect for Mobile === */
+@media (max-width: 768px) {
+  .bracket-bg.edge-light-active::before {
+    content: '';
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    box-sizing: border-box;
+    border: 0.25rem solid transparent;
+    background:
+      linear-gradient(120deg, #00e6ff, #ff00c8, #ffd700, #00e6ff 90%) border-box;
+    background-size: 200% 100%;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: edge-light-move 3s linear infinite;
+    opacity: 0.85;
+    box-shadow: 0 0 24px 6px #00e6ff99, 0 0 32px 8px #ff00c899;
+  }
+}
+
+@keyframes edge-light-move {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+/* removed stray closing brace */
+}
 .party-lights-bg {
   position: absolute;
   inset: 0;

@@ -10,6 +10,7 @@ const TournamentBracket: React.FC = () => {
   const [currentSong, setCurrentSong] = useState(0);
   const [musicStarted, setMusicStarted] = useState(false);
   const [curtainOpen, setCurtainOpen] = useState(false);
+  // Edge light should be active when curtain is open
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -32,7 +33,7 @@ const TournamentBracket: React.FC = () => {
   };
 
   return (
-    <div className="bracket-bg">
+    <div className={`bracket-bg${curtainOpen ? ' edge-light-active' : ''}`}> 
       {/* Fullscreen Overlay for Join Button */}
       {!musicStarted && (
         <div className={`join-overlay${curtainOpen ? ' curtain-open' : ''}`}>
