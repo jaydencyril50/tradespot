@@ -8,32 +8,44 @@ const DJ_SONGS = [
 
 const TournamentBracket: React.FC = () => {
   const [currentSong, setCurrentSong] = useState(0);
+  const [musicStarted, setMusicStarted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
-    // When the song changes, play it
-    if (audioRef.current) {
+    if (musicStarted && audioRef.current) {
       audioRef.current.load();
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {});
       }
     }
-  }, [currentSong]);
+  }, [currentSong, musicStarted]);
 
   const handleEnded = () => {
     setCurrentSong((prev) => (prev + 1) % DJ_SONGS.length);
   };
 
+  const handleStartMusic = () => {
+    setMusicStarted(true);
+  };
+
   return (
     <div className="bracket-bg">
+      {/* Fullscreen Overlay for Join Button */}
+      {!musicStarted && (
+        <div className="join-overlay">
+          <button className="join-club-btn" onClick={handleStartMusic}>
+            Join the Club
+          </button>
+        </div>
+      )}
       {/* Illuminating Header */}
       <h1 className="vip-header">TRADESPOT VIP CLUB</h1>
       {/* DJ Kings Music Autoplay */}
       <audio
         ref={audioRef}
         src={DJ_SONGS[currentSong]}
-        autoPlay
+        autoPlay={musicStarted}
         onEnded={handleEnded}
         loop={false}
         preload="auto"

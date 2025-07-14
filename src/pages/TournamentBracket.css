@@ -1,12 +1,70 @@
+.join-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 10, 20, 0.98);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s;
+  animation: overlay-fade-in 0.7s;
+}
+
+@keyframes overlay-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.join-overlay[style*="display: none"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.join-club-btn {
+  display: inline-block;
+  margin: 1.2rem auto 1.5rem auto;
+  padding: 0.85rem 2.2rem;
+  font-size: 1.3rem;
+  font-family: 'Orbitron', Arial, sans-serif;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(90deg, #00e6ff 30%, #ff00c8 100%);
+  border: none;
+  border-radius: 40px;
+  box-shadow: 0 0 18px #00e6ff99, 0 0 32px #ff00c899;
+  cursor: pointer;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  z-index: 10;
+  outline: none;
+  animation: join-btn-glow 2s infinite alternate;
+  position: relative;
+  left: 0;
+  top: 0;
+}
+
+.join-club-btn:hover, .join-club-btn:focus {
+  background: linear-gradient(90deg, #ffd700 30%, #00e6ff 100%);
+  transform: scale(1.06);
+  box-shadow: 0 0 32px #ffd700cc, 0 0 48px #00e6ffcc;
+}
+
+@keyframes join-btn-glow {
+  0% { box-shadow: 0 0 18px #00e6ff99, 0 0 32px #ff00c899; }
+  100% { box-shadow: 0 0 32px #ffd700cc, 0 0 48px #00e6ffcc; }
+}
 .vip-header {
   font-family: 'Orbitron', 'Arial Black', Arial, sans-serif;
   font-size: 1.5rem;
-  font-weight: 800;
+  font-weight: 900;
   text-transform: uppercase;
   color: #fff;
   letter-spacing: 6px;
-  margin-bottom: 1.2rem;
-  margin-top: 0.1rem;
+  margin-bottom: 1rem;
+  margin-top: 0rem;
   text-align: center;
   z-index: 2;
   text-shadow:
@@ -15,6 +73,7 @@
     0 0 48px #ffd700,
     0 0 8px #fff;
   animation: vip-glow 2.5s infinite alternate;
+  position: relative;
 }
 
 @keyframes vip-glow {
