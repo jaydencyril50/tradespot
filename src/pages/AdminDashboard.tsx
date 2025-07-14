@@ -14,6 +14,7 @@ const adminButtons = [
   { label: 'TEAM', icon: '👥' },
   { label: 'MESSAGE', icon: '✉️' },
   { label: 'FLEX DROP', icon: '🎁' },
+  { label: 'AWARDS', icon: '🏆' },
   { label: 'LOGOUT', icon: '🚪' },
   { label: 'STATISTICS', icon: '📊' },
 ];
@@ -89,7 +90,9 @@ const AdminDashboard: React.FC = () => {
               } else if (btn.label === 'MESSAGE') {
                 navigate('/admin/chat');
               } else if (btn.label === 'FLEX DROP') {
-                navigate('/admin/flex-drop'); // New route
+                navigate('/admin/flex-drop');
+              } else if (btn.label === 'AWARDS') {
+                navigate('/admin/awards');
               } else if (btn.label === 'STATISTICS') {
                 navigate('/admin/platform-stats');
               } else if (btn.label === 'LOGOUT') {

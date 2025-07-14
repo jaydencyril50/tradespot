@@ -44,6 +44,7 @@ import FlexDropClaim from './pages/FlexDropClaim';
 import AdminPlatformStats from './pages/AdminPlatformStats';
 import AdminSendFunds from './pages/AdminSendFunds';
 import TournamentBracket from './pages/TournamentBracket';
+import AdminRewards from './pages/AdminRewards';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Root container missing in index.html');
@@ -139,6 +140,7 @@ root.render(
             <Route path="/admin/trash" element={<Trash />} />
             <Route path="/admin/platform-stats" element={<AdminPlatformStats />} />
             <Route path="/admin/send-funds" element={<AdminSendFunds />} />
+            <Route path="/admin/awards" element={<AdminRewards />} />
             <Route path="/buy" element={
               <ProtectedRoute>
                 <BuySpotPage />
