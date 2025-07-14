@@ -48,6 +48,8 @@
 /* === Blocks === */
 .bracket-block {
   min-width: 130px;
+  max-width: 130px;
+  width: 130px;
   min-height: 40px;
   padding: 8px 14px;
   color: #fff;
@@ -179,18 +181,18 @@
     padding: 0;
   }
   .bracket-title {
-    font-size: 1rem;
+    font-size: 0.55rem;
     text-align: center;
-    letter-spacing: 1.5px;
-    margin-bottom: 0.7rem;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.2rem;
   }
 
   .bracket-bg {
-    overflow-x: auto;
+    overflow-x: hidden;
     width: 100vw;
     min-width: 100vw;
     min-height: 100vh;
-    padding: 0.3rem 0.1rem;
+    padding: 0.05rem 0.01rem;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -199,11 +201,11 @@
   }
 
   .bracket-main {
-    gap: 5px;
+    gap: 4px;
     min-width: 80vw;
     max-width: 100vw;
-    min-height: 100px;
-    overflow-x: auto;
+    min-height: 20px;
+    overflow-x: hidden;
     margin-left: 0;
     padding-left: 0;
     display: flex;
@@ -217,26 +219,33 @@
   }
 
   .bracket-round {
-    gap: 4px;
+    gap: 10px;
   }
 
   .bracket-block {
-    min-width: 30px;
-    min-height: 10px;
-    font-size: 0.45rem;
-    padding: 3px 4px;
-    border-radius: 3px;
+    min-width: 45px;
+    max-width: 45px;
+    width: 40px;
+    min-height: 18px;
+    font-size: 0.65rem;
+    padding: 2px 3px;
+    border-radius: 2px;
     box-shadow: 0 0 7px rgba(0, 230, 255, 0.18);
   }
 
   .bracket-semifinals {
-    height: 80px;
-    gap: 10px;
+    height: 40px;
+    gap: 7px;
+    align-items: center;
   }
 
   .bracket-center {
-    height: 30px;
-    min-width: 30px;
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .trophy {
@@ -245,7 +254,7 @@
   }
 
   .bracket-footer {
-    font-size: 0.7rem;
+    font-size: 1rem;
     margin-top: 1rem;
     letter-spacing: 1px;
   }
