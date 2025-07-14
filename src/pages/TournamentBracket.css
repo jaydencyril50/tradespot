@@ -1,3 +1,27 @@
+.vip-header {
+  font-family: 'Orbitron', 'Arial Black', Arial, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #fff;
+  letter-spacing: 6px;
+  margin-bottom: 1.2rem;
+  margin-top: 0.1rem;
+  text-align: center;
+  z-index: 2;
+  text-shadow:
+    0 0 12px #00e6ff,
+    0 0 32px #ff00c8,
+    0 0 48px #ffd700,
+    0 0 8px #fff;
+  animation: vip-glow 2.5s infinite alternate;
+}
+
+@keyframes vip-glow {
+  0% { text-shadow: 0 0 12px #00e6ff, 0 0 32px #ff00c8, 0 0 48px #ffd700, 0 0 8px #fff; }
+  50% { text-shadow: 0 0 24px #ffd700, 0 0 48px #00e6ff, 0 0 64px #ff00c8, 0 0 16px #fff; }
+  100% { text-shadow: 0 0 12px #00e6ff, 0 0 32px #ff00c8, 0 0 48px #ffd700, 0 0 8px #fff; }
+}
 /* === Background & Font === */
 .bracket-bg {
   width: 100vw;

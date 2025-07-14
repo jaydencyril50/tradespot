@@ -27,6 +27,8 @@ const TournamentBracket: React.FC = () => {
 
   return (
     <div className="bracket-bg">
+      {/* Illuminating Header */}
+      <h1 className="vip-header">TRADESPOT VIP CLUB</h1>
       {/* DJ Kings Music Autoplay */}
       <audio
         ref={audioRef}
