@@ -81,7 +81,7 @@ const TournamentBracket: React.FC = () => {
       {/* Left Top - all purple */}
       <div className="bracket-side bracket-left">
         <div className="bracket-round round-left round0">
-          {Array(5).fill(null).map((_, i) => (
+          {Array(3).fill(null).map((_, i) => (
             <div className="bracket-block block-left color-yellow2" key={i}></div>
           ))}
         </div>
@@ -90,25 +90,17 @@ const TournamentBracket: React.FC = () => {
           <div className="bracket-block block-left color-green"></div>
           <div className="bracket-block block-left color-green"></div>
         </div>
-        <div className="bracket-round round-left round2">
-          <div className="bracket-block block-left color-green"></div>
-          <div className="bracket-block block-left color-green"></div>
-        </div>
       </div>
 
       {/* Left Bottom - all yellow */}
       <div className="bracket-side bracket-left">
         <div className="bracket-round round-left round0">
-          {Array(5).fill(null).map((_, i) => (
+          {Array(3).fill(null).map((_, i) => (
             <div className="bracket-block block-left color-yellow" key={i}></div>
           ))}
         </div>
         <div className="bracket-round round-left round1">
           <div className="bracket-block block-left color-grass"></div>
-          <div className="bracket-block block-left color-grass"></div>
-          <div className="bracket-block block-left color-grass"></div>
-        </div>
-        <div className="bracket-round round-left round2">
           <div className="bracket-block block-left color-grass"></div>
           <div className="bracket-block block-left color-grass"></div>
         </div>
@@ -135,7 +127,7 @@ const TournamentBracket: React.FC = () => {
       {/* Right Top - all blue */}
       <div className="bracket-side bracket-right">
         <div className="bracket-round round-right round0">
-          {Array(5).fill(null).map((_, i) => (
+          {Array(3).fill(null).map((_, i) => (
             <div className="bracket-block block-right color-blue" key={i}></div>
           ))}
         </div>
@@ -144,25 +136,17 @@ const TournamentBracket: React.FC = () => {
           <div className="bracket-block block-right color-red"></div>
           <div className="bracket-block block-right color-red"></div>
         </div>
-        <div className="bracket-round round-right round2">
-          <div className="bracket-block block-right color-red"></div>
-          <div className="bracket-block block-right color-red"></div>
-        </div>
       </div>
 
       {/* Right Bottom - all orange */}
       <div className="bracket-side bracket-right">
         <div className="bracket-round round-right round0">
-          {Array(5).fill(null).map((_, i) => (
+          {Array(3).fill(null).map((_, i) => (
             <div className="bracket-block block-right color-navi" key={i}></div>
           ))}
         </div>
         <div className="bracket-round round-right round1">
           <div className="bracket-block block-right color-blood"></div>
-          <div className="bracket-block block-right color-blood"></div>
-          <div className="bracket-block block-right color-blood"></div>
-        </div>
-        <div className="bracket-round round-right round2">
           <div className="bracket-block block-right color-blood"></div>
           <div className="bracket-block block-right color-blood"></div>
         </div>
@@ -176,13 +160,13 @@ const TournamentBracket: React.FC = () => {
       <thead>
         <tr>
           <th className="awards-header">AWARD CATEGORY</th>
-          <th className="teams-header">TEAMS AND USERS</th>
+          <th className="teams-header">TEAMS</th>
           <th className="rewards-header">REWARDS</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>TOP SOUL WINNING NEWBIES</td>
+          <td>TOP SOUL WINNING TEAM</td>
           <td>Team Alpha</td>
           <td>$500</td>
         </tr>
@@ -192,27 +176,27 @@ const TournamentBracket: React.FC = () => {
           <td>$400</td>
         </tr>
         <tr>
-          <td>GROUP MANAGERS AWARDS</td>
+          <td>TEAM MANAGERS AWARDS</td>
           <td>Jane Doe</td>
           <td>$300</td>
         </tr>
         <tr>
-          <td>GROUP ASSISTANT AWARDS</td>
+          <td>TEAM ASSISTANT AWARDS</td>
           <td>John Smith</td>
           <td>$200</td>
         </tr>
         <tr>
-          <td>TOP INDIVIDUAL ORDERS AWARDS</td>
+          <td>TOP TEAM ORDERS AWARDS</td>
           <td>Mary Lee</td>
           <td>$150</td>
         </tr>
         <tr>
-          <td>TOP INDIVIDUAL DEPOSITS AWARDS</td>
+          <td>HIGHEST DEPOSITS TEAM</td>
           <td>Chris Ray</td>
           <td>$120</td>
         </tr>
         <tr>
-          <td>TOP USDT BALANCE HOLDERS</td>
+          <td>TOP USDT TEAM HOLDERS</td>
           <td>Team Gamma</td>
           <td>$100</td>
         </tr>
