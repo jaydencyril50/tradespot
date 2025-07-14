@@ -167,8 +167,63 @@ const TournamentBracket: React.FC = () => {
           <div className="bracket-block block-right color-blood"></div>
         </div>
       </div>
-    </div>
 
+  </div>
+
+  {/* Awards Table Below Bracket */}
+  <div className="awards-table-container">
+    <table className="awards-table">
+      <thead>
+        <tr>
+          <th className="awards-header">AWARD CATEGORY</th>
+          <th className="teams-header">TEAMS AND USERS</th>
+          <th className="rewards-header">REWARDS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>TOP SOUL WINNING NEWBIES</td>
+          <td>Team Alpha</td>
+          <td>$500</td>
+        </tr>
+        <tr>
+          <td>TOP DEPOSITING TEAMS</td>
+          <td>Team Beta</td>
+          <td>$400</td>
+        </tr>
+        <tr>
+          <td>GROUP MANAGERS AWARDS</td>
+          <td>Jane Doe</td>
+          <td>$300</td>
+        </tr>
+        <tr>
+          <td>GROUP ASSISTANT AWARDS</td>
+          <td>John Smith</td>
+          <td>$200</td>
+        </tr>
+        <tr>
+          <td>TOP INDIVIDUAL ORDERS AWARDS</td>
+          <td>Mary Lee</td>
+          <td>$150</td>
+        </tr>
+        <tr>
+          <td>TOP INDIVIDUAL DEPOSITS AWARDS</td>
+          <td>Chris Ray</td>
+          <td>$120</td>
+        </tr>
+        <tr>
+          <td>TOP USDT BALANCE HOLDERS</td>
+          <td>Team Gamma</td>
+          <td>$100</td>
+        </tr>
+        <tr>
+          <td>TOP ADVERTISING TEAMS</td>
+          <td>Team Delta</td>
+          <td>$80</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
   </div>
   );
 };
