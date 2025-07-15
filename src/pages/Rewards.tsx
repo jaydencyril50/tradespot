@@ -20,8 +20,22 @@ const TournamentBracket: React.FC = () => {
   const [rewards, setRewards] = useState<Reward[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
 
+
   useEffect(() => {
-    fetchRewards().then(setRewards).catch(() => setRewards([]));
+    let isMounted = true;
+    const getRewards = () => {
+      fetchRewards().then(data => {
+        if (isMounted) setRewards(data);
+      }).catch(() => {
+        if (isMounted) setRewards([]);
+      });
+    };
+    getRewards();
+    const interval = setInterval(getRewards, 3000); // fetch every 3 seconds
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {
