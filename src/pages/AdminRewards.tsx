@@ -262,8 +262,8 @@ const AdminRewards: React.FC = () => {
       <style>{`
   @media (max-width: 600px) {
     .save-btn-container {
-      padding-left: 5vw !important;
-      padding-right: 1vw !important;
+      padding-left: 2vw !important;
+      padding-right: 2vw !important;
       max-width: 100% !important;
       box-sizing: border-box;
     }
