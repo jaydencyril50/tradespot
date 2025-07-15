@@ -4,6 +4,27 @@ import axios from 'axios';
 const AdminRewards: React.FC = () => {
   const API = process.env.REACT_APP_API_BASE_URL || '/api';
   const [values, setValues] = React.useState<string[]>(Array(29).fill(''));
+  React.useEffect(() => {
+    const fetchRewards = async () => {
+      try {
+        const res = await axios.get(`${API}/api/reward/rewards`);
+        if (Array.isArray(res.data.rewards)) {
+          setValues(prev => {
+            const copy = [...prev];
+            res.data.rewards.forEach((reward: any) => {
+              if (typeof reward.index === 'number' && reward.index >= 0 && reward.index < 29) {
+                copy[reward.index] = reward.value || '';
+              }
+            });
+            return copy;
+          });
+        }
+      } catch (e) {
+        // Optionally handle error
+      }
+    };
+    fetchRewards();
+  }, [API]);
   const [saving, setSaving] = React.useState<number | null>(null);
   const [success, setSuccess] = React.useState<string>('');
   // Removed colorRowMap
