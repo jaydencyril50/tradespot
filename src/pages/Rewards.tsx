@@ -43,6 +43,10 @@ const TournamentBracket: React.FC = () => {
     setTimeout(() => setMusicStarted(true), 1800); // match curtain animation duration (1.8s)
   };
 
+
+  // Helper to get reward value or fallback
+  const getRewardValue = (idx: number) => rewards[idx]?.value || '';
+
   return (
     <div className={`bracket-bg${curtainOpen ? ' edge-light-active' : ''}`}> 
       {/* Fullscreen Overlay for Join Button */}
@@ -93,13 +97,13 @@ const TournamentBracket: React.FC = () => {
       {/* Left Top - all purple */}
       <div className="bracket-side bracket-left">
         <div className="bracket-round round-left round0">
-          {rewards.slice(0, 3).map((reward, i) => (
-            <div className="bracket-block block-left color-yellow2" key={i}>{reward.value}</div>
+          {[0,1,2].map(i => (
+            <div className="bracket-block block-left color-yellow2" key={i}>{getRewardValue(i)}</div>
           ))}
         </div>
         <div className="bracket-round round-left round1">
-          {rewards.slice(3, 6).map((reward, i) => (
-            <div className="bracket-block block-left color-green" key={i}>{reward.value}</div>
+          {[3,4,5].map(i => (
+            <div className="bracket-block block-left color-green" key={i}>{getRewardValue(i)}</div>
           ))}
         </div>
       </div>
@@ -107,45 +111,47 @@ const TournamentBracket: React.FC = () => {
       {/* Left Bottom - all yellow */}
       <div className="bracket-side bracket-left">
         <div className="bracket-round round-left round0">
-          {rewards.slice(6, 9).map((reward, i) => (
-            <div className="bracket-block block-left color-yellow" key={i}>{reward.value}</div>
+          {[6,7,8].map(i => (
+            <div className="bracket-block block-left color-yellow" key={i}>{getRewardValue(i)}</div>
           ))}
         </div>
         <div className="bracket-round round-left round1">
-          {rewards.slice(9, 12).map((reward, i) => (
-            <div className="bracket-block block-left color-grass" key={i}>{reward.value}</div>
+          {[9,10,11].map(i => (
+            <div className="bracket-block block-left color-grass" key={i}>{getRewardValue(i)}</div>
           ))}
         </div>
       </div>
 
       {/* Semifinals Left */}
       <div className="bracket-semifinals bracket-left">
-        <div className="bracket-block semi color-silver"></div>
-        <div className="bracket-block semi color-silver"></div>
+        {[24,25].map(i => (
+          <div className="bracket-block semi color-silver" key={i}>{getRewardValue(i)}</div>
+        ))}
       </div>
 
       {/* Center Final */}
       <div className="bracket-center">
         <div className="trophy">🏆</div>
-        <div className="bracket-block final"></div>
+        <div className="bracket-block final">{getRewardValue(27)}</div>
       </div>
 
       {/* Semifinals Right */}
       <div className="bracket-semifinals bracket-right">
-        <div className="bracket-block semi color-silver"></div>
-        <div className="bracket-block semi color-silver"></div>
+        {[26,28].map(i => (
+          <div className="bracket-block semi color-silver" key={i}>{getRewardValue(i)}</div>
+        ))}
       </div>
 
       {/* Right Top - all blue */}
       <div className="bracket-side bracket-right">
         <div className="bracket-round round-right round0">
-          {rewards.slice(12, 15).map((reward, i) => (
-            <div className="bracket-block block-right color-blue" key={i}>{reward.value}</div>
+          {[12,13,14].map(i => (
+            <div className="bracket-block block-right color-blue" key={i}>{getRewardValue(i)}</div>
           ))}
         </div>
         <div className="bracket-round round-right round1">
-          {rewards.slice(15, 18).map((reward, i) => (
-            <div className="bracket-block block-right color-red" key={i}>{reward.value}</div>
+          {[15,16,17].map(i => (
+            <div className="bracket-block block-right color-red" key={i}>{getRewardValue(i)}</div>
           ))}
         </div>
       </div>
@@ -153,13 +159,13 @@ const TournamentBracket: React.FC = () => {
       {/* Right Bottom - all orange */}
       <div className="bracket-side bracket-right">
         <div className="bracket-round round-right round0">
-          {rewards.slice(18, 21).map((reward, i) => (
-            <div className="bracket-block block-right color-navi" key={i}>{reward.value}</div>
+          {[18,19,20].map(i => (
+            <div className="bracket-block block-right color-navi" key={i}>{getRewardValue(i)}</div>
           ))}
         </div>
         <div className="bracket-round round-right round1">
-          {rewards.slice(21, 24).map((reward, i) => (
-            <div className="bracket-block block-right color-blood" key={i}>{reward.value}</div>
+          {[21,22,23].map(i => (
+            <div className="bracket-block block-right color-blood" key={i}>{getRewardValue(i)}</div>
           ))}
         </div>
       </div>
