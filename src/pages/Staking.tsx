@@ -2,7 +2,7 @@ import React from 'react';
 
 const Staking: React.FC = () => {
   return (
-    <div className="staking-root" style={{ background: 'var(--bg)', minHeight: '100vh' }}>
+    <div className="staking-root" style={{ background: 'var(--bg)', minHeight: '100vh', paddingBottom: '48px' }}>
       {/* Header Bar */}
       <div className="staking-header" style={{ background: 'var(--card-bg)', borderBottom: '1.5px solid var(--primary)', padding: '16px 0', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
        <span className="staking-header-title" style={{ color: 'var(--primary)', fontWeight: 700, fontSize: 22, marginLeft: 24 }}>
@@ -51,7 +51,7 @@ const Staking: React.FC = () => {
         <style>{`
           @media (max-width: 600px) {
             .staking-cards {
-              gap: 0.7rem !important;
+              gap: 1.1rem !important;
               margin-left: 4px !important;
               margin-right: 4px !important;
             }
@@ -64,7 +64,7 @@ const Staking: React.FC = () => {
               margin: 0 auto 0 auto !important;
             }
             .staking-header-title {
-              font-size: 1.1rem !important;
+              font-size: 1.45rem !important;
               margin-left: 8px !important;
             }
           }
