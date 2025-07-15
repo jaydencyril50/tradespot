@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { fetchRewards } from '../services/rewardsService';
 import './TournamentBracket.css';
 
 const DJ_SONGS = [
@@ -10,8 +11,18 @@ const TournamentBracket: React.FC = () => {
   const [currentSong, setCurrentSong] = useState(0);
   const [musicStarted, setMusicStarted] = useState(false);
   const [curtainOpen, setCurtainOpen] = useState(false);
-  // Edge light should be active when curtain is open
+  type Reward = {
+    index: number;
+    value: string;
+    colorRow: string;
+    updatedAt: string;
+  };
+  const [rewards, setRewards] = useState<Reward[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    fetchRewards().then(setRewards).catch(() => setRewards([]));
+  }, []);
 
   useEffect(() => {
     if (musicStarted && audioRef.current) {
@@ -82,28 +93,28 @@ const TournamentBracket: React.FC = () => {
       {/* Left Top - all purple */}
       <div className="bracket-side bracket-left">
         <div className="bracket-round round-left round0">
-          {Array(3).fill(null).map((_, i) => (
-            <div className="bracket-block block-left color-yellow2" key={i}></div>
+          {rewards.slice(0, 3).map((reward, i) => (
+            <div className="bracket-block block-left color-yellow2" key={i}>{reward.value}</div>
           ))}
         </div>
         <div className="bracket-round round-left round1">
-          <div className="bracket-block block-left color-green"></div>
-          <div className="bracket-block block-left color-green"></div>
-          <div className="bracket-block block-left color-green"></div>
+          {rewards.slice(3, 6).map((reward, i) => (
+            <div className="bracket-block block-left color-green" key={i}>{reward.value}</div>
+          ))}
         </div>
       </div>
 
       {/* Left Bottom - all yellow */}
       <div className="bracket-side bracket-left">
         <div className="bracket-round round-left round0">
-          {Array(3).fill(null).map((_, i) => (
-            <div className="bracket-block block-left color-yellow" key={i}></div>
+          {rewards.slice(6, 9).map((reward, i) => (
+            <div className="bracket-block block-left color-yellow" key={i}>{reward.value}</div>
           ))}
         </div>
         <div className="bracket-round round-left round1">
-          <div className="bracket-block block-left color-grass"></div>
-          <div className="bracket-block block-left color-grass"></div>
-          <div className="bracket-block block-left color-grass"></div>
+          {rewards.slice(9, 12).map((reward, i) => (
+            <div className="bracket-block block-left color-grass" key={i}>{reward.value}</div>
+          ))}
         </div>
       </div>
 
@@ -128,28 +139,28 @@ const TournamentBracket: React.FC = () => {
       {/* Right Top - all blue */}
       <div className="bracket-side bracket-right">
         <div className="bracket-round round-right round0">
-          {Array(3).fill(null).map((_, i) => (
-            <div className="bracket-block block-right color-blue" key={i}></div>
+          {rewards.slice(12, 15).map((reward, i) => (
+            <div className="bracket-block block-right color-blue" key={i}>{reward.value}</div>
           ))}
         </div>
         <div className="bracket-round round-right round1">
-          <div className="bracket-block block-right color-red"></div>
-          <div className="bracket-block block-right color-red"></div>
-          <div className="bracket-block block-right color-red"></div>
+          {rewards.slice(15, 18).map((reward, i) => (
+            <div className="bracket-block block-right color-red" key={i}>{reward.value}</div>
+          ))}
         </div>
       </div>
 
       {/* Right Bottom - all orange */}
       <div className="bracket-side bracket-right">
         <div className="bracket-round round-right round0">
-          {Array(3).fill(null).map((_, i) => (
-            <div className="bracket-block block-right color-navi" key={i}></div>
+          {rewards.slice(18, 21).map((reward, i) => (
+            <div className="bracket-block block-right color-navi" key={i}>{reward.value}</div>
           ))}
         </div>
         <div className="bracket-round round-right round1">
-          <div className="bracket-block block-right color-blood"></div>
-          <div className="bracket-block block-right color-blood"></div>
-          <div className="bracket-block block-right color-blood"></div>
+          {rewards.slice(21, 24).map((reward, i) => (
+            <div className="bracket-block block-right color-blood" key={i}>{reward.value}</div>
+          ))}
         </div>
       </div>
 

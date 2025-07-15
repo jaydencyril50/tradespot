@@ -43,7 +43,7 @@ import AdminFlexDrop from './pages/AdminFlexDrop';
 import FlexDropClaim from './pages/FlexDropClaim';
 import AdminPlatformStats from './pages/AdminPlatformStats';
 import AdminSendFunds from './pages/AdminSendFunds';
-import TournamentBracket from './pages/TournamentBracket';
+import Rewards from './pages/Rewards';
 import AdminRewards from './pages/AdminRewards';
 
 const container = document.getElementById('root');
@@ -169,7 +169,7 @@ root.render(
             } />
             <Route path="/admin/flex-drop" element={<AdminFlexDrop />} />
             <Route path="/flex-drop/:linkId" element={<FlexDropClaim />} />
-            <Route path="/tournament-bracket" element={<TournamentBracket />} />
+            <Route path="/rewards" element={<Rewards/>} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>
