@@ -523,100 +523,60 @@ const SimulatedMarketChart = () => {
             </div>
           </ChartFullscreenWrapper>
         </div>
-        {/* Buy/Sell/Order Buttons Section */}
-        <div className="market-buy-sell-order market-buy-sell-order-vertical">
-          <div className="market-btn-card" style={{ background: 'var(--card-bg)', boxShadow: 'var(--card-shadow)', border: '1px solid var(--card-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 50 }}>
-            <span
-              onClick={() => {
-                setTradeType('buy');
-                navigate('/buy');
-              }}
-              className={`market-btn buy${tradeType === 'buy' ? ' active' : ''}`}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--primary)',
-                fontSize: '1.2rem',
-                padding: 0,
-                minWidth: 80,
-                borderRadius: 3,
-                fontWeight: 800,
-                height: 'auto',
-                cursor: 'pointer',
-                outline: 'none',
-                boxShadow: 'none',
-                display: 'inline-block',
-                textDecoration: tradeType === 'buy' ? 'underline' : 'none',
-                transition: 'color 0.2s',
-                textAlign: 'center',
-              }}
-              tabIndex={0}
-              role="button"
-            >
-              Buy
-            </span>
-          </div>
-          <div className="market-btn-card" style={{ background: 'var(--card-bg)', boxShadow: 'var(--card-shadow)', border: '1px solid var(--card-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 50 }}>
-            <span
-              onClick={() => {
-                setTradeType('sell');
-                navigate('/sell');
-              }}
-              className={`market-btn sell${tradeType === 'sell' ? ' active' : ''}`}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--primary)',
-                fontSize: '1.2rem',
-                padding: 0,
-                minWidth: 80,
-                borderRadius: 3,
-                fontWeight: 800,
-                height: 'auto',
-                cursor: 'pointer',
-                outline: 'none',
-                boxShadow: 'none',
-                display: 'inline-block',
-                textDecoration: tradeType === 'sell' ? 'underline' : 'none',
-                transition: 'color 0.2s',
-                textAlign: 'center',
-              }}
-              tabIndex={0}
-              role="button"
-            >
-              Sell
-            </span>
-          </div>
-          <div className="market-btn-card" style={{ background: 'var(--card-bg)', boxShadow: 'var(--card-shadow)', border: '1px solid var(--card-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 50 }}>
-            <span
-              onClick={() => navigate('/order')}
-              className="market-btn order"
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--primary)',
-                fontSize: '1.2rem',
-                padding: 0,
-                minWidth: 70,
-                borderRadius: 3,
-                fontWeight: 800,
-                height: 'auto',
-                cursor: 'pointer',
-                outline: 'none',
-                boxShadow: 'none',
-                display: 'inline-block',
-                textDecoration: 'none',
-                transition: 'color 0.2s',
-                textAlign: 'center',
-              }}
-              tabIndex={0}
-              role="button"
-            >
-              Order
-            </span>
-          </div>
-        </div>
-      </div>
+        {/* Buy/Sell/Order/Stake Buttons Section */}
+<div className="market-buy-sell-order" style={{
+  display: 'flex',
+  gap: '0.75rem',
+  justifyContent: 'center',
+  alignItems: 'center',
+  flexWrap: 'wrap', // optional, to allow wrapping on smaller screens
+}}>
+  {['buy', 'sell', 'order', 'stake'].map((type) => (
+    <div
+      key={type}
+      className="market-btn-card"
+      style={{
+        background: 'var(--card-bg)',
+        boxShadow: 'var(--card-shadow)',
+        border: '1px solid var(--card-bg)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 50,
+        width: 90,
+        borderRadius: 5,
+      }}
+    >
+      <span
+        onClick={() => {
+          if (type === 'buy' || type === 'sell') {
+            setTradeType(type);
+            navigate(`/${type}`);
+          } else {
+            navigate(`/${type}`);
+          }
+        }}
+        className={`market-btn ${type}${tradeType === type ? ' active' : ''}`}
+        style={{
+          background: 'none',
+          border: 'none',
+          color: 'var(--primary)',
+          fontSize: '1.1rem',
+          fontWeight: 800,
+          textAlign: 'center',
+          textDecoration: tradeType === type ? 'underline' : 'none',
+          cursor: 'pointer',
+          outline: 'none',
+        }}
+        tabIndex={0}
+        role="button"
+      >
+        {type.charAt(0).toUpperCase() + type.slice(1)}
+      </span>
+    </div>
+  ))}
+</div>
+</div>
       {/* Profile Modal Overlay (unchanged) */}
       {profileModalOpen && (
         <div style={{
