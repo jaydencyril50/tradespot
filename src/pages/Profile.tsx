@@ -288,40 +288,80 @@ const Profile: React.FC = () => {
             </span>
           </div>
         </div>
-        {/* Recent Transactions Card */}
-        <div style={{
-          background: 'var(--card-bg)',
-          borderRadius: 0,
-          boxShadow: 'var(--card-shadow)',
-          border: 'none',
-          padding: '12px 16px',
-          minWidth: 200,
-          maxWidth: 380,
-          width: '100%',
-          textAlign: 'center',
-          marginBottom: 0,
-          fontFamily: 'inherit',
-          minHeight: 320, // Ensure it's taller than the other cards
-          height: 380, // Explicitly set a larger height
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-        }}>
+        {/* Recent Transactions Card - Dynamic Height */}
+        <div
+          style={{
+            background: 'var(--card-bg)',
+            borderRadius: 0,
+            boxShadow: 'var(--card-shadow)',
+            border: 'none',
+            padding: '12px 16px',
+            minWidth: 200,
+            maxWidth: 380,
+            width: '100%',
+            textAlign: 'center',
+            marginBottom: 0,
+            fontFamily: 'inherit',
+            // Dynamic height based on transaction count
+            height: user.recentTransactions && user.recentTransactions.length > 0
+              ? showAllTransactions
+                ? Math.min(80 + user.recentTransactions.length * 48, 380)
+                : Math.min(80 + Math.max(3, Math.min(5, user.recentTransactions.length)) * 48, 380)
+              : 120,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            transition: 'height 0.2s',
+            overflow: 'hidden',
+          }}
+        >
           <div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: 17, marginBottom: 8 }}>Recent Transactions</div>
           {user.recentTransactions && user.recentTransactions.length > 0 ? (
             <>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, width: '100%', flex: 1, overflowY: 'auto' }}>
+              <ul
+                style={{
+                  listStyle: 'none',
+                  padding: 0,
+                  margin: 0,
+                  width: '100%',
+                  flex: 1,
+                  overflowY: showAllTransactions ? 'auto' : 'hidden',
+                  maxHeight: showAllTransactions ? 260 : 'none',
+                  transition: 'max-height 0.2s',
+                }}
+              >
                 {(showAllTransactions
                   ? user.recentTransactions
-                  : user.recentTransactions.slice(0, 5)
+                  : user.recentTransactions.slice(0, Math.max(3, Math.min(5, user.recentTransactions.length)))
                 ).map((tx: any, idx: number) => (
-                  <li key={idx} style={{ marginBottom: 8, fontSize: 15, color: 'var(--primary)', background: 'var(--bg)', padding: '8px 12px', borderRadius: 4, boxShadow: '0 1px 4px var(--bg)', textAlign: 'left' }}>
-                    <span style={{ fontWeight: 600 }}>{tx.type}</span> &bull; {tx.amount} {tx.currency} <span style={{ color: '#888', fontWeight: 400 }}>on {new Date(tx.date).toLocaleString()}</span>
+                  <li
+                    key={idx}
+                    style={{
+                      marginBottom: 8,
+                      fontSize: 15,
+                      color: 'var(--primary)',
+                      background: 'var(--bg)',
+                      padding: '8px 12px',
+                      borderRadius: 4,
+                      boxShadow: '0 1px 4px var(--bg)',
+                      textAlign: 'left',
+                      minHeight: 32,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <span>
+                      <span style={{ fontWeight: 600 }}>{tx.type}</span> &bull; {tx.amount} {tx.currency}
+                    </span>
+                    <span style={{ color: '#888', fontWeight: 400, marginLeft: 8 }}>
+                      {new Date(tx.date).toLocaleString()}
+                    </span>
                   </li>
                 ))}
               </ul>
-              {user.recentTransactions.length >= 5 && !showAllTransactions && (
+              {user.recentTransactions.length > 5 && !showAllTransactions && (
                 <button
                   style={{
                     marginTop: 8,
@@ -334,16 +374,14 @@ const Profile: React.FC = () => {
                     fontWeight: 600,
                     alignSelf: 'center',
                     boxShadow: '0 1px 4px var(--bg)',
-                    fontSize: 15
+                    fontSize: 15,
                   }}
-                  onClick={() => {
-                    navigate('/transaction-history');
-                  }}
+                  onClick={() => setShowAllTransactions(true)}
                 >
-                  See All
+                  Expand
                 </button>
               )}
-              {showAllTransactions && user.recentTransactions.length >= 5 && (
+              {showAllTransactions && (
                 <button
                   style={{
                     marginTop: 8,
@@ -356,11 +394,11 @@ const Profile: React.FC = () => {
                     fontWeight: 600,
                     alignSelf: 'center',
                     boxShadow: '0 1px 4px var(--bg)',
-                    fontSize: 15
+                    fontSize: 15,
                   }}
                   onClick={() => setShowAllTransactions(false)}
                 >
-                  Show Less
+                  Collapse
                 </button>
               )}
             </>
@@ -418,12 +456,21 @@ const Profile: React.FC = () => {
                 margin-left: 5vw !important;
                 margin-right: 5vw !important;
                 padding: 10px 2vw !important;
-                height: 90px !important;
+                height: auto !important;
               }
-
               /* 👇 Shift name, email & profile picture to the right on small screens */
               div[style*="display: flex"][style*="justify-content: flex-start"] {
                 padding-left: 12px !important;
+              }
+              /* Fix transaction card height for mobile */
+              div[style*="Recent Transactions"] {
+                height: auto !important;
+                min-height: 120px !important;
+                max-height: none !important;
+              }
+              ul {
+                max-height: none !important;
+                overflow-y: visible !important;
               }
             }
           `}
