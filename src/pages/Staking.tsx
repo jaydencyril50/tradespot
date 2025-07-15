@@ -10,7 +10,7 @@ const Staking: React.FC = () => {
 </span>
       </div>
       {/* Staking Cards */}
-      <div className="staking-cards" style={{ display: 'flex', gap: '1.5rem', justifyContent: 'flex-start', flexWrap: 'wrap', marginTop: 32, marginLeft: 24 }}>
+      <div className="staking-cards" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', justifyContent: 'flex-start', marginTop: 32, marginLeft: 24, marginRight: 24 }}>
         {[
           { label: '7 DAYS', days: 7 },
           { label: '15 DAYS', days: 15 },
@@ -23,26 +23,52 @@ const Staking: React.FC = () => {
             className="staking-card"
             style={{
               background: 'var(--card-bg)',
-              border: '1.5px solid var(--primary)',
-              borderRadius: 10,
+              borderRadius: 0,
               boxShadow: 'var(--card-shadow)',
-              padding: '28px 32px',
-              minWidth: 140,
-              minHeight: 90,
+              border: '1px solid rgba(120,140,180,0.18)',
+              padding: '14px 16px',
+              width: '100%',
+              maxWidth: 320,
+              textAlign: 'center',
+              margin: '0 auto',
+              fontFamily: 'inherit',
+              height: 110,
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center',
               justifyContent: 'center',
-              fontWeight: 700,
-              fontSize: 20,
-              color: 'var(--primary)',
+              alignItems: 'center',
               cursor: 'pointer',
+              color: 'var(--primary)',
+              fontWeight: 700,
+              fontSize: 18,
+              letterSpacing: 1,
               transition: 'box-shadow 0.2s',
             }}
           >
-            {option.label}
+            <span style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--primary)', letterSpacing: 1 }}>{option.label}</span>
           </div>
         ))}
+        <style>{`
+          @media (max-width: 600px) {
+            .staking-cards {
+              gap: 0.7rem !important;
+              margin-left: 4px !important;
+              margin-right: 4px !important;
+            }
+            .staking-card {
+              max-width: 90vw !important;
+              width: 90vw !important;
+              height: 100px !important;
+              padding: 6px 2vw !important;
+              font-size: 0.95rem !important;
+              margin: 0 auto 0 auto !important;
+            }
+            .staking-header-title {
+              font-size: 1.1rem !important;
+              margin-left: 8px !important;
+            }
+          }
+        `}</style>
       </div>
     </div>
   );
