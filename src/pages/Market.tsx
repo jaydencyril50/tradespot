@@ -545,6 +545,8 @@ const SimulatedMarketChart = () => {
         height: 50,
         width: 90,
         borderRadius: 5,
+        opacity: type === 'stake' ? 0.5 : 1,
+        pointerEvents: type === 'stake' ? 'none' : 'auto',
       }}
     >
       <span
@@ -565,11 +567,12 @@ const SimulatedMarketChart = () => {
           fontWeight: 800,
           textAlign: 'center',
           textDecoration: tradeType === type ? 'underline' : 'none',
-          cursor: 'pointer',
+          cursor: type === 'stake' ? 'not-allowed' : 'pointer',
           outline: 'none',
         }}
         tabIndex={0}
         role="button"
+        aria-disabled={type === 'stake'}
       >
         {type.charAt(0).toUpperCase() + type.slice(1)}
       </span>
