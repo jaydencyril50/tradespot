@@ -6,19 +6,7 @@ const AdminRewards: React.FC = () => {
   const [values, setValues] = React.useState<string[]>(Array(29).fill(''));
   const [saving, setSaving] = React.useState<number | null>(null);
   const [success, setSuccess] = React.useState<string>('');
-  const colorRowMap = [
-    'dark-yellow', 'dark-yellow', 'dark-yellow',
-    'light-yellow', 'light-yellow', 'light-yellow',
-    'deep-green', 'deep-green', 'deep-green',
-    'light-green', 'light-green', 'light-green',
-    'light-blue', 'light-blue', 'light-blue',
-    'deep-blue', 'deep-blue', 'deep-blue',
-    'light-red', 'light-red', 'light-red',
-    'deep-red', 'deep-red', 'deep-red',
-    'silver', 'silver', 'silver',
-    'silver',
-    'gold'
-  ];
+  // Removed colorRowMap
 
   const handleInput = (i: number, val: string) => {
     const digits = val.replace(/[^\d]/g, '').slice(0, 7);
@@ -35,8 +23,7 @@ const AdminRewards: React.FC = () => {
     try {
       await axios.post(`${API}/api/reward/reward`, {
         index: i,
-        value: values[i],
-        colorRow: colorRowMap[i]
+        value: values[i]
       });
       setSuccess(`Saved #${i + 1}`);
     } catch (e: any) {
@@ -46,7 +33,7 @@ const AdminRewards: React.FC = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff' }}>
+    <div style={{ minHeight: '100vh' }}>
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -83,31 +70,9 @@ const AdminRewards: React.FC = () => {
               width: '100%',
               minWidth: 0,
               aspectRatio: '1 / 1.2',
-              background: i < 3
-                ? '#b5aa2dff' // first row dark yellow
-                : i < 6
-                ? '#e9c537ff' // second row lighter yellow
-                : i < 9
-                ? '#176a3aff' // third row deep green
-                : i < 12
-                ? '#6edc7aff' // fourth row lighter green
-                : i < 15
-                ? '#7ecbff' // fifth row lighter blue
-                : i < 18
-                ? '#325ed7ff' // sixth row deep blue
-                : i < 21
-                ? '#e04646ff' // seventh row light red
-                : i < 24
-                ? '#ef3333ff' // eighth row deep red
-                : i < 27
-                ? '#7a7575ff' // ninth row silver
-                : i < 28
-                ? '#8b8585ff' // tenth row, last card silver
-                : i < 29
-                ? '#ff8c00ff' // eleventh row, last card gold
-                : '#f7f7f7',
+              background: '#fff',
               borderRadius: 12,
-              boxShadow: '0 8px 32px rgba(8, 23, 51, 0.4), 0 2px 8px rgba(30,60,114,0.18)',
+              boxShadow: '0 10px 40px 0 rgba(7, 8, 11, 0.43), 0 2px 8px 0 rgba(8,23,51,0.18)',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
