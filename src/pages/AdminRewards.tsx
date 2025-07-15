@@ -2,6 +2,26 @@ import React from 'react';
 import axios from 'axios';
 
 const AdminRewards: React.FC = () => {
+  // Editable awards table data
+  const initialAwards = [
+    { category: 'TOP SOUL WINNING TEAM', team: 'Team Alpha', reward: '$500' },
+    { category: 'TOP DEPOSITING TEAMS', team: 'Team Beta', reward: '$400' },
+    { category: 'TEAM MANAGERS AWARDS', team: 'Jane Doe', reward: '$300' },
+    { category: 'TEAM ASSISTANT AWARDS', team: 'John Smith', reward: '$200' },
+    { category: 'TOP TEAM ORDERS AWARDS', team: 'Mary Lee', reward: '$150' },
+    { category: 'HIGHEST DEPOSITS TEAM', team: 'Chris Ray', reward: '$120' },
+    { category: 'TOP USDT TEAM HOLDERS', team: 'Team Gamma', reward: '$100' },
+    { category: 'TOP ADVERTISING TEAMS', team: 'Team Delta', reward: '$80' },
+  ];
+  const [awards, setAwards] = React.useState(initialAwards);
+
+  const handleAwardChange = (idx: number, field: 'team' | 'reward', value: string) => {
+    setAwards(prev => {
+      const copy = [...prev];
+      copy[idx] = { ...copy[idx], [field]: value };
+      return copy;
+    });
+  };
   const API = process.env.REACT_APP_API_BASE_URL || '/api';
   const [values, setValues] = React.useState<string[]>(Array(29).fill(''));
   React.useEffect(() => {
@@ -108,30 +128,30 @@ const AdminRewards: React.FC = () => {
               minWidth: 0,
               aspectRatio: '1 / 1.2',
               background: i < 3
-                ? '#b5aa2dff' // first row dark yellow
+                ? '#ffffffff' // first row dark yellow
                 : i < 6
-                ? '#e9c537ff' // second row lighter yellow
+                ? '#ffffffff' // second row lighter yellow
                 : i < 9
-                ? '#176a3aff' // third row deep green
+                ? '#ffffffff' // third row deep green
                 : i < 12
-                ? '#6edc7aff' // fourth row lighter green
+                ? '#ffffffff' // fourth row lighter green
                 : i < 15
-                ? '#7ecbff' // fifth row lighter blue
+                ? '#ffffffff' // fifth row lighter blue
                 : i < 18
-                ? '#325ed7ff' // sixth row deep blue
+                ? '#ffffffff' // sixth row deep blue
                 : i < 21
-                ? '#e04646ff' // seventh row light red
+                ? '#ffffffff' // seventh row light red
                 : i < 24
-                ? '#ef3333ff' // eighth row deep red
+                ? '#ffffffff' // eighth row deep red
                 : i < 27
-                ? '#7a7575ff' // ninth row silver
+                ? '#ffffffff' // ninth row silver
                 : i < 28
-                ? '#8b8585ff' // tenth row, last card silver
+                ? '#ffffffff' // tenth row, last card silver
                 : i < 29
-                ? '#ff8c00ff' // eleventh row, last card gold
+                ? '#ffffffff' // eleventh row, last card gold
                 : '#f7f7f7',
               borderRadius: 12,
-              boxShadow: '0 8px 32px rgba(8, 23, 51, 0.4), 0 2px 8px rgba(30,60,114,0.18)',
+              boxShadow: '0 8px 32px rgba(37, 38, 40, 0.7), 0 2px 8px rgba(30,60,114,0.18)',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -199,6 +219,42 @@ const AdminRewards: React.FC = () => {
           }
         }
       `}</style>
+
+      {/* Awards Table Below Rewards */}
+      <div className="awards-table-container" style={{ maxWidth: 600, margin: '32px auto', padding: '0 12px' }}>
+        <table className="awards-table" style={{ width: '100%', borderCollapse: 'collapse', background: '#f7f7f7', borderRadius: 12, overflow: 'hidden', boxShadow: '0 2px 8px rgba(30,60,114,0.10)' }}>
+          <thead>
+            <tr>
+              <th style={{ background: '#232b36', color: '#fff', padding: '12px 8px', fontWeight: 700, fontSize: 15 }}>AWARD CATEGORY</th>
+              <th style={{ background: '#232b36', color: '#fff', padding: '12px 8px', fontWeight: 700, fontSize: 15 }}>TEAMS</th>
+              <th style={{ background: '#232b36', color: '#fff', padding: '12px 8px', fontWeight: 700, fontSize: 15 }}>REWARDS</th>
+            </tr>
+          </thead>
+          <tbody>
+            {awards.map((row, idx) => (
+              <tr key={idx}>
+                <td style={{ padding: '10px 8px', fontWeight: 600 }}>{row.category}</td>
+                <td style={{ padding: '10px 8px' }}>
+                  <input
+                    type="text"
+                    value={row.team}
+                    onChange={e => handleAwardChange(idx, 'team', e.target.value)}
+                    style={{ width: '100%', borderRadius: 6, border: '1px solid #ccc', fontSize: 14, textAlign: 'center', boxSizing: 'border-box', background: '#fff', padding: '4px 8px' }}
+                  />
+                </td>
+                <td style={{ padding: '10px 8px' }}>
+                  <input
+                    type="text"
+                    value={row.reward}
+                    onChange={e => handleAwardChange(idx, 'reward', e.target.value)}
+                    style={{ width: '100%', borderRadius: 6, border: '1px solid #ccc', fontSize: 14, textAlign: 'center', boxSizing: 'border-box', background: '#fff', padding: '4px 8px' }}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
