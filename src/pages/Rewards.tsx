@@ -44,8 +44,15 @@ const TournamentBracket: React.FC = () => {
   };
 
 
+  // Build a map for fast lookup by index
+  const rewardMap = React.useMemo(() => {
+    const map: Record<number, string> = {};
+    rewards.forEach(r => { map[r.index] = r.value; });
+    return map;
+  }, [rewards]);
+
   // Helper to get reward value or fallback
-  const getRewardValue = (idx: number) => rewards[idx]?.value || '';
+  const getRewardValue = (idx: number) => rewardMap[idx] || '';
 
   return (
     <div className={`bracket-bg${curtainOpen ? ' edge-light-active' : ''}`}> 
