@@ -9,7 +9,41 @@ const Staking: React.FC = () => {
   STAKE
 </span>
       </div>
-      {/* Staking page will be implemented here */}
+      {/* Staking Cards */}
+      <div className="staking-cards" style={{ display: 'flex', gap: '1.5rem', justifyContent: 'flex-start', flexWrap: 'wrap', marginTop: 32, marginLeft: 24 }}>
+        {[
+          { label: '7 DAYS', days: 7 },
+          { label: '15 DAYS', days: 15 },
+          { label: '30 DAYS', days: 30 },
+          { label: '120 DAYS', days: 120 },
+          { label: '365 DAYS', days: 365 },
+        ].map((option) => (
+          <div
+            key={option.days}
+            className="staking-card"
+            style={{
+              background: 'var(--card-bg)',
+              border: '1.5px solid var(--primary)',
+              borderRadius: 10,
+              boxShadow: 'var(--card-shadow)',
+              padding: '28px 32px',
+              minWidth: 140,
+              minHeight: 90,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 700,
+              fontSize: 20,
+              color: 'var(--primary)',
+              cursor: 'pointer',
+              transition: 'box-shadow 0.2s',
+            }}
+          >
+            {option.label}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
