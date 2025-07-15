@@ -1,21 +1,33 @@
 import React from 'react';
 import axios from 'axios';
 
-// Add rewards state and fetchRewards function
-const fetchRewards = async () => {
-  try {
-    const API = process.env.REACT_APP_API_BASE_URL || '/api';
-    const res = await axios.get(`${API}/api/reward/reward`);
-    return res.data;
-  } catch {
-    return [];
-  }
-};
-
 const AdminRewards: React.FC = () => {
   const API = process.env.REACT_APP_API_BASE_URL || '/api';
-  const [rewards, setRewards] = React.useState<any[]>([]);
   const [values, setValues] = React.useState<string[]>(Array(29).fill(''));
+  React.useEffect(() => {
+    const fetchRewards = async () => {
+      try {
+        const res = await axios.get(`${API}/api/reward/rewards`);
+        if (res.data && Array.isArray(res.data.rewards)) {
+          const arr = Array(29).fill('');
+          res.data.rewards.forEach((reward: any) => {
+            if (
+              typeof reward.index === 'number' &&
+              reward.index >= 0 &&
+              reward.index < 29 &&
+              typeof reward.value === 'string'
+            ) {
+              arr[reward.index] = reward.value;
+            }
+          });
+          setValues(arr);
+        }
+      } catch (e) {
+        // Optionally handle error
+      }
+    };
+    fetchRewards();
+  }, [API]);
   const [saving, setSaving] = React.useState<number | null>(null);
   const [success, setSuccess] = React.useState<string>('');
   const colorRowMap = [
@@ -32,24 +44,6 @@ const AdminRewards: React.FC = () => {
     'gold'
   ];
 
-  // Periodically fetch rewards every 3 seconds
-  React.useEffect(() => {
-    fetchRewards().then(setRewards).catch(() => setRewards([]));
-    let isMounted = true;
-    const getRewards = () => {
-      fetchRewards().then(data => {
-        if (isMounted) setRewards(data);
-      }).catch(() => {
-        if (isMounted) setRewards([]);
-      });
-    };
-    getRewards();
-    const interval = setInterval(getRewards, 3000); // fetch every 3 seconds
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
-  }, []);
   const handleInput = (i: number, val: string) => {
     const digits = val.replace(/[^\d]/g, '').slice(0, 7);
     setValues(prev => {
@@ -193,11 +187,6 @@ const AdminRewards: React.FC = () => {
         ))}
       </div>
       {success && <div style={{textAlign:'center',marginTop:12,color:'#176a3aff',fontWeight:600}}>{success}</div>}
-      {/* Display fetched rewards data for debugging/visualization */}
-      <div style={{maxWidth:540,margin:'18px auto',padding:12,background:'#f6f9fe',borderRadius:8,fontSize:13,color:'#232b36'}}>
-        <div style={{fontWeight:600,marginBottom:6}}>Fetched Rewards Data:</div>
-        <pre style={{whiteSpace:'pre-wrap',wordBreak:'break-all',margin:0}}>{JSON.stringify(rewards, null, 2)}</pre>
-      </div>
       <style>{`
         @media (max-width: 600px) {
           div[style*='grid'] {
