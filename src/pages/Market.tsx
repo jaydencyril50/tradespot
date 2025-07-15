@@ -26,6 +26,7 @@ const SimulatedMarketChart = () => {
   const [showMACD, setShowMACD] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [browserFullscreen, setBrowserFullscreen] = useState(false); // NEW
   const navigate = useNavigate();
 
   // Dummy user data for modal (replace with real API calls as needed)
@@ -242,7 +243,7 @@ const SimulatedMarketChart = () => {
   })();
 
   useEffect(() => {
-    if (isFullscreen) {
+    if (isFullscreen && !browserFullscreen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -250,7 +251,22 @@ const SimulatedMarketChart = () => {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isFullscreen]);
+  }, [isFullscreen, browserFullscreen]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        setBrowserFullscreen(false);
+        setIsFullscreen(false);
+      } else {
+        setBrowserFullscreen(true);
+      }
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
 
   // Poll USDT balance and check for profit if activated
   useEffect(() => {
@@ -376,7 +392,26 @@ const SimulatedMarketChart = () => {
   }, [isFullscreen]);
 
   return (
-    <div className={`market-root${isFullscreen ? ' fullscreen' : ''}`} style={{ background: 'var(--bg)', minHeight: '100vh' }}>
+    <div className={`market-root${isFullscreen ? ' fullscreen' : ''}`} style={isFullscreen ? (
+      browserFullscreen ? {
+        width: '100vw',
+        height: '100vh',
+        background: 'var(--bg)',
+        zIndex: 9999,
+        minHeight: '100vh',
+        overflow: 'hidden',
+      } : {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'var(--bg)',
+        zIndex: 9999,
+        minHeight: '100vh',
+        overflow: 'hidden',
+      }
+    ) : { background: 'var(--bg)', minHeight: '100vh' }}>
       {/* Header Bar */}
       <div className="market-header" style={{ background: 'var(--card-bg)', borderBottom: '1.5px solid var(--primary)' }}>
         <span className="market-header-title" style={{ color: 'var(--primary)' }}>
@@ -394,12 +429,30 @@ const SimulatedMarketChart = () => {
         {/* Chart Card */}
         <div
           className={`market-chart-card${isFullscreen ? ' fullscreen' : ''}`}
-          style={Object.assign({}, isFullscreen ? {
-            // Only set width/height for JS-driven chart sizing, all other styles handled by .fullscreen CSS
-            width: '100vw',
-            height: '100vh',
-          } : {})}
-        >
+          style={isFullscreen ? (
+            browserFullscreen ? {
+              width: '100vw',
+              height: '100vh',
+              background: 'var(--bg)',
+              zIndex: 9999,
+              margin: 0,
+              padding: 0,
+              border: 'none',
+              boxShadow: 'none',
+            } : {
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              background: 'var(--bg)',
+              zIndex: 9999,
+              margin: 0,
+              padding: 0,
+              border: 'none',
+              boxShadow: 'none',
+            }
+          ) : {}}>
           {/* Chart Controls */}
           <div className="market-chart-controls" style={{ color: 'var(--text)' }}>
             <label><input type="checkbox" checked={showSMA} onChange={() => setShowSMA(!showSMA)} /> SMA</label>
@@ -407,7 +460,19 @@ const SimulatedMarketChart = () => {
             <label><input type="checkbox" checked={showRSI} onChange={() => setShowRSI(!showRSI)} /> RSI</label>
             <label><input type="checkbox" checked={showMACD} onChange={() => setShowMACD(!showMACD)} /> MACD</label>
             <span
-              onClick={() => setIsFullscreen(f => !f)}
+              onClick={async () => {
+                if (!isFullscreen) {
+                  setIsFullscreen(true);
+                  if (chartContainerRef.current && chartContainerRef.current.requestFullscreen) {
+                    await chartContainerRef.current.requestFullscreen();
+                  }
+                } else {
+                  setIsFullscreen(false);
+                  if (document.fullscreenElement) {
+                    await document.exitFullscreen();
+                  }
+                }
+              }}
               style={{ cursor: 'pointer', marginLeft: 8, fontSize: 22, display: 'flex', alignItems: 'center', color: 'var(--primary)' }}
               title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
             >
@@ -424,7 +489,22 @@ const SimulatedMarketChart = () => {
             <div
               ref={chartContainerRef}
               className="market-chart-container"
-              style={!isFullscreen ? { background: 'var(--bg)' } : undefined}
+              style={isFullscreen ? (
+                browserFullscreen ? {
+                  width: '100vw',
+                  height: '100vh',
+                  background: 'var(--bg)',
+                  zIndex: 9999,
+                } : {
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  width: '100vw',
+                  height: '100vh',
+                  background: 'var(--bg)',
+                  zIndex: 9999,
+                }
+              ) : { background: 'var(--bg)' }}
             >
               <div
                 ref={tooltipRef}
