@@ -260,21 +260,24 @@ const AdminRewards: React.FC = () => {
       </div>
       {success && <div style={{textAlign:'center',marginTop:12,color:'#176a3aff',fontWeight:600}}>{success}</div>}
       <style>{`
-        @media (max-width: 600px) {
-          div[style*='grid'] {
-            padding-left: 2vw !important;
-            padding-right: 2vw !important;
-          }
-          input[type="text"] {
-            font-size: 14px !important;
-            height: 32px !important;
-          }
-        }
-      `}</style>
-
+  @media (max-width: 600px) {
+    .save-btn-container {
+      padding-left: 5vw !important;
+      padding-right: 1vw !important;
+      max-width: 100% !important;
+      box-sizing: border-box;
+    }
+    .save-btn-container button {
+      width: 100%;
+      font-size: 16px !important;
+      padding: 12px 0 !important;
+      border-radius: 5px !important;
+    }
+  }
+`}</style>
       {/* Awards Table Below Rewards */}
-      <div className="awards-table-container" style={{ maxWidth: 600, margin: '32px auto', padding: '0 12px' }}>
-        <table className="awards-table" style={{ width: '100%', borderCollapse: 'collapse', background: '#f7f7f7', borderRadius: 12, overflow: 'hidden', boxShadow: '0 2px 8px rgba(30,60,114,0.10)' }}>
+      <div className="awards-table-container" style={{ maxWidth: 600, margin: '32px auto 0 auto', padding: '0 12px' }}>
+        <table className="awards-table" style={{ width: '100%', borderCollapse: 'collapse', background: '#f7f7f7', borderRadius: 12, overflow: 'hidden', boxShadow: '0 2px 8px rgba(30,60,114,0.10)', marginBottom: 6 }}>
           <thead>
             <tr>
               <th style={{ background: '#232b36', color: '#fff', padding: '12px 8px', fontWeight: 700, fontSize: 15 }}>AWARD CATEGORY</th>
@@ -306,6 +309,41 @@ const AdminRewards: React.FC = () => {
             ))}
           </tbody>
         </table>
+      </div>
+      {/* Save button for awards table - now outside and below the table container */}
+      <div className="save-btn-container" style={{ maxWidth: 600, margin: '12px auto', padding: '0 12px' }}>
+        <button
+          style={{
+            width: '100%',
+            padding: '12px 0',
+            borderRadius: 8,
+            border: 'none',
+            background: '#232b36',
+            color: '#fff',
+            fontWeight: 700,
+            fontSize: 17,
+            cursor: 'pointer',
+            boxShadow: '0 2px 8px rgba(30,60,114,0.10)',
+            marginBottom: 8
+          }}
+          onClick={async () => {
+            setSuccess('');
+            let error = false;
+            for (let idx = 0; idx < awards.length; idx++) {
+              try {
+                const row = awards[idx];
+                await axios.post(`${API}/api/reward/award-table`, {
+                  category: row.category,
+                  team: row.team,
+                  reward: row.reward
+                });
+              } catch (e) {
+                error = true;
+              }
+            }
+            setSuccess(error ? 'Error saving some rows' : 'All awards saved!');
+          }}
+        >Save</button>
       </div>
     </div>
   );
