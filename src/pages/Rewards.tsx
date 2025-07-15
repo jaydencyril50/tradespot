@@ -47,7 +47,7 @@ const TournamentBracket: React.FC = () => {
   // Build a map for fast lookup by index
   const rewardMap = React.useMemo(() => {
     const map: Record<number, string> = {};
-    rewards.forEach(r => { map[r.index] = r.value; });
+    (rewards ?? []).forEach(r => { map[r.index] = r.value; });
     return map;
   }, [rewards]);
 
