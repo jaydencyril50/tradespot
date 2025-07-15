@@ -58,6 +58,7 @@ const TournamentBracket: React.FC = () => {
   };
 
 
+
   // Build a map for fast lookup by index
   const rewardMap = React.useMemo(() => {
     const map: Record<number, string> = {};
@@ -67,6 +68,36 @@ const TournamentBracket: React.FC = () => {
 
   // Helper to get reward value or fallback
   const getRewardValue = (idx: number) => rewardMap[idx] || '';
+
+  // Awards Table State
+  type AwardRow = { category: string; team: string; reward: string };
+  const [awardRows, setAwardRows] = useState<AwardRow[]>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchAwardRows = () => {
+      fetch('/api/reward/award-table')
+        .then(res => res.json())
+        .then(data => {
+          if (isMounted) {
+            if (data && Array.isArray(data.rows)) {
+              setAwardRows(data.rows);
+            } else {
+              setAwardRows([]);
+            }
+          }
+        })
+        .catch(() => {
+          if (isMounted) setAwardRows([]);
+        });
+    };
+    fetchAwardRows();
+    const interval = setInterval(fetchAwardRows, 3000); // fetch every 3 seconds
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <div className={`bracket-bg${curtainOpen ? ' edge-light-active' : ''}`}> 
@@ -204,46 +235,18 @@ const TournamentBracket: React.FC = () => {
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>TOP SOUL WINNING TEAM</td>
-          <td>Team Alpha</td>
-          <td>$500</td>
-        </tr>
-        <tr>
-          <td>TOP DEPOSITING TEAMS</td>
-          <td>Team Beta</td>
-          <td>$400</td>
-        </tr>
-        <tr>
-          <td>TEAM MANAGERS AWARDS</td>
-          <td>Jane Doe</td>
-          <td>$300</td>
-        </tr>
-        <tr>
-          <td>TEAM ASSISTANT AWARDS</td>
-          <td>John Smith</td>
-          <td>$200</td>
-        </tr>
-        <tr>
-          <td>TOP TEAM ORDERS AWARDS</td>
-          <td>Mary Lee</td>
-          <td>$150</td>
-        </tr>
-        <tr>
-          <td>HIGHEST DEPOSITS TEAM</td>
-          <td>Chris Ray</td>
-          <td>$120</td>
-        </tr>
-        <tr>
-          <td>TOP USDT TEAM HOLDERS</td>
-          <td>Team Gamma</td>
-          <td>$100</td>
-        </tr>
-        <tr>
-          <td>TOP ADVERTISING TEAMS</td>
-          <td>Team Delta</td>
-          <td>$80</td>
-        </tr>
+        {awardRows.length === 0 && (
+          <tr>
+            <td colSpan={3} style={{textAlign:'center', color:'#888', fontStyle:'italic'}}>No awards found.</td>
+          </tr>
+        )}
+        {awardRows.length > 0 && awardRows.map((row, idx) => (
+          <tr key={idx}>
+            <td>{row.category}</td>
+            <td>{row.team}</td>
+            <td>{row.reward}</td>
+          </tr>
+        ))}
       </tbody>
     </table>
   </div>
