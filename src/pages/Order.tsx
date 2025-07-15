@@ -160,6 +160,13 @@ const OrderPage: React.FC = () => {
     return `${m}m ${s < 10 ? '0' : ''}${s}s`;
   };
 
+  // Format date and time
+  const formatDateTime = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}:${date.getSeconds().toString().padStart(2,'0')}`;
+  };
+
   // Filtered orders based on filter state
   const filteredOrders = filter === 'all' ? orders : orders.filter((o: any) => o.status === filter);
 
@@ -274,6 +281,9 @@ const OrderPage: React.FC = () => {
                   {order.type === 'buy' ? 'Seller making payment…' : 'Buyer making payment…'}
                 </div>
                 <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
+                <div style={{ fontSize: 15, color: 'var(--text)', marginBottom: 8 }}>
+                  Date & Time: <b>{formatDateTime(order.createdAt)}</b>
+                </div>
                 {/* Unified layout for buy and sell */}
                 <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>
                   RATE: <b>{order.price} USDT/SPOT</b>
@@ -299,6 +309,9 @@ const OrderPage: React.FC = () => {
               <>
                 <div style={{ fontSize: 20, fontWeight: 600, color: '#e74c3c', marginBottom: 10 }}>Order Cancelled ❌</div>
                 <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
+                <div style={{ fontSize: 15, color: 'var(--text)', marginBottom: 8 }}>
+                  Date & Time: <b>{formatDateTime(order.createdAt)}</b>
+                </div>
                 <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>RATE: <b>{order.price} USDT/SPOT</b></div>
                 {order.type === 'buy' ? (
                   <>
@@ -316,6 +329,9 @@ const OrderPage: React.FC = () => {
               <>
                 <div style={{ fontSize: 20, fontWeight: 600, color: '#27ae60', marginBottom: 10 }}>Order Complete ✅</div>
                 <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>Order ID: <b>{order._id}</b></div>
+                <div style={{ fontSize: 15, color: 'var(--text)', marginBottom: 8 }}>
+                  Date & Time: <b>{formatDateTime(order.createdAt)}</b>
+                </div>
                 <div style={{ fontSize: 16, color: 'var(--text)', marginBottom: 8 }}>RATE: <b>{order.price} USDT/SPOT</b></div>
                 {order.type === 'buy' ? (
                   <>
