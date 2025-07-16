@@ -4,6 +4,7 @@ import axios from 'axios';
 const BotSettings: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedBot, setSelectedBot] = useState<any>(null);
+  // Remove boughtBots state, use currentBotType from DB
   const [vipLevel, setVipLevel] = useState<string>('');
   const [price, setPrice] = useState('');
   const [modalLoading, setModalLoading] = useState(false);
@@ -46,6 +47,8 @@ const BotSettings: React.FC = () => {
       });
       setMessage('Bot activated!');
       setShowModal(false);
+      // After activation, update currentBotType to reflect the bought bot
+      setCurrentBotType(selectedBot?.name || '');
       setSelectedBot(null);
       setPrice('');
     } catch (err: any) {
@@ -212,20 +215,21 @@ const BotSettings: React.FC = () => {
             </div>
           <button
             style={{
-              background: 'var(--primary, #10b981)',
-              color: '#fff',
+              background: currentBotType === bot.name ? '#d1d5db' : 'var(--primary, #10b981)',
+              color: currentBotType === bot.name ? '#888' : '#fff',
               border: 'none',
               borderRadius: 8,
               padding: '10px 0',
               fontWeight: 600,
               fontSize: '1rem',
-              cursor: 'pointer',
+              cursor: currentBotType === bot.name ? 'not-allowed' : 'pointer',
               width: '100%',
               marginTop: 'auto',
               boxShadow: '0 2px 8px rgba(16,185,129,0.08)'
             }}
-            onClick={() => handleBuyClick(bot)}
-          >Buy</button>
+            onClick={() => currentBotType !== bot.name && handleBuyClick(bot)}
+            disabled={currentBotType === bot.name}
+          >{currentBotType === bot.name ? 'Bought' : 'Buy'}</button>
           </div>
         ))}
       </div>
