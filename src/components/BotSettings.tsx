@@ -32,13 +32,22 @@ const BotSettings: React.FC = () => {
   const handleActivate = async () => {
     setModalLoading(true);
     setModalError('');
-    // You can add activation logic here, e.g. POST to /api/activate-bot
-    setTimeout(() => {
-      setModalLoading(false);
+    try {
+      const percent = selectedBot?.percent ? parseInt(selectedBot.percent.replace('%','')) : 4;
+      await axios.put('/api/bot-settings', {
+        botEnabled: true,
+        botType: selectedBot?.name,
+        botPercent: percent,
+      });
+      setMessage('Bot activated!');
       setShowModal(false);
-      setPrice('');
       setSelectedBot(null);
-    }, 1000);
+      setPrice('');
+    } catch (err: any) {
+      setModalError('Failed to activate bot');
+    } finally {
+      setModalLoading(false);
+    }
   };
   const [botEnabled, setBotEnabled] = useState(false);
   const [botDailyOrderAmount, setBotDailyOrderAmount] = useState(0);
@@ -47,6 +56,8 @@ const BotSettings: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
+  const [currentBotType, setCurrentBotType] = useState('');
+  const [currentBotPercent, setCurrentBotPercent] = useState<number>(4);
   useEffect(() => {
     // Fetch current bot settings
     setLoading(true);
@@ -57,6 +68,8 @@ const BotSettings: React.FC = () => {
         setBotDailyOrderAmount(settings.botDailyOrderAmount || 0);
         setBotOrderType(settings.botOrderType || 'buy');
         setBotRunTime(settings.botRunTime || '09:00');
+        setCurrentBotType(settings.botType || '');
+        setCurrentBotPercent(settings.botPercent ?? 4);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -111,6 +124,13 @@ const BotSettings: React.FC = () => {
         </span>
       </div>
 
+      {/* Show current bot if enabled */}
+      {botEnabled && (
+        <div style={{margin:'1.5rem auto',maxWidth:400,background:'#e0e7ff',borderRadius:8,padding:'1rem 1.5rem',color:'#222',fontWeight:500}}>
+          <div>Active Bot: <b>{currentBotType}</b></div>
+          <div>Commission: <b>{currentBotPercent}%</b></div>
+        </div>
+      )}
       {/* Bot Cards Section - one per row */}
       <div style={{
         marginTop: 2,
