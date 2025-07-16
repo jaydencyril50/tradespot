@@ -15,7 +15,12 @@ const BotSettings: React.FC = () => {
     setModalLoading(true);
     setModalError('');
     try {
-      const res = await axios.get('/api/bot/vip-level');
+      const token = localStorage.getItem('token');
+      const res = await axios.get('/api/bot/vip-level', {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : ''
+        }
+      });
       setVipLevel(res.data.vipLevel || '');
     } catch (err: any) {
       setModalError('Failed to fetch VIP level');
@@ -45,13 +50,13 @@ const BotSettings: React.FC = () => {
   useEffect(() => {
     // Fetch current bot settings
     setLoading(true);
-    axios.get('/api/user/me') // Adjust endpoint if needed
+    axios.get('/api/bot-settings')
       .then(res => {
-        const user = res.data;
-        setBotEnabled(!!user.botEnabled);
-        setBotDailyOrderAmount(user.botDailyOrderAmount || 0);
-        setBotOrderType(user.botOrderType || 'buy');
-        setBotRunTime(user.botRunTime || '09:00');
+        const settings = res.data;
+        setBotEnabled(!!settings.botEnabled);
+        setBotDailyOrderAmount(settings.botDailyOrderAmount || 0);
+        setBotOrderType(settings.botOrderType || 'buy');
+        setBotRunTime(settings.botRunTime || '09:00');
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -121,10 +126,10 @@ const BotSettings: React.FC = () => {
         {[
           { name: 'AlphaBot', img: 'https://i.postimg.cc/ZKbLVGMn/security.png', range: '1-50 USDT', percent: '4%' },
           { name: 'Fireblaze', img: 'https://i.postimg.cc/2ymDBkTC/technical-support.png', range: '51-150 USDT', percent: '5%' },
-          { name: 'Trademaster', img: 'https://i.postimg.cc/28tBhgpP/chatbot.png', range: '151-300 USDT', percent: '6%' },
+          { name: 'SignalCore', img: 'https://i.postimg.cc/28tBhgpP/chatbot.png', range: '151-300 USDT', percent: '6%' },
           { name: 'ProfitPilot', img: 'https://i.postimg.cc/Jz3jbP1m/robot-1.png', range: '301-500 USDT', percent: '7%' },
-          { name: 'MarketMaven', img: 'https://i.postimg.cc/gJy07BTk/robotic-process-automation.png', range: '501-1000 USDT', percent: '8%' },
-          { name: 'SignalSeeker', img: 'https://i.postimg.cc/B6fWdSr2/bot.png', range: '1001-2000 USDT', percent: '9%' },
+          { name: 'VoltaEdge', img: 'https://i.postimg.cc/gJy07BTk/robotic-process-automation.png', range: '501-1000 USDT', percent: '8%' },
+          { name: 'ProVoltage', img: 'https://i.postimg.cc/B6fWdSr2/bot.png', range: '1001-2000 USDT', percent: '9%' },
           { name: 'QuantumBot', img: 'https://i.postimg.cc/Hxs3hFST/robot.png', range: '2001-MAX USDT', percent: '10%' },
         ].map((bot, idx) => (
           <div key={bot.name} style={{
