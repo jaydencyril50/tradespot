@@ -61,7 +61,7 @@ const BotSettings: React.FC = () => {
   useEffect(() => {
     // Fetch current bot settings
     setLoading(true);
-    axios.get('/api/bot-settings')
+    axios.get('/api/bot/bot-settings')
       .then(res => {
         const settings = res.data;
         setBotEnabled(!!settings.botEnabled);
