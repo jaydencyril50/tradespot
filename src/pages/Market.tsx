@@ -531,7 +531,7 @@ const SimulatedMarketChart = () => {
   alignItems: 'center',
   flexWrap: 'wrap', // optional, to allow wrapping on smaller screens
 }}>
-  {['buy', 'sell', 'order', 'stake'].map((type) => (
+  {['buy', 'sell', 'order', 'Auto'].map((type) => (
     <div
       key={type}
       className="market-btn-card"
@@ -554,6 +554,8 @@ const SimulatedMarketChart = () => {
           if (type === 'buy' || type === 'sell') {
             setTradeType(type);
             navigate(`/${type}`);
+          } else if (type === 'Auto') {
+            navigate('/settings/bot');
           } else {
             navigate(`/${type}`);
           }

@@ -45,7 +45,6 @@ import AdminPlatformStats from './pages/AdminPlatformStats';
 import AdminSendFunds from './pages/AdminSendFunds';
 import Rewards from './pages/Rewards';
 import AdminRewards from './pages/AdminRewards';
-import Staking from './pages/Staking';
 import BotSettings from './components/BotSettings';
 
 const container = document.getElementById('root');
@@ -177,11 +176,6 @@ root.render(
             <Route path="/admin/flex-drop" element={<AdminFlexDrop />} />
             <Route path="/flex-drop/:linkId" element={<FlexDropClaim />} />
             <Route path="/rewards" element={<Rewards/>} />
-            <Route path="/stake" element={
-              <ProtectedRoute>
-                <Staking />
-              </ProtectedRoute>
-            } />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>
