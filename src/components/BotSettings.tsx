@@ -80,7 +80,7 @@ const BotSettings: React.FC = () => {
     setLoading(true);
     setMessage('');
     try {
-      const res = await axios.put('/api/bot-settings', {
+      const res = await axios.put('/api/bot/bot-settings', {
         botEnabled,
         botDailyOrderAmount,
         botOrderType,
