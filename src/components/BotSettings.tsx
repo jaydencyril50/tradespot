@@ -34,7 +34,7 @@ const BotSettings: React.FC = () => {
     setModalError('');
     try {
       const percent = selectedBot?.percent ? parseInt(selectedBot.percent.replace('%','')) : 4;
-      await axios.put('/api/bot-settings', {
+      await axios.put('/api/bot', {
         botEnabled: true,
         botType: selectedBot?.name,
         botPercent: percent,
@@ -62,7 +62,7 @@ const BotSettings: React.FC = () => {
     // Fetch current bot settings
     setLoading(true);
     const token = localStorage.getItem('token');
-    axios.get('/api/bot/bot-settings', {
+    axios.get('/api/bot', {
       headers: {
         Authorization: token ? `Bearer ${token}` : ''
       }
@@ -85,7 +85,7 @@ const BotSettings: React.FC = () => {
     setLoading(true);
     setMessage('');
     try {
-      const res = await axios.put('/api/bot/bot-settings', {
+      const res = await axios.put('/api/bot', {
         botEnabled,
         botDailyOrderAmount,
         botOrderType,
