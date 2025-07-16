@@ -34,10 +34,15 @@ const BotSettings: React.FC = () => {
     setModalError('');
     try {
       const percent = selectedBot?.percent ? parseInt(selectedBot.percent.replace('%','')) : 4;
+      const token = localStorage.getItem('token');
       await axios.put('/api/bot', {
         botEnabled: true,
         botType: selectedBot?.name,
         botPercent: percent,
+      }, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : ''
+        }
       });
       setMessage('Bot activated!');
       setShowModal(false);
