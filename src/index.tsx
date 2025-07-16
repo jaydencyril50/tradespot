@@ -46,6 +46,7 @@ import AdminSendFunds from './pages/AdminSendFunds';
 import Rewards from './pages/Rewards';
 import AdminRewards from './pages/AdminRewards';
 import Staking from './pages/Staking';
+import BotSettings from './components/BotSettings';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Root container missing in index.html');
@@ -104,6 +105,11 @@ root.render(
             <Route path="/settings/additional" element={
               <ProtectedRoute>
                 <AdditionalSettings />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings/bot" element={
+              <ProtectedRoute>
+                <BotSettings />
               </ProtectedRoute>
             } />
             <Route path="/deposit" element={
