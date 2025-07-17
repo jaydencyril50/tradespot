@@ -119,23 +119,6 @@ const SellSpotPage: React.FC = () => {
     setInputError(error);
   }, [spotAmount, selectedBuyer, userSpotBalance]);
 
-  // --- Status randomizer for sellers ---
-  useEffect(() => {
-    if (!buyers.length) return;
-    const interval = setInterval(() => {
-      setBuyers(prevBuyers => prevBuyers.map(buyer => {
-        // Randomly pick a new status
-        const statuses = ['online', 'offline', 'recently'];
-        let newStatus = statuses[Math.floor(Math.random() * statuses.length)];
-        // Avoid repeating the same status
-        while (newStatus === buyer.status && statuses.length > 1) {
-          newStatus = statuses[Math.floor(Math.random() * statuses.length)];
-        }
-        return { ...buyer, status: newStatus };
-      }));
-    }, 2 * 60 * 60 * 1000); // 2 hours in ms
-    return () => clearInterval(interval);
-  }, [buyers.length]);
 
   // Poll trade limits every 12 hours and update min/max limits for each seller
   useEffect(() => {
