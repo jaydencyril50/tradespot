@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState, memo } from 'react';
 import { fetchRewards } from '../services/rewardsService';
 import './TournamentBracket.css';
 
+const API = process.env.REACT_APP_API_BASE_URL || 'https://api.tradespot.online';
+
 const DJ_SONGS = [
   process.env.PUBLIC_URL + '/djkings/TS2.mp3',
   process.env.PUBLIC_URL + '/djkings/TS1.mp3',
@@ -89,7 +91,7 @@ const TournamentBracket: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
     const fetchAwardRows = () => {
-      fetch('/api/reward/award-table')
+      fetch(`${API}/api/reward/award-table`)
         .then(res => res.json())
         .then(data => {
           if (isMounted) {
