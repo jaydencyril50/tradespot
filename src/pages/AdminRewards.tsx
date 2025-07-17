@@ -224,8 +224,8 @@ const AdminRewards: React.FC = () => {
   }
 `}</style>
       {/* Awards Table Below Rewards */}
-      <div className="awards-table-container" style={{ maxWidth: 600, margin: '32px auto 0 auto', padding: '0 12px' }}>
-        <table className="awards-table" style={{ width: '100%', borderCollapse: 'collapse', background: '#f7f7f7', borderRadius: 12, overflow: 'hidden', boxShadow: '0 2px 8px rgba(30,60,114,0.10)', marginBottom: 6 }}>
+      <div className="awards-table-container" style={{ maxWidth: 540, width: '100%', margin: '32px auto 0 auto', padding: '0 12px', boxSizing: 'border-box', overflowX: 'auto' }}>
+        <table className="awards-table" style={{ width: '100%', minWidth: 320, borderCollapse: 'collapse', background: '#f7f7f7', borderRadius: 12, overflow: 'hidden', boxShadow: '0 2px 8px rgba(30,60,114,0.10)', marginBottom: 6 }}>
           <thead>
             <tr>
               <th style={{ background: '#232b36', color: '#fff', padding: '12px 8px', fontWeight: 700, fontSize: 15 }}>AWARD CATEGORY</th>
@@ -257,9 +257,40 @@ const AdminRewards: React.FC = () => {
             ))}
           </tbody>
         </table>
+        {/* Awards Table Save button moved below the table container */}
+        <style>{`
+  @media (max-width: 600px) {
+    .awards-table-container {
+      max-width: 100% !important;
+      padding-left: 2vw !important;
+      padding-right: 2vw !important;
+      box-sizing: border-box;
+      overflow-x: auto !important;
+    }
+    .awards-table {
+      min-width: 320px !important;
+      font-size: 13px !important;
+    }
+    .awards-table th, .awards-table td {
+      padding: 8px 4px !important;
+      font-size: 13px !important;
+    }
+    .save-btn-container {
+      padding-left: 2vw !important;
+      padding-right: 2vw !important;
+      max-width: 100% !important;
+      box-sizing: border-box;
+    }
+    .save-btn-container button {
+      width: 100%;
+      font-size: 16px !important;
+      padding: 12px 0 !important;
+      border-radius: 5px !important;
+    }
+  }
+`}</style>
       </div>
-      {/* Save button for awards table - now outside and below the table container */}
-      <div className="save-btn-container" style={{ maxWidth: 600, margin: '12px auto', padding: '0 12px' }}>
+      <div className="save-btn-container" style={{ maxWidth: 540, margin: '12px auto 0 auto', padding: '0 12px', boxSizing: 'border-box' }}>
         <button
           style={{
             width: '100%',
