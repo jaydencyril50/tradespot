@@ -6,107 +6,65 @@ const API = process.env.REACT_APP_API_BASE_URL || 'https://api.tradespot.online'
 const BotSettings: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedBot, setSelectedBot] = useState<any>(null);
-  // Remove boughtBots state, use currentBotType from DB
-  const [vipLevel, setVipLevel] = useState<string>('');
-  const [price, setPrice] = useState('');
-  const [modalLoading, setModalLoading] = useState(false);
-  const [modalError, setModalError] = useState('');
+  const [subscriptions, setSubscriptions] = useState<any[]>([]);
+  const [subLoading, setSubLoading] = useState<string | null>(null); // botId being processed
+  const [error, setError] = useState('');
 
-
-  const handleBuyClick = async (bot: any) => {
-    setSelectedBot(bot);
-    setShowModal(true);
-    setModalLoading(true);
-    setModalError('');
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get(`${API}/api/bot/vip-level`, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : ''
-        }
-      });
-      setVipLevel(res.data.vipLevel || '');
-    } catch (err: any) {
-      setModalError('Failed to fetch VIP level');
-    } finally {
-      setModalLoading(false);
-    }
-  };
-
-  const handleActivate = async () => {
-    setModalLoading(true);
-    setModalError('');
-    try {
-      const percent = selectedBot?.percent ? parseInt(selectedBot.percent.replace('%','')) : 4;
-      const token = localStorage.getItem('token');
-      await axios.put(`${API}/api/bot`, {
-        botEnabled: true,
-        botType: selectedBot?.name,
-        botPercent: percent,
-      }, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : ''
-        }
-      });
-      setMessage('Bot activated!');
-      setShowModal(false);
-      // After activation, update currentBotType to reflect the bought bot
-      setCurrentBotType(selectedBot?.name || '');
-      setSelectedBot(null);
-      setPrice('');
-    } catch (err: any) {
-      setModalError('Failed to activate bot');
-    } finally {
-      setModalLoading(false);
-    }
-  };
-  const [botEnabled, setBotEnabled] = useState(false);
-  const [botDailyOrderAmount, setBotDailyOrderAmount] = useState(0);
-  const [botOrderType, setBotOrderType] = useState<'buy' | 'sell' | 'both'>('buy');
-  const [botRunTime, setBotRunTime] = useState('09:00');
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-
-  const [currentBotType, setCurrentBotType] = useState('');
-  const [currentBotPercent, setCurrentBotPercent] = useState<number>(4);
+  // Fetch subscriptions on mount
   useEffect(() => {
-    // Fetch current bot settings
-    setLoading(true);
     const token = localStorage.getItem('token');
-    axios.get(`${API}/api/bot`, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : ''
-      }
+    if (!token) return;
+    axios.get(`${API}/api/bot/subscriptions`, {
+      headers: { Authorization: `Bearer ${token}` }
     })
-      .then(res => {
-        const settings = res.data;
-        setBotEnabled(!!settings.botEnabled);
-        setBotDailyOrderAmount(settings.botDailyOrderAmount || 0);
-        setBotOrderType(settings.botOrderType || 'buy');
-        setBotRunTime(settings.botRunTime || '09:00');
-        setCurrentBotType(settings.botType || '');
-        setCurrentBotPercent(settings.botPercent ?? 4);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .then(res => setSubscriptions(res.data.subscriptions || []))
+      .catch(() => setSubscriptions([]));
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage('');
+  // Helper to check if user is subscribed to a bot
+  const isSubscribed = (botId: string) => {
+    return subscriptions.some(sub => sub.botId === botId && sub.isActive);
+  };
+
+  // Subscribe to a bot
+  const handleSubscribe = async (bot: any) => {
+    setSubLoading(bot._id);
+    setError('');
+    const token = localStorage.getItem('token');
     try {
-      const res = await axios.put(`${API}/api/bot`, {
-        botEnabled,
-        botDailyOrderAmount,
-        botOrderType,
-        botRunTime,
+      await axios.post(`${API}/api/bot/bots/${bot._id}/subscribe`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setMessage(res.data.message || 'Settings updated!');
+      // Refresh subscriptions
+      const res = await axios.get(`${API}/api/bot/subscriptions`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSubscriptions(res.data.subscriptions || []);
     } catch (err: any) {
-      setMessage(err.response?.data?.error || 'Failed to update settings');
+      setError('Failed to subscribe');
     } finally {
-      setLoading(false);
+      setSubLoading(null);
+    }
+  };
+
+  // Unsubscribe from a bot
+  const handleUnsubscribe = async (bot: any) => {
+    setSubLoading(bot._id);
+    setError('');
+    const token = localStorage.getItem('token');
+    try {
+      await axios.post(`${API}/api/bot/bots/${bot._id}/unsubscribe`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Refresh subscriptions
+      const res = await axios.get(`${API}/api/bot/subscriptions`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSubscriptions(res.data.subscriptions || []);
+    } catch (err: any) {
+      setError('Failed to unsubscribe');
+    } finally {
+      setSubLoading(null);
     }
   };
 
@@ -141,12 +99,7 @@ const BotSettings: React.FC = () => {
       </div>
 
       {/* Show current bot if enabled */}
-      {botEnabled && (
-        <div style={{margin:'1.5rem auto',maxWidth:400,background:'#e0e7ff',borderRadius:8,padding:'1rem 1.5rem',color:'#222',fontWeight:500}}>
-          <div>Active Bot: <b>{currentBotType}</b></div>
-          <div>Commission: <b>{currentBotPercent}%</b></div>
-        </div>
-      )}
+      {/* No botEnabled UI, since not supported by backend */}
       {/* Bot Cards Section - one per row */}
       <div style={{
         marginTop: 2,
@@ -159,151 +112,113 @@ const BotSettings: React.FC = () => {
         width: '100%',
         boxSizing: 'border-box',
       }}>
-        {[
-          { name: 'AlphaBot', img: 'https://i.postimg.cc/ZKbLVGMn/security.png', range: '1-50 USDT', percent: '4%' },
-          { name: 'Fireblaze', img: 'https://i.postimg.cc/2ymDBkTC/technical-support.png', range: '51-150 USDT', percent: '5%' },
-          { name: 'SignalCore', img: 'https://i.postimg.cc/28tBhgpP/chatbot.png', range: '151-300 USDT', percent: '6%' },
-          { name: 'ProfitPilot', img: 'https://i.postimg.cc/Jz3jbP1m/robot-1.png', range: '301-500 USDT', percent: '7%' },
-          { name: 'VoltaEdge', img: 'https://i.postimg.cc/gJy07BTk/robotic-process-automation.png', range: '501-1000 USDT', percent: '8%' },
-          { name: 'ProVoltage', img: 'https://i.postimg.cc/B6fWdSr2/bot.png', range: '1001-2000 USDT', percent: '9%' },
-          { name: 'QuantumBot', img: 'https://i.postimg.cc/Hxs3hFST/robot.png', range: '2001-MAX USDT', percent: '10%' },
-        ].map((bot, idx) => (
-          <div key={bot.name} style={{
-            background: '#fff',
-            borderRadius: 2,
-            boxShadow: '0 4px 18px rgba(0,0,0,0.10)',
-            width: '100%',
-            maxWidth: 400,
-            minWidth: 0,
-            minHeight: 200,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '1.5rem 1rem 1rem 1rem',
-            border: '1.5px solid #e5e7eb',
-            boxSizing: 'border-box',
-          }}>
-            <img src={bot.img} alt={bot.name} style={{ width: 40, height: 40, marginBottom: 14, borderRadius: 10, background: '#f3f4f6', objectFit: 'cover' }} />
-            <div style={{ fontWeight: 700, fontSize: '1.15rem', color: '#222', marginBottom: 4, textAlign: 'center' }}>{bot.name}</div>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-              marginBottom: 10,
-            }}>
-              <div style={{
-                fontWeight: 500,
-                fontSize: '0.98rem',
-                color: '#10b981',
-                background: '#e6f9f3',
-                borderRadius: 6,
-                padding: '3px 12px',
-                textAlign: 'center',
-                display: 'inline-block',
-                letterSpacing: '0.01em',
-              }}>{bot.range}</div>
-              <div style={{
-                fontWeight: 500,
-                fontSize: '0.95rem',
-                color: '#2563eb',
-                background: '#e0e7ff',
-                borderRadius: 6,
-                padding: '2px 10px',
-                textAlign: 'center',
-                display: 'inline-block',
-                letterSpacing: '0.01em',
-              }}>{bot.percent}</div>
-            </div>
-          <button
-            style={{
-              background: currentBotType === bot.name ? '#d1d5db' : 'var(--primary, #10b981)',
-              color: currentBotType === bot.name ? '#888' : '#fff',
-              border: 'none',
-              borderRadius: 8,
-              padding: '10px 0',
-              fontWeight: 600,
-              fontSize: '1rem',
-              cursor: currentBotType === bot.name ? 'not-allowed' : 'pointer',
+        {/* Map bot names to images */}
+        {(() => {
+          const botImages: Record<string, string> = {
+            AlphaBot: 'https://i.postimg.cc/ZKbLVGMn/security.png',
+            Fireblaze: 'https://i.postimg.cc/2ymDBkTC/technical-support.png',
+            SignalCore: 'https://i.postimg.cc/28tBhgpP/chatbot.png',
+            ProfitPilot: 'https://i.postimg.cc/Jz3jbP1m/robot-1.png',
+            VoltaEdge: 'https://i.postimg.cc/gJy07BTk/robotic-process-automation.png',
+            ProVoltage: 'https://i.postimg.cc/B6fWdSr2/bot.png',
+            QuantumBot: 'https://i.postimg.cc/Hxs3hFST/robot.png',
+          };
+          const [bots, setBots] = React.useState<any[]>([]);
+          React.useEffect(() => {
+            axios.get(`${API}/api/bot/bots`).then(res => setBots(res.data.bots || []));
+          }, []);
+          return bots.map((bot, idx) => (
+            <div key={bot._id} style={{
+              background: '#fff',
+              borderRadius: 2,
+              boxShadow: '0 4px 18px rgba(0,0,0,0.10)',
               width: '100%',
-              marginTop: 'auto',
-              boxShadow: '0 2px 8px rgba(16,185,129,0.08)'
-            }}
-            onClick={() => currentBotType !== bot.name && handleBuyClick(bot)}
-            disabled={currentBotType === bot.name}
-          >{currentBotType === bot.name ? 'Bought' : 'Buy'}</button>
-          </div>
-        ))}
-      </div>
-      {/* Modal for Buy button */}
-      {showModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          background: 'rgba(0,0,0,0.25)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999,
-        }}>
-          <div style={{
-            background: '#fff',
-            borderRadius: 10,
-            boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
-            padding: '2rem 1.5rem',
-            minWidth: 320,
-            maxWidth: 380,
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            position: 'relative',
-          }}>
-            <button
-              style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: '#888' }}
-              onClick={() => { setShowModal(false); setSelectedBot(null); setPrice(''); }}
-              aria-label="Close"
-            >×</button>
-            <div style={{ fontWeight: 700, fontSize: '1.25rem', marginBottom: 10, color: '#222' }}>
-              Activate {selectedBot?.name}
-            </div>
-            {modalLoading ? (
-              <div style={{ margin: '1.5rem 0', color: '#888' }}>Loading...</div>
+              maxWidth: 400,
+              minWidth: 0,
+              minHeight: 200,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '1.5rem 1rem 1rem 1rem',
+              border: '1.5px solid #e5e7eb',
+              boxSizing: 'border-box',
+            }}>
+              <img src={botImages[bot.name] || ''} alt={bot.name} style={{ width: 40, height: 40, marginBottom: 14, borderRadius: 10, background: '#f3f4f6', objectFit: 'cover' }} />
+              <div style={{ fontWeight: 700, fontSize: '1.15rem', color: '#222', marginBottom: 4, textAlign: 'center' }}>{bot.name}</div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                marginBottom: 10,
+              }}>
+                <div style={{
+                  fontWeight: 500,
+                  fontSize: '0.98rem',
+                  color: '#10b981',
+                  background: '#e6f9f3',
+                  borderRadius: 6,
+                  padding: '3px 12px',
+                  textAlign: 'center',
+                  display: 'inline-block',
+                  letterSpacing: '0.01em',
+                }}>{`${bot.rules?.minTrade || 0}-${bot.rules?.maxTrade || 'MAX'} USDT`}</div>
+                <div style={{
+                  fontWeight: 500,
+                  fontSize: '0.95rem',
+                  color: '#2563eb',
+                  background: '#e0e7ff',
+                  borderRadius: 6,
+                  padding: '2px 10px',
+                  textAlign: 'center',
+                  display: 'inline-block',
+                  letterSpacing: '0.01em',
+                }}>{`${bot.commissionPercent}%`}</div>
+              </div>
+            {isSubscribed(bot._id) ? (
+              <button
+                style={{
+                  background: '#d1d5db',
+                  color: '#888',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '10px 0',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  width: '100%',
+                  marginTop: 'auto',
+                  boxShadow: '0 2px 8px rgba(16,185,129,0.08)'
+                }}
+                onClick={() => handleUnsubscribe(bot)}
+                disabled={subLoading === bot._id}
+              >{subLoading === bot._id ? 'Processing...' : 'Unsubscribe'}</button>
             ) : (
-              <>
-                <div style={{ marginBottom: 10, fontSize: '1.05rem', color: '#444' }}>
-                  <strong>VIP Level:</strong> {vipLevel || 'N/A'}
-                </div>
-                <div style={{ marginBottom: 10, fontSize: '1.05rem', color: '#444' }}>
-                  <strong>Bot:</strong> {selectedBot?.name}
-                </div>
-                {modalError && <div style={{ color: 'red', marginBottom: 10 }}>{modalError}</div>}
-                <button
-                  style={{
-                    background: 'var(--primary, #10b981)',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 8,
-                    padding: '10px 0',
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    width: '100%',
-                    marginTop: 8,
-                    boxShadow: '0 2px 8px rgba(16,185,129,0.08)'
-                  }}
-                  onClick={handleActivate}
-                  disabled={modalLoading}
-                >Activate</button>
-              </>
+              <button
+                style={{
+                  background: 'var(--primary, #10b981)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '10px 0',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  width: '100%',
+                  marginTop: 'auto',
+                  boxShadow: '0 2px 8px rgba(16,185,129,0.08)'
+                }}
+                onClick={() => handleSubscribe(bot)}
+                disabled={subLoading === bot._id}
+              >{subLoading === bot._id ? 'Processing...' : 'Subscribe'}</button>
             )}
-          </div>
-        </div>
-      )}
+            </div>
+          ));
+        })()}
+      </div>
+      {/* Optionally, show error */}
+      {error && <div style={{ color: 'red', textAlign: 'center', marginTop: 10 }}>{error}</div>}
     </div>
   );
 };
