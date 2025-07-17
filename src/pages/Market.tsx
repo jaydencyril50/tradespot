@@ -176,7 +176,7 @@ const SimulatedMarketChart = () => {
     };
 
     const updateChart = async () => {
-      const response = await fetch('https://market-egl7.onrender.com/api/market/candles');
+      const response = await fetch('https://market-biim.onrender.com/api/market/candles');
       const candles: Candle[] = await response.json();
       candleSeries.setData(candles);
       volumeSeries.setData(candles.map(c => ({ time: c.time, value: c.volume, color: c.close > c.open ? 'rgba(38, 166, 154, 0.3)' : 'rgba(239, 83, 80, 0.3)' })));
