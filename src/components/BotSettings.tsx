@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const API = process.env.REACT_APP_API_BASE_URL || 'https://api.tradespot.online';
+
 const BotSettings: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedBot, setSelectedBot] = useState<any>(null);
@@ -10,6 +12,7 @@ const BotSettings: React.FC = () => {
   const [modalLoading, setModalLoading] = useState(false);
   const [modalError, setModalError] = useState('');
 
+
   const handleBuyClick = async (bot: any) => {
     setSelectedBot(bot);
     setShowModal(true);
@@ -17,7 +20,7 @@ const BotSettings: React.FC = () => {
     setModalError('');
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('/api/bot/vip-level', {
+      const res = await axios.get(`${API}/api/bot/vip-level`, {
         headers: {
           Authorization: token ? `Bearer ${token}` : ''
         }
@@ -36,7 +39,7 @@ const BotSettings: React.FC = () => {
     try {
       const percent = selectedBot?.percent ? parseInt(selectedBot.percent.replace('%','')) : 4;
       const token = localStorage.getItem('token');
-      await axios.put('/api/bot', {
+      await axios.put(`${API}/api/bot`, {
         botEnabled: true,
         botType: selectedBot?.name,
         botPercent: percent,
@@ -70,7 +73,7 @@ const BotSettings: React.FC = () => {
     // Fetch current bot settings
     setLoading(true);
     const token = localStorage.getItem('token');
-    axios.get('/api/bot', {
+    axios.get(`${API}/api/bot`, {
       headers: {
         Authorization: token ? `Bearer ${token}` : ''
       }
@@ -93,7 +96,7 @@ const BotSettings: React.FC = () => {
     setLoading(true);
     setMessage('');
     try {
-      const res = await axios.put('/api/bot', {
+      const res = await axios.put(`${API}/api/bot`, {
         botEnabled,
         botDailyOrderAmount,
         botOrderType,
