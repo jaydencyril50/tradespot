@@ -41,7 +41,12 @@ const BotSettings: React.FC = () => {
       });
       setSubscriptions(res.data.subscriptions || []);
     } catch (err: any) {
-      setError('Failed to subscribe');
+      // Show backend error if present
+      if (err.response && err.response.data && err.response.data.error) {
+        setError(err.response.data.error);
+      } else {
+        setError('Failed to subscribe');
+      }
     } finally {
       setSubLoading(null);
     }
