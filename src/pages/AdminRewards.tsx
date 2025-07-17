@@ -74,58 +74,6 @@ const AdminRewards: React.FC = () => {
   };
 
   const handleSave = async (i: number) => {
-  const API = process.env.REACT_APP_API_BASE_URL || '/api';
-  const [awardSaving, setAwardSaving] = React.useState<number | null>(null);
-  const [awardSuccess, setAwardSuccess] = React.useState<string>('');
-  const defaultAwards = [
-    { category: 'TOP SOUL WINNING TEAM', team: '', reward: '' },
-    { category: 'TOP DEPOSITING TEAMS', team: '', reward: '' },
-    { category: 'TEAM MANAGERS AWARDS', team: '', reward: '' },
-    { category: 'TEAM ASSISTANT AWARDS', team: '', reward: '' },
-    { category: 'TOP TEAM ORDERS AWARDS', team: '', reward: '' },
-    { category: 'HIGHEST DEPOSITS TEAM', team: '', reward: '' },
-    { category: 'TOP USDT TEAM HOLDERS', team: '', reward: '' },
-    { category: 'TOP ADVERTISING TEAMS', team: '', reward: '' },
-  ];
-  const [awards, setAwards] = React.useState(defaultAwards);
-
-  // Fetch awards table from backend
-  React.useEffect(() => {
-    const fetchAwardTable = async () => {
-      try {
-        const res = await axios.get(`${API}/api/reward/award-table`);
-        if (res.data && Array.isArray(res.data.rows)) {
-          // Map backend rows to defaultAwards order
-          const updated = defaultAwards.map(row => {
-            const found = res.data.rows.find((r: any) => r.category === row.category);
-            return found ? { category: row.category, team: found.team, reward: found.reward } : row;
-          });
-          setAwards(updated);
-        }
-      } catch (e) {
-        // Optionally handle error
-      }
-    };
-    fetchAwardTable();
-  }, [API]);
-
-  // Save award row to backend
-  const saveAwardRow = async (idx: number) => {
-    setAwardSaving(idx);
-    setAwardSuccess('');
-    try {
-      const row = awards[idx];
-      await axios.post(`${API}/api/reward/award-table`, {
-        category: row.category,
-        team: row.team,
-        reward: row.reward
-      });
-      setAwardSuccess(`Saved ${row.category}`);
-    } catch (e: any) {
-      setAwardSuccess('Error saving');
-    }
-    setAwardSaving(null);
-  };
     setSaving(i);
     setSuccess('');
     try {
