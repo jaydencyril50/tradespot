@@ -229,8 +229,13 @@ const Register: React.FC = () => {
                         onChange={handleConfirmPasswordChange}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: 'var(--bg)', color: 'var(--text)' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: passwordMatch || confirmPassword === '' ? '1px solid #ccc' : '1.5px solid #e74c3c', fontSize: 16, background: 'var(--bg)', color: 'var(--text)' }}
                     />
+                    {!passwordMatch && confirmPassword !== '' && (
+                        <div style={{ color: '#e74c3c', fontSize: 13, marginTop: 4 }}>
+                            Passwords do not match.
+                        </div>
+                    )}
                 </div>
                 <div style={{ marginBottom: '1.5rem', width: '90%' }}>
                     <label htmlFor="register-wallet" style={{ display: 'block', marginBottom: 6, color: 'var(--text)', fontWeight: 500, textAlign: 'left' }}>TRC20 Wallet Address:</label>
