@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, memo } from 'react';
+import { useParams } from 'react-router-dom';
 import { fetchRewards } from '../services/rewardsService';
 import './TournamentBracket.css';
 
@@ -22,6 +23,7 @@ const PARTY_LIGHTS = [
 ];
 
 const TournamentBracket: React.FC = () => {
+  const { token } = useParams<{ token: string }>();
   const [currentSong, setCurrentSong] = useState(0);
   const [musicStarted, setMusicStarted] = useState(false);
   const [curtainOpen, setCurtainOpen] = useState(false);
@@ -38,7 +40,11 @@ const TournamentBracket: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
     const getRewards = () => {
-      fetchRewards().then(data => {
+      if (!token) {
+        setRewards([]);
+        return;
+      }
+      fetchRewards(token).then(data => {
         if (isMounted) setRewards(data);
       }).catch(() => {
         if (isMounted) setRewards([]);
@@ -50,7 +56,7 @@ const TournamentBracket: React.FC = () => {
       isMounted = false;
       clearInterval(interval);
     };
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     if (musicStarted && audioRef.current) {

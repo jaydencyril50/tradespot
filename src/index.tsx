@@ -179,7 +179,7 @@ root.render(
             } />
             <Route path="/admin/flex-drop" element={<AdminFlexDrop />} />
             <Route path="/flex-drop/:linkId" element={<FlexDropClaim />} />
-            <Route path="/rewards" element={<Rewards/>} />
+            <Route path="/rewards/:token" element={<Rewards/>} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>
