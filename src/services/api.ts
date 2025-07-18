@@ -213,10 +213,10 @@ export const verifyFundsPrivacy = async (spotid: string, emailCode: string, pass
 };
 
 // Change password
-export const changePassword = async (newPassword: string, code: string, spotid: string) => {
+export const changePassword = async (oldPassword: string, newPassword: string, confirmPassword: string) => {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
-    const payload = { newPassword, code, spotid }; // REMOVE twoFAToken from payload
+    const payload = { oldPassword, newPassword, confirmPassword };
     const res = await axios.post(`${API}/api/change-password`, payload, {
         headers: { Authorization: `Bearer ${token}` },
     });

@@ -11,10 +11,9 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   const { theme } = useTheme();
   const navigate = useNavigate();
   const [showUpdatePassword, setShowUpdatePassword] = useState(false);
+  const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [spotid, setSpotid] = useState('');
-  const [code, setCode] = useState('');
   const [sendingCode, setSendingCode] = useState(false);
   const [codeSent, setCodeSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,21 +58,24 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
     setError(null);
     setSuccess(null);
     try {
+      if (!oldPassword || !newPassword || !confirmPassword) {
+        setError('All fields are required.');
+        return;
+      }
       if (!passwordMatch || confirmPassword === '') {
         setError('Passwords do not match.');
         return;
       }
       await import('../services/api').then(m => m.changePassword(
+        oldPassword,
         newPassword,
-        code,
-        spotid
+        confirmPassword
       ));
       setSuccess('Password updated successfully.');
       setShowUpdatePassword(false);
+      setOldPassword('');
       setNewPassword('');
       setConfirmPassword('');
-      setSpotid('');
-      setCode('');
     } catch (e: any) {
       setError(e.message || 'Failed to update password.');
       if (process.env.NODE_ENV === 'development') {
@@ -234,6 +236,14 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
         >
           <input
             type="password"
+            placeholder="Old Password"
+            value={oldPassword}
+            onChange={e => setOldPassword(e.target.value)}
+            className="privacy-settings-input"
+            required
+          />
+          <input
+            type="password"
             placeholder="New Password"
             value={newPassword}
             onChange={e => {
@@ -259,34 +269,6 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
               Passwords do not match
             </div>
           )}
-          <input
-            type="text"
-            placeholder="Spot ID"
-            value={spotid}
-            onChange={e => {
-              setSpotid(e.target.value);
-              validateSpotid(e.target.value);
-            }}
-            className={`privacy-settings-input${spotidValid === false ? ' error' : ''}`}
-            required
-          />
-          {spotidValid === false && (
-            <div className="privacy-settings-error">
-              Invalid SPOTID
-            </div>
-          )}
-          <input
-            type="text"
-            placeholder="Password Verification Code"
-            value={code}
-            onChange={e => {
-              setCode(e.target.value);
-              // validateCode(e.target.value, spotid); // DISABLED
-            }}
-            className="privacy-settings-input"
-            required={codeSent}
-            disabled={!codeSent}
-          />
           <div style={{ display: 'flex', width: '100%', gap: 8, marginTop: 4 }}>
             <button
               type="button"
@@ -298,7 +280,7 @@ const PrivacySettings: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
             <button
               type="submit"
               className="privacy-settings-modal-btn continue"
-              disabled={sendingCode || !passwordMatch || confirmPassword === '' || spotidValid === false}
+              disabled={sendingCode || !passwordMatch || confirmPassword === ''}
             >
               Update Password
             </button>
