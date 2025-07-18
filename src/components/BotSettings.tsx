@@ -20,10 +20,10 @@ const BotSettings: React.FC = () => {
       .then(res => setSubscriptions(res.data.subscriptions || []))
       .catch(() => setSubscriptions([]));
     // Fetch user USDT balance
-    axios.get(`${API}/api/funds/balance`, {
+    axios.get(`${API}/api/portfolio`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then(res => setUsdtBalance(res.data.usdt || null))
+      .then(res => setUsdtBalance(res.data.usdtBalance || null))
       .catch(() => setUsdtBalance(null));
   }, []);
 
