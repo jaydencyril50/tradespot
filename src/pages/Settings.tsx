@@ -26,7 +26,7 @@ const Settings: React.FC = () => {
             textAlign: 'center',
             marginBottom: 0,
             fontFamily: 'inherit',
-            height: 120,
+            height: 130,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
@@ -69,7 +69,7 @@ const Settings: React.FC = () => {
             textAlign: 'center',
             marginBottom: 0,
             fontFamily: 'inherit',
-            height: 120,
+            height: 130,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
@@ -112,7 +112,7 @@ const Settings: React.FC = () => {
             textAlign: 'center',
             marginBottom: 0,
             fontFamily: 'inherit',
-            height: 120,
+            height: 130,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
@@ -155,7 +155,7 @@ const Settings: React.FC = () => {
                 margin-left: 5vw !important;
                 margin-right: 5vw !important;
                 padding: 10px 2vw !important;
-                height: 90px !important;
+                height: 115px !important;
               }
             }
           `}

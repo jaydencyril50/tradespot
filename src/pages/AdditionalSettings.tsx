@@ -39,7 +39,27 @@ const AdditionalSettings: React.FC = () => {
             fontWeight: 600,
             fontSize: '1rem',
             cursor: 'pointer',
-            marginTop: 4,
+            marginTop: 0,
+            background: 'var(--secondary)',
+            color: '#fff', // force white text
+            boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
+            transition: 'background 0.2s',
+            alignSelf: 'center',
+            width: '100%'
+          }}
+          onClick={() => navigate('/faq')}
+        >
+         FAQ Data
+        </button>
+        <button
+          style={{
+            border: 'none',
+            borderRadius: 0,
+            padding: '10px 0',
+            fontWeight: 600,
+            fontSize: '1rem',
+            cursor: 'pointer',
+            marginTop: 8,
             background: 'var(--secondary)',
             color: '#fff', // force white text
             boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
@@ -69,33 +89,6 @@ const AdditionalSettings: React.FC = () => {
           }}
         >
          Change language
-        </button>
-        <button
-          style={{
-            border: 'none',
-            borderRadius: 0,
-            padding: '10px 0',
-            fontWeight: 600,
-            fontSize: '1rem',
-            cursor: 'pointer',
-            marginTop: 8,
-            background: 'var(--secondary)',
-            color: '#fff', // force white text
-            boxShadow: '0 1px 4px rgba(30,60,114,0.10)',
-            transition: 'background 0.2s',
-            alignSelf: 'center',
-            width: '100%'
-          }}
-          onClick={() => {
-            const link = document.createElement('a');
-            link.href = '/TradeSpot.apk';
-            link.download = 'TradeSpot.apk';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          }}
-        >
-         Download APK
         </button>
         {showThemeModal && (
           <div style={{

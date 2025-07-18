@@ -31,31 +31,88 @@ const FAQPage: React.FC = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card-bg)', padding: '16px 24px 10px 18px', border: '1.5px solid var(--secondary)', borderTop: 0, borderLeft: 0, borderRight: 0}}>
-        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)', letterSpacing: 1, fontFamily: 'serif' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', padding: 0, paddingBottom: 20 }}>
+      <div className="faq-header" style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', background: 'var(--card-bg)', padding: '16px 0 10px 0', border: '1.5px solid var(--secondary)', borderTop: 0, borderLeft: 0, borderRight: 0 }}>
+        <span className="faq-title" style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)', letterSpacing: 1, fontFamily: 'serif', textAlign: 'left', width: '100%', paddingLeft: 24 }}>
           FAQ
         </span>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 30, gap: 20 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 20, gap: 14, width: '100%' }}>
         {loading && <p>Loading...</p>}
         {error && <p style={{ color: '#d32f2f', marginTop: 16 }}>{error}</p>}
         {faqs.map((faq, idx) => (
-          <div key={faq._id} className="card" style={{ borderRadius: 0, minWidth: 200, maxWidth: 480, width: '100%', textAlign: 'left', marginBottom: 0, fontFamily: 'inherit', boxShadow: 'var(--card-shadow)', background: 'var(--card-bg)', padding: '18px 24px' }}>
+          <div
+            key={faq._id}
+            className="card"
+            style={{
+              borderRadius: 5,
+              minWidth: 0,
+              maxWidth: 540,
+              width: '100%',
+              textAlign: 'left',
+              marginBottom: 0,
+              fontFamily: 'inherit',
+              boxShadow: 'var(--card-shadow)',
+              background: 'var(--card-bg)',
+              padding: '14px 12px',
+              fontSize: '1rem',
+            }}
+          >
             <button
               className="button"
-              style={{ width: '100%', background: 'none', color: 'var(--primary)', fontWeight: 700, fontSize: '1.08rem', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: 'none', boxShadow: 'none', padding: 0, marginBottom: 8, cursor: 'pointer' }}
+              style={{
+                width: '100%',
+                background: 'none',
+                color: 'var(--primary)',
+                fontWeight: 700,
+                fontSize: '1rem',
+                textAlign: 'left',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                border: 'none',
+                boxShadow: 'none',
+                padding: 0,
+                marginBottom: 8,
+                cursor: 'pointer',
+                lineHeight: 1.3,
+              }}
               onClick={() => toggleAccordion(idx)}
             >
-              {faq.question}
+              <span style={{ flex: 1 }}>{faq.question}</span>
               <span style={{ fontSize: '1.2rem', marginLeft: 8 }}>{openIndex === idx ? '▲' : '▼'}</span>
             </button>
             {openIndex === idx && (
-              <div style={{ padding: '8px 0 0 0', color: '#444', fontSize: '1rem' }}>{faq.answer}</div>
+              <div style={{ padding: '8px 0 0 0', color: '#444', fontSize: '0.98rem', wordBreak: 'break-word' }}>{faq.answer}</div>
             )}
           </div>
         ))}
       </div>
+      <style>{`
+        @media (max-width: 600px) {
+          .faq-header {
+            width: 100vw !important;
+            margin-left: calc(-50vw + 50%) !important;
+            padding: 10px 0 8px 0 !important;
+          }
+          .faq-title {
+            font-size: 1.5rem !important;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-align: left !important;
+            padding-left: 12px !important;
+          }
+          .card {
+            max-width: 96vw !important;
+            width: 96vw !important;
+            padding: 8px 4px !important;
+            font-size: 0.98rem !important;
+          }
+          .button {
+            font-size: 0.90rem !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };
