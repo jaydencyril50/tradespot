@@ -47,7 +47,10 @@ const BotSettings: React.FC = () => {
       return;
     }
     if (usdtBalance < minTrade || usdtBalance > maxTrade) {
-      setBotErrors(prev => ({ ...prev, [bot._id]: `Your USDT balance (${usdtBalance}) is not within the bot's trade limit (${minTrade}-${maxTrade}).` }));
+      setBotErrors(prev => ({
+        ...prev,
+        [bot._id]: `Your USDT balance must be between ${minTrade} and ${maxTrade} USDT to subscribe to this bot.`
+      }));
       setSubLoading(null);
       return;
     }
