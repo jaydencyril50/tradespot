@@ -3,6 +3,7 @@ import './theme.css';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
+import FAQPage from './pages/FAQ';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './components/Dashboard';
@@ -58,6 +59,7 @@ root.render(
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Home />} />
+           <Route path="/faq" element={<FAQPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
