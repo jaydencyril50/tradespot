@@ -27,17 +27,18 @@ const AboutUs: React.FC = () => {
             padding: '2.5rem',
           }}
         >
-          <p style={{ fontSize: '1.15rem', marginBottom: '1.5rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)' }}>
+
+          <p style={{ fontSize: '1.15rem', marginBottom: '1.5rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)', fontWeight: 'bold' }}>
             TradeSpot is more than a platform—it's a global revolution in crypto empowerment.
           </p>
-          <p style={{ fontSize: '1.15rem', marginBottom: '1.5rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)' }}>
+          <p style={{ fontSize: '1.15rem', marginBottom: '1.5rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)', fontWeight: 'bold' }}>
             Born out of the need to eliminate fear, loss, and confusion in the crypto space, TradeSpot stands as a secure, intelligent, and profit-driven ecosystem designed for everyone—whether you’re just starting your journey or already playing at the top.
           </p>
-          <p style={{ fontSize: '1.15rem', marginBottom: '1.5rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)' }}>
+          <p style={{ fontSize: '1.15rem', marginBottom: '1.5rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)', fontWeight: 'bold' }}>
             With an independent SPOT/USDT market, bulletproof Locked & Loaded security, and a fully self-sustained economy, TradeSpot puts you in full control of your financial future. No guesswork. No stress. Just opportunity, empowerment, and consistent gains.
           </p>
-          <h2 style={{ fontWeight: 600, fontSize: '1.5rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--primary)' }}>🔑 What Sets Us Apart</h2>
-          <ul style={{ fontSize: '1.1rem', marginBottom: '1.5rem', paddingLeft: '1.5rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)' }}>
+          <h2 style={{ fontWeight: 700, fontSize: '1.5rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--primary)' }}>🔑 What Sets Us Apart</h2>
+          <ul style={{ fontSize: '1.1rem', marginBottom: '1.5rem', paddingLeft: '1.5rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)', fontWeight: 'bold' }}>
             <li>Profit-Based P2P Trading – Buy low, sell high, by design—not by chance.</li>
             <li>Real-Time Human Support – Help when you need it, not hours later.</li>
             <li>Beginner-First UI – Clean, intuitive, and welcoming for all users.</li>
@@ -46,15 +47,15 @@ const AboutUs: React.FC = () => {
             <li>VIP Club Access – For top performers who lead the charge.</li>
             <li>The TradeSpot Social Hub – A crypto-native social media experience built to connect, compete, and celebrate.</li>
           </ul>
-          <p style={{ fontSize: '1.15rem', marginBottom: '1.5rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)' }}>
+          <p style={{ fontSize: '1.15rem', marginBottom: '1.5rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)', fontWeight: 'bold' }}>
             We are already live and scaling fast—continually evolving to meet the needs of our users and stay ahead of the curve. TradeSpot is not a prototype. It’s a full-force platform backed by a clear mission and a powerful community.
           </p>
-          <h2 style={{ fontWeight: 600, fontSize: '1.5rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--primary)' }}>🚀 Our Vision</h2>
-          <p style={{ fontSize: '1.15rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)' }}>
+          <h2 style={{ fontWeight: 700, fontSize: '1.5rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--primary)' }}>🚀 Our Vision</h2>
+          <p style={{ fontSize: '1.15rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)', fontWeight: 'bold' }}>
             A world where crypto is 0% struggle, 0% fear, and 100% drive.<br />
             Where anyone—minor or mighty—can grow, thrive, and profit confidently.
           </p>
-          <p style={{ fontSize: '1.15rem', marginTop: '1rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)' }}>
+          <p style={{ fontSize: '1.15rem', marginTop: '1rem', color: theme === 'dark' ? '#fff' : 'var(--secondary)', fontWeight: 'bold' }}>
             TradeSpot isn’t just building the future of finance.<br />
             We’re redefining what’s possible in crypto.
           </p>
