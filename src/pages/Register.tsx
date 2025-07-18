@@ -16,7 +16,18 @@ const Register: React.FC = () => {
     const [emailValid, setEmailValid] = useState(true);
     const [referralValid, setReferralValid] = useState(true);
     const [referralChecking, setReferralChecking] = useState(false);
+    const [passwordValid, setPasswordValid] = useState(true);
     const navigate = useNavigate();
+
+    // Password validation: min 8 chars, at least 1 letter and 1 number, must not match any filled detail
+    const validatePassword = (pwd: string) => {
+        if (pwd.length < 8) return false;
+        if (!/[A-Za-z]/.test(pwd)) return false;
+        if (!/[0-9]/.test(pwd)) return false;
+        const details = [fullName, email, wallet, referredBy].map(d => d.trim().toLowerCase()).filter(Boolean);
+        if (details.some(d => d && pwd.trim().toLowerCase() === d)) return false;
+        return true;
+    };
 
     useEffect(() => {
         // Pre-fill referral code from URL if present
@@ -40,6 +51,10 @@ const Register: React.FC = () => {
         }
         if (!walletValid) {
             setError('Please enter a valid TRC20 USDT wallet address');
+            return;
+        }
+        if (!passwordValid) {
+            setError('Password must be at least 8 characters, contain at least 1 letter and 1 number, and must not match any of your details.');
             return;
         }
         if (password !== confirmPassword) {
@@ -75,12 +90,15 @@ const Register: React.FC = () => {
     };
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPassword(e.target.value);
-        setPasswordMatch(e.target.value === confirmPassword);
+        const value = e.target.value;
+        setPassword(value);
+        setPasswordMatch(value === confirmPassword);
+        setPasswordValid(validatePassword(value));
     };
     const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setConfirmPassword(e.target.value);
         setPasswordMatch(password === e.target.value);
+        setPasswordValid(validatePassword(password));
     };
 
     // TRC20 USDT wallet address validation (starts with 'T' and is 34 chars)
@@ -193,8 +211,13 @@ const Register: React.FC = () => {
                         onChange={handlePasswordChange}
                         required
                         autoComplete="off"
-                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: '1px solid #ccc', fontSize: 16, background: 'var(--bg)', color: 'var(--text)' }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '0.5rem', borderRadius: 0, border: passwordValid || password === '' ? '1px solid #ccc' : '1.5px solid #e74c3c', fontSize: 16, background: 'var(--bg)', color: 'var(--text)' }}
                     />
+                    {!passwordValid && password !== '' && (
+                        <div style={{ color: '#e74c3c', fontSize: 13, marginTop: 4 }}>
+                            Password must be at least 8 characters, contain at least 1 letter and 1 number, and must not match any of your details.
+                        </div>
+                    )}
                 </div>
                 <div style={{ marginBottom: '1rem', width: '90%' }}>
                     <label htmlFor="register-confirm-password" style={{ display: 'block', marginBottom: 6, color: 'var(--text)', fontWeight: 500, textAlign: 'left' }}>Confirm Password:</label>
