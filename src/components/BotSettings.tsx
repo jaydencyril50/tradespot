@@ -9,8 +9,10 @@ const BotSettings: React.FC = () => {
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [subLoading, setSubLoading] = useState<string | null>(null); // botId being processed
   const [error, setError] = useState('');
+  const [botErrors, setBotErrors] = useState<Record<string, string>>({});
+  const [usdtBalance, setUsdtBalance] = useState<number | null>(null);
 
-  // Fetch subscriptions on mount
+  // Fetch subscriptions and balance on mount
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -19,6 +21,12 @@ const BotSettings: React.FC = () => {
     })
       .then(res => setSubscriptions(res.data.subscriptions || []))
       .catch(() => setSubscriptions([]));
+    // Fetch user USDT balance
+    axios.get(`${API}/api/funds/balance`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => setUsdtBalance(res.data.usdt || null))
+      .catch(() => setUsdtBalance(null));
   }, []);
 
   // Helper to check if user is subscribed to a bot
@@ -26,11 +34,25 @@ const BotSettings: React.FC = () => {
     return subscriptions.some(sub => sub.botId === botId && sub.isActive);
   };
 
-  // Subscribe to a bot
+  // Subscribe to a bot with USDT balance check
   const handleSubscribe = async (bot: any) => {
     setSubLoading(bot._id);
     setError('');
+    setBotErrors({});
     const token = localStorage.getItem('token');
+    // Check balance before subscribing
+    const minTrade = bot.rules?.minTrade || 0;
+    const maxTrade = bot.rules?.maxTrade || Number.MAX_SAFE_INTEGER;
+    if (usdtBalance === null) {
+      setBotErrors(prev => ({ ...prev, [bot._id]: 'Unable to fetch USDT balance.' }));
+      setSubLoading(null);
+      return;
+    }
+    if (usdtBalance < minTrade || usdtBalance > maxTrade) {
+      setBotErrors(prev => ({ ...prev, [bot._id]: `Your USDT balance (${usdtBalance}) is not within the bot's trade limit (${minTrade}-${maxTrade}).` }));
+      setSubLoading(null);
+      return;
+    }
     try {
       await axios.post(`${API}/api/bot/bots/${bot._id}/subscribe`, {}, {
         headers: { Authorization: `Bearer ${token}` }
@@ -41,11 +63,10 @@ const BotSettings: React.FC = () => {
       });
       setSubscriptions(res.data.subscriptions || []);
     } catch (err: any) {
-      // Show backend error if present
       if (err.response && err.response.data && err.response.data.error) {
-        setError(err.response.data.error);
+        setBotErrors(prev => ({ ...prev, [bot._id]: err.response.data.error }));
       } else {
-        setError('Failed to subscribe');
+        setBotErrors(prev => ({ ...prev, [bot._id]: 'Failed to subscribe' }));
       }
     } finally {
       setSubLoading(null);
@@ -217,6 +238,10 @@ const BotSettings: React.FC = () => {
                 onClick={() => handleSubscribe(bot)}
                 disabled={subLoading === bot._id}
               >{subLoading === bot._id ? 'Processing...' : 'Subscribe'}</button>
+            )}
+            {/* Show error for this bot only */}
+            {botErrors[bot._id] && (
+              <div style={{ color: 'red', textAlign: 'center', marginTop: 8, fontSize: '0.95rem' }}>{botErrors[bot._id]}</div>
             )}
             </div>
           ));
