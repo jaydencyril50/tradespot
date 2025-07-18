@@ -3,6 +3,7 @@ import './theme.css';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
+import AboutUs from './pages/AboutUs';
 import FAQPage from './pages/FAQ';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -60,6 +61,7 @@ root.render(
             {/* Public routes */}
             <Route path="/" element={<Home />} />
            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/about" element={<AboutUs />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
